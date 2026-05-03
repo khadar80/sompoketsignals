@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Signals · Somali.PocketOption</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#080d14;font-family:'Courier New',monospace}
+  ::-webkit-scrollbar{width:3px}
+  ::-webkit-scrollbar-thumb{background:#1e3a2a;border-radius:2px}
+  @keyframes sIn{from{transform:translateX(60px);opacity:0}to{transform:translateX(0);opacity:1}}
+  @keyframes fUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+  @keyframes glow{0%,100%{box-shadow:0 0 8px rgba(0,200,100,0.25)}50%{box-shadow:0 0 22px rgba(0,200,100,0.6)}}
+  input[type=number]{border-radius:7px;padding:6px 9px;font-family:inherit;font-size:13px;width:100%}
+  select{cursor:pointer}
+  button{cursor:pointer;font-family:'Courier New',monospace}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useEffect,useRef}=React;
+
+const ASSETS=[
+  {symbol:"EUR/USD",id:"EURUSD_otc",base:1.085},
+  {symbol:"GBP/USD",id:"GBPUSD_otc",base:1.265},
+  {symbol:"USD/JPY",id:"USDJPY_otc",base:155.4},
+  {symbol:"AUD/USD",id:"AUDUSD_otc",base:0.645},
+  {symbol:"EUR/GBP",id:"EURGBP_otc",base:0.857},
+  {symbol:"USD/CAD",id:"USDCAD_otc",base:1.365},
+  {symbol:"USD/CHF",id:"USDCHF_otc",base:0.902},
+  {symbol:"NZD/USD",id:"NZDUSD_otc",base:0.595},
+  {symbol:"EUR/JPY",id:"EURJPY_otc",base:168.5},
+  {symbol:"GBP/JPY",id:"GBPJPY_otc",base:196.2},
+];
+const TFS=["30s","1m","2m","5m","15m"];
+const TF_SEC={"30s":30,"1m":60,"2m":120,"5m":300,"15m":900};
+
+function genPrice(p){return parseFloat((p+(Math.random()-0.495)*p*0.002).toFixed(5));}
+
+function analyze(hist){
+  const p=hist&&hist.length>=10?hist:Array.from({length:14},(_,i)=>1+i*0.001);
+  const n=p.length;let g=0,l=0;
+  for(let i=1;i<n;i++){const d=p[i]-p[i-1];d>0?g+=d:l+=Math.abs(d);}
+  const rsi=100-100/(1+(g/n)/((l/n)||0.0001));
+  const ema=(arr,k)=>arr.slice(-k).reduce((a,b,i)=>i===0?b:a*(1-2/(k+1))+b*(2/(k+1)),arr[0]);
+  const e5=ema(p,5),e14=ema(p,14);
+  const mean=p.reduce((a,b)=>a+b,0)/n;
+  const std=Math.sqrt(p.reduce((a,b)=>a+Math.pow(b-mean,2),0)/n);
+  const last=p[n-1];
+  let up=0,dn=0;
+  if(rsi<32)up+=3;else if(rsi<45)up+=1;
+  if(rsi>68)dn+=3;else if(rsi>55)dn+=1;
+  if(e5>e14)up+=2;else dn+=2;
+  if(last<=mean-2*std)up+=3;else if(last>=mean+2*std)dn+=3;
+  up+=Math.random()*0.8;dn+=Math.random()*0.8;
+  const dir=up>=dn?"UP":"DOWN";
+  const conf=Math.min(94,Math.floor(74+Math.max(up,dn)*2+Math.random()*4));
+  let strat="Multi-Indicator";
+  if(rsi<32||rsi>68)strat="RSI Extreme Zone";
+  else if(last<=mean-2*std||last>=mean+2*std)strat="Bollinger Reversal";
+  else if(Math.abs(e5-e14)>std*0.3)strat="EMA Trend Cross";
+  else strat=["MACD+EMA Sync","S/R Bounce","Momentum Shift"][Math.floor(Math.random()*3)];
+  return{dir,conf,strat};
+}
+
+function playBeep(up){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const osc=ctx.createOscillator(),gain=ctx.createGain();
+    osc.connect(gain);gain.connect(ctx.destination);
+    osc.frequency.value=up?880:440;osc.type="sine";
+    gain.gain.setValueAtTime(0.3,ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.45);
+    osc.start();osc.stop(ctx.currentTime+0.45);
+  }catch(e){}
+}
+
+function MiniChart({data,color}){
+  const W=72,H=32;
+  if(!data||data.length<2)return React.createElement("svg",{width:W,height:H});
+  const min=Math.min(...data),max=Math.max(...data),range=max-min||0.0001;
+  const bw=Math.max(2,W/data.length-0.8);
+  const bars=data.map((v,i)=>{
+    const pv=i>0?data[i-1]:v,isUp=v>=pv;
+    const x=(i/(data.length-1))*(W-bw);
+    const yh=H-((Math.max(v,pv)-min)/range)*(H-4)-2;
+    const yl=H-((Math.min(v,pv)-min)/range)*(H-4)-2;
+    return React.createElement("rect",{key:i,x,y:yh,width:bw,height:Math.max(2,yl-yh),fill:isUp?"#00ff88":"#ff4d6a",opacity:0.82,rx:0.5});
+  });
+  const pts=data.map((v,i)=>`${(i/(data.length-1))*W},${H-((v-min)/range)*(H-4)-2}`).join(" ");
+  const line=React.createElement("polyline",{points:pts,fill:"none",stroke:color,strokeWidth:"1.1",opacity:"0.5"});
+  return React.createElement("svg",{width:W,height:H},...bars,line);
+}
+
+function Ring({sec,total}){
+  const pct=Math.max(0,sec/total),r=18,c=2*Math.PI*r;
+  const col=pct>0.5?"#00ff88":pct>0.25?"#ffd60a":"#ff4d6a";
+  return(
+    <svg width={44} height={44}>
+      <circle cx={22} cy={22} r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth={3}/>
+      <circle cx={22} cy={22} r={r} fill="none" stroke={col} strokeWidth={3}
+        strokeDasharray={c} strokeDashoffset={c*(1-pct)} strokeLinecap="round"
+        transform="rotate(-90 22 22)" style={{transition:"stroke-dashoffset 1s linear"}}/>
+      <text x={22} y={26} textAnchor="middle" fill={col} fontSize={11} fontWeight="bold" fontFamily="monospace">{sec}</text>
+    </svg>
+  );
+}
+
+function StrBadge({conf}){
+  if(conf>=88)return <span style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:11,fontWeight:800,padding:"4px 11px",borderRadius:6,background:"rgba(255,214,10,0.18)",color:"#ffd60a",border:"1px solid rgba(255,214,10,0.4)"}}>XOOGGAN <span style={{opacity:0.8,fontSize:10}}>{conf}%</span></span>;
+  if(conf>=80)return <span style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:11,fontWeight:800,padding:"4px 11px",borderRadius:6,background:"rgba(0,255,136,0.13)",color:"#00ff88",border:"1px solid rgba(0,255,136,0.3)"}}>FIICAN <span style={{opacity:0.8,fontSize:10}}>{conf}%</span></span>;
+  return <span style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:11,fontWeight:800,padding:"4px 11px",borderRadius:6,background:"rgba(255,255,255,0.06)",color:"#aaa",border:"1px solid rgba(255,255,255,0.12)"}}>CAADI <span style={{opacity:0.8,fontSize:10}}>{conf}%</span></span>;
+}
+
+function App(){
+  const [dark,setDark]=useState(true);
+  const [tab,setTab]=useState("signals");
+  const [panel,setPanel]=useState("markets");
+  const [prices,setPrices]=useState(()=>Object.fromEntries(ASSETS.map(a=>[a.symbol,a.base])));
+  const [hist,setHist]=useState(()=>Object.fromEntries(ASSETS.map(a=>[a.symbol,[]])));
+  const [signals,setSignals]=useState([]);
+  const [allHist,setAllHist]=useState([]);
+  const [selAsset,setSelAsset]=useState(ASSETS[0]);
+  const [selTF,setSelTF]=useState("1m");
+  const [scanning,setScanning]=useState(false);
+  const [onlyMe,setOnlyMe]=useState(false);
+  const [soundOn,setSoundOn]=useState(true);
+  const [stats,setStats]=useState({total:0,wins:0,losses:0});
+  const [notif,setNotif]=useState(null);
+  const [cds,setCds]=useState({});
+  const [mgBase,setMgBase]=useState(10);
+  const [mgMul,setMgMul]=useState(2.1);
+  const [mgLoss,setMgLoss]=useState(0);
+
+  const scanRef=useRef(null),priceRef=useRef(null),cdRef=useRef(null);
+  const pricesRef=useRef(prices),histRef=useRef(hist);
+  useEffect(()=>{pricesRef.current=prices;},[prices]);
+  useEffect(()=>{histRef.current=hist;},[hist]);
+
+  const bg=dark?"#080d14":"#f0f4f8";
+  const card=dark?"rgba(255,255,255,0.035)":"rgba(0,0,0,0.05)";
+  const bdr=dark?"rgba(255,255,255,0.08)":"rgba(0,0,0,0.12)";
+  const txt=dark?"#e8f0fe":"#0d1a2e";
+  const sub=dark?"rgba(255,255,255,0.4)":"rgba(0,0,0,0.4)";
+  const ac="#00ff88";
+
+  useEffect(()=>{
+    priceRef.current=setInterval(()=>{
+      setPrices(p=>{const n={...p};ASSETS.forEach(a=>{n[a.symbol]=genPrice(p[a.symbol]);});return n;});
+      setHist(h=>{const n={...h};ASSETS.forEach(a=>{const arr=[...(h[a.symbol]||[]),pricesRef.current[a.symbol]||a.base];n[a.symbol]=arr.length>40?arr.slice(-40):arr;});return n;});
+    },1200);
+    return()=>clearInterval(priceRef.current);
+  },[]);
+
+  useEffect(()=>{
+    cdRef.current=setInterval(()=>{
+      setCds(p=>{const n={...p};Object.keys(n).forEach(id=>{n[id]--;if(n[id]<=0)delete n[id];});return n;});
+    },1000);
+    return()=>clearInterval(cdRef.current);
+  },[]);
+
+  useEffect(()=>{
+    if(scanning){
+      scanRef.current=setInterval(()=>{
+        const asset=onlyMe?selAsset:ASSETS[Math.floor(Math.random()*ASSETS.length)];
+        const h=histRef.current[asset.symbol]||[];
+        const{dir,conf,strat}=analyze(h);
+        const tfSec=TF_SEC[selTF]||60;
+        const sig={id:Date.now()+Math.random(),asset:asset.symbol,assetId:asset.id,dir,conf,strat,tf:selTF,time:new Date().toLocaleTimeString(),result:null};
+        setSignals(s=>[sig,...s].slice(0,30));
+        setAllHist(s=>[sig,...s].slice(0,200));
+        setStats(s=>({...s,total:s.total+1}));
+        setNotif(sig);setPanel("signals");
+        if(soundOn)playBeep(dir==="UP");
+        setCds(c=>({...c,[sig.id]:tfSec}));
+        setTimeout(()=>setNotif(n=>n&&n.id===sig.id?null:n),4000);
+        setTimeout(()=>{
+          const won=Math.random()<0.5+(conf-70)*0.018;
+          const result=won?"WIN":"LOSS";
+          setSignals(s=>s.map(x=>x.id===sig.id?{...x,result}:x));
+          setAllHist(s=>s.map(x=>x.id===sig.id?{...x,result}:x));
+          setStats(s=>({...s,wins:s.wins+(won?1:0),losses:s.losses+(won?0:1)}));
+        },tfSec*1000);
+      },7000);
+    }else{clearInterval(scanRef.current);}
+    return()=>clearInterval(scanRef.current);
+  },[scanning,selTF,onlyMe,selAsset,soundOn]);
+
+  const wr=(stats.wins+stats.losses)>0?Math.round(stats.wins/(stats.wins+stats.losses)*100):0;
+  const mgSteps=Array.from({length:6},(_,i)=>({n:i+1,amt:parseFloat((mgBase*Math.pow(mgMul,i)).toFixed(2)),risk:parseFloat((mgBase*(Math.pow(mgMul,i+1)-1)/(mgMul-1)).toFixed(2))}));
+  const pending=signals.filter(s=>!s.result).length;
+  const poURL=id=>`https://pocketoption.com/en/cabinet/demo-quick-high-low/?asset=${id}`;
+
+  const inp={background:dark?"#0d1520":"#e8eef4",border:`1px solid ${bdr}`,color:txt};
+
+  return(
+    <div style={{minHeight:"100vh",background:bg,color:txt,fontFamily:"'Courier New',monospace",overflowX:"hidden"}}>
+      <div style={{position:"fixed",inset:0,zIndex:0,backgroundImage:"linear-gradient(rgba(0,200,100,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,100,0.025) 1px,transparent 1px)",backgroundSize:"40px 40px",pointerEvents:"none"}}/>
+
+      {notif&&(
+        <div style={{position:"fixed",top:16,right:16,zIndex:9999,background:notif.dir==="UP"?"rgba(0,220,100,0.18)":"rgba(255,60,80,0.18)",border:`1px solid ${notif.dir==="UP"?"#00dc64":"#ff3c50"}`,borderRadius:14,padding:"13px 18px",backdropFilter:"blur(16px)",animation:"sIn 0.3s ease",minWidth:220}}>
+          <div style={{fontSize:10,opacity:0.55,marginBottom:4}}>SIGNAL CUSUB</div>
+          <div style={{fontSize:16,fontWeight:800,color:notif.dir==="UP"?"#00ff88":"#ff4d6a"}}>{notif.dir==="UP"?"BUY":"SELL"} — {notif.asset} OTC</div>
+          <div style={{fontSize:11,opacity:0.7,marginTop:4}}>{notif.strat} · {notif.tf} · {notif.conf}%</div>
+        </div>
+      )}
+
+      <div style={{position:"relative",zIndex:1,maxWidth:600,margin:"0 auto",padding:"14px 12px"}}>
+
+        {/* HEADER */}
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14}}>
+          <div style={{display:"flex",alignItems:"center",gap:10}}>
+            <div style={{width:40,height:40,borderRadius:10,background:"linear-gradient(135deg,#00ff88,#00b4d8)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,fontWeight:900,color:"#000"}}>S</div>
+            <div>
+              <div style={{fontSize:13,fontWeight:800}}>Signals · Somali.<span style={{color:ac}}>PocketOption</span></div>
+              <div style={{fontSize:9,opacity:0.4,letterSpacing:2}}>OTC SIGNALS · 24/7</div>
+            </div>
+          </div>
+          <div style={{display:"flex",gap:6,alignItems:"center"}}>
+            <button onClick={()=>setSoundOn(v=>!v)} style={{background:card,border:`1px solid ${bdr}`,borderRadius:8,padding:"6px 10px",fontSize:14,color:txt}}>{soundOn?"[ON]":"[OFF]"}</button>
+            <button onClick={()=>setDark(v=>!v)} style={{background:card,border:`1px solid ${bdr}`,borderRadius:8,padding:"6px 10px",fontSize:14,color:txt}}>{dark?"[Light]":"[Dark]"}</button>
+            <div style={{display:"flex",alignItems:"center",gap:5,background:scanning?"rgba(0,255,136,0.1)":card,border:`1px solid ${scanning?ac:bdr}`,borderRadius:20,padding:"5px 12px",animation:scanning?"glow 2s infinite":"none"}}>
+              <div style={{width:7,height:7,borderRadius:"50%",background:scanning?ac:"#555",animation:scanning?"pulse 1s infinite":"none"}}/>
+              <span style={{fontSize:10,fontWeight:700,color:scanning?ac:sub}}>{scanning?"LIVE":"OFF"}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* STATS */}
+        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:14}}>
+          {[{l:"SIGNALS",v:stats.total,c:"#00b4d8"},{l:"PROFIT",v:stats.wins,c:"#00ff88"},{l:"LOSS",v:stats.losses,c:"#ff4d6a"},{l:"WIN RATE",v:`${wr}%`,c:wr>=70?"#00ff88":wr>=55?"#ffd60a":"#ff4d6a"}].map(s=>(
+            <div key={s.l} style={{background:card,border:`1px solid ${bdr}`,borderRadius:10,padding:"10px 8px",textAlign:"center"}}>
+              <div style={{fontSize:20,fontWeight:800,color:s.c}}>{s.v}</div>
+              <div style={{fontSize:9,color:sub,marginTop:2,letterSpacing:1}}>{s.l}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* CONTROLS */}
+        <div style={{background:card,border:`1px solid ${bdr}`,borderRadius:13,padding:"13px 14px",marginBottom:14,display:"flex",flexWrap:"wrap",gap:10,alignItems:"flex-end"}}>
+          <div style={{flex:1,minWidth:140}}>
+            <div style={{fontSize:9,color:sub,marginBottom:5,letterSpacing:1}}>ASSET</div>
+            <select value={selAsset.symbol} onChange={e=>setSelAsset(ASSETS.find(a=>a.symbol===e.target.value))}
+              style={{width:"100%",...inp,borderRadius:7,padding:"8px 9px",fontSize:11}}>
+              {ASSETS.map(a=><option key={a.symbol} value={a.symbol}>{a.symbol} — OTC</option>)}
+            </select>
+          </div>
+          <div>
+            <div style={{fontSize:9,color:sub,marginBottom:5,letterSpacing:1}}>WAQTI</div>
+            <div style={{display:"flex",gap:5}}>
+              {TFS.map(tf=>(
+                <button key={tf} onClick={()=>setSelTF(tf)} style={{background:selTF===tf?"rgba(0,255,136,0.15)":card,border:`1px solid ${selTF===tf?ac:bdr}`,color:selTF===tf?ac:sub,borderRadius:6,padding:"6px 8px",fontSize:11,fontWeight:700}}>{tf}</button>
+              ))}
+            </div>
+          </div>
+          <div style={{display:"flex",gap:8,alignItems:"flex-end"}}>
+            <div>
+              <div style={{fontSize:9,color:sub,marginBottom:5,letterSpacing:1}}>NOOCA</div>
+              <button onClick={()=>setOnlyMe(v=>!v)} style={{background:onlyMe?"rgba(0,180,216,0.15)":card,border:`1px solid ${onlyMe?"#00b4d8":bdr}`,color:onlyMe?"#00b4d8":sub,borderRadius:8,padding:"7px 12px",fontSize:11,fontWeight:700,whiteSpace:"nowrap"}}>
+                {onlyMe?"KALIYA: "+selAsset.symbol:"DHAMAAN"}
+              </button>
+            </div>
+            <button onClick={()=>setScanning(v=>!v)} style={{background:scanning?"rgba(255,60,80,0.15)":"linear-gradient(135deg,rgba(0,255,136,0.18),rgba(0,180,216,0.18))",border:`1px solid ${scanning?"#ff4d6a":ac}`,color:scanning?"#ff4d6a":ac,borderRadius:10,padding:"9px 18px",fontSize:12,fontWeight:800,animation:scanning?"glow 2s infinite":"none"}}>
+              {scanning?"JOOJI":"BILOW SCAN"}
+            </button>
+          </div>
+        </div>
+
+        {/* TABS */}
+        <div style={{display:"flex",gap:6,marginBottom:14,flexWrap:"wrap"}}>
+          {[["signals","Signals"],["history","Taariikhda"],["accuracy","Guusha"],["martingale","Martingale"]].map(([id,lbl])=>(
+            <button key={id} onClick={()=>setTab(id)} style={{background:tab===id?"rgba(0,255,136,0.13)":card,border:`1px solid ${tab===id?ac:bdr}`,color:tab===id?ac:sub,borderRadius:8,padding:"8px 14px",fontSize:11,fontWeight:700}}>
+              {lbl}{id==="signals"&&pending>0&&<span style={{marginLeft:6,background:"#00cfff",color:"#000",borderRadius:10,padding:"1px 6px",fontSize:10,fontWeight:900}}>{pending}</span>}
+            </button>
+          ))}
+        </div>
+
+        {/* SIGNALS TAB */}
+        {tab==="signals"&&(
+          <div>
+            <div style={{display:"flex",background:card,border:`1px solid ${bdr}`,borderRadius:10,padding:3,gap:3,marginBottom:12}}>
+              <button onClick={()=>setPanel("markets")} style={{flex:1,padding:"8px",borderRadius:7,border:"none",fontSize:11,fontWeight:700,background:panel==="markets"?"rgba(0,255,136,0.15)":"transparent",color:panel==="markets"?ac:sub}}>
+                OTC Markets
+              </button>
+              <button onClick={()=>setPanel("signals")} style={{flex:1,padding:"8px",borderRadius:7,border:"none",fontSize:11,fontWeight:700,background:panel==="signals"?"rgba(0,180,216,0.15)":"transparent",color:panel==="signals"?"#00cfff":sub,display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
+                Signals {pending>0&&<span style={{background:"#00cfff",color:"#000",borderRadius:10,padding:"1px 7px",fontSize:10,fontWeight:900}}>{pending}</span>}
+              </button>
+            </div>
+
+            {panel==="markets"&&(
+              <div style={{animation:"fUp 0.25s ease"}}>
+                <div style={{fontSize:9,color:sub,letterSpacing:2,marginBottom:8}}>OTC MARKETS · LIVE</div>
+                <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                  {ASSETS.map(asset=>{
+                    const price=prices[asset.symbol],h=hist[asset.symbol]||[];
+                    const prev=h.length>=2?h[h.length-2]:price,up=price>=prev,sel=selAsset.symbol===asset.symbol;
+                    return(
+                      <div key={asset.symbol} onClick={()=>setSelAsset(asset)}
+                        style={{background:sel?(dark?"rgba(0,255,136,0.07)":"rgba(0,150,80,0.07)"):card,border:`1px solid ${sel?"rgba(0,255,136,0.35)":bdr}`,borderRadius:9,padding:"10px 12px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                        <div style={{minWidth:65}}>
+                          <div style={{fontSize:12,fontWeight:700,color:sel?ac:txt}}>{asset.symbol}</div>
+                          <div style={{fontSize:9,color:"#00b4d8",fontWeight:600}}>OTC</div>
+                        </div>
+                        <MiniChart data={h} color={up?"#00ff88":"#ff4d6a"}/>
+                        <div style={{textAlign:"right"}}>
+                          <div style={{fontSize:12,fontWeight:700,color:up?"#00ff88":"#ff4d6a"}}>{price>100?price.toFixed(2):price.toFixed(5)}</div>
+                          <div style={{fontSize:9,color:up?"#00ff88":"#ff4d6a"}}>{up?"UP":"DN"} {Math.abs(((price-prev)/prev)*100).toFixed(3)}%</div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {panel==="signals"&&(
+              <div style={{animation:"fUp 0.25s ease"}}>
+                <div style={{fontSize:9,color:sub,letterSpacing:2,marginBottom:8,display:"flex",alignItems:"center",gap:8}}>
+                  SIGNALS {scanning&&<span style={{color:ac,animation:"pulse 1s infinite"}}>● LIVE</span>}
+                </div>
+                {signals.length===0?(
+                  <div style={{background:card,border:`1px dashed ${bdr}`,borderRadius:12,padding:"50px 20px",textAlign:"center"}}>
+                    <div style={{fontSize:36,marginBottom:10}}>📡</div>
+                    <div style={{color:sub,fontSize:13}}>Signals ma jiraan weli</div>
+                    <div style={{color:sub,fontSize:10,marginTop:6,opacity:0.5}}>Guji BILOW SCAN</div>
+                  </div>
+                ):(
+                  <div style={{display:"flex",flexDirection:"column",gap:9}}>
+                    {signals.map(sig=>{
+                      const cd=cds[sig.id],tfSec=TF_SEC[sig.tf]||60,isUp=sig.dir==="UP";
+                      return(
+                        <div key={sig.id} style={{background:isUp?"rgba(0,255,136,0.05)":"rgba(255,60,80,0.05)",border:`1px solid ${isUp?"rgba(0,255,136,0.22)":"rgba(255,60,80,0.22)"}`,borderRadius:12,padding:"13px 14px",animation:"fUp 0.3s ease"}}>
+                          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
+                            <div style={{display:"flex",alignItems:"center",gap:9}}>
+                              {(cd!==undefined&&cd>0)?<Ring sec={cd} total={tfSec}/>:(
+                                <div style={{width:44,height:44,borderRadius:10,background:isUp?"rgba(0,255,136,0.18)":"rgba(255,60,80,0.18)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",border:`1px solid ${isUp?"rgba(0,255,136,0.35)":"rgba(255,60,80,0.35)"}`}}>
+                                  <span style={{fontSize:16}}>{isUp?"📈":"📉"}</span>
+                                  <span style={{fontSize:9,fontWeight:800,color:isUp?"#00ff88":"#ff4d6a"}}>{isUp?"BUY":"SELL"}</span>
+                                </div>
+                              )}
+                              <div>
+                                <div style={{display:"flex",alignItems:"center",gap:6}}>
+                                  <span style={{fontSize:14,fontWeight:800,color:isUp?"#00ff88":"#ff4d6a"}}>{sig.asset}</span>
+                                  <span style={{fontSize:9,fontWeight:700,padding:"2px 6px",borderRadius:4,background:"rgba(0,180,216,0.15)",color:"#00b4d8",border:"1px solid rgba(0,180,216,0.3)"}}>OTC</span>
+                                </div>
+                                <div style={{fontSize:9,color:sub,marginTop:2}}>{sig.time} · {sig.tf}</div>
+                              </div>
+                            </div>
+                            <div style={{fontSize:16,fontWeight:900,color:isUp?"#00ff88":"#ff4d6a",background:isUp?"rgba(0,255,136,0.12)":"rgba(255,60,80,0.12)",border:`1px solid ${isUp?"rgba(0,255,136,0.4)":"rgba(255,60,80,0.4)"}`,borderRadius:8,padding:"5px 14px"}}>
+                              {isUp?"BUY":"SELL"}
+                            </div>
+                          </div>
+                          <div style={{fontSize:10,color:sub,marginBottom:9}}>{sig.strat}</div>
+                          <div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:7}}>
+                            <StrBadge conf={sig.conf}/>
+                            {sig.result&&<span style={{fontSize:11,fontWeight:700,color:sig.result==="WIN"?"#00ff88":"#ff4d6a",background:sig.result==="WIN"?"rgba(0,255,136,0.1)":"rgba(255,60,80,0.1)",borderRadius:5,padding:"4px 10px"}}>{sig.result==="WIN"?"PROFIT":"LOSS"}</span>}
+                            <a href={poURL(sig.assetId)} target="_blank" rel="noopener noreferrer"
+                              style={{display:"inline-flex",alignItems:"center",gap:5,fontSize:11,fontWeight:800,padding:"4px 12px",borderRadius:6,textDecoration:"none",background:"linear-gradient(135deg,rgba(0,180,216,0.22),rgba(0,120,180,0.15))",border:"1px solid rgba(0,180,216,0.5)",color:"#00cfff"}}>
+                              Chart Fur
+                            </a>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* HISTORY TAB */}
+        {tab==="history"&&(
+          <div>
+            <div style={{fontSize:9,color:sub,letterSpacing:2,marginBottom:10}}>TAARIIKHDA · {allHist.length} SIGNALS</div>
+            {allHist.length===0?<div style={{background:card,border:`1px dashed ${bdr}`,borderRadius:12,padding:"50px",textAlign:"center",color:sub}}>Taariikhda waa madhan tahay</div>:(
+              <div style={{display:"flex",flexDirection:"column",gap:6,maxHeight:560,overflowY:"auto"}}>
+                {allHist.map((sig,i)=>(
+                  <div key={sig.id} style={{background:card,border:`1px solid ${bdr}`,borderRadius:9,padding:"9px 13px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                    <div style={{display:"flex",alignItems:"center",gap:10}}>
+                      <div style={{fontSize:10,color:sub,minWidth:24}}>#{allHist.length-i}</div>
+                      <span style={{fontSize:16}}>{sig.dir==="UP"?"📈":"📉"}</span>
+                      <div>
+                        <div style={{fontSize:11,fontWeight:700}}>{sig.asset} <span style={{fontSize:9,color:"#00b4d8"}}>OTC</span></div>
+                        <div style={{fontSize:9,color:sub}}>{sig.time} · {sig.tf}</div>
+                      </div>
+                    </div>
+                    <div style={{display:"flex",alignItems:"center",gap:7}}>
+                      <div style={{fontSize:12,fontWeight:800,color:sig.dir==="UP"?"#00ff88":"#ff4d6a"}}>{sig.dir==="UP"?"BUY":"SELL"}</div>
+                      <div style={{fontSize:10,color:sub}}>{sig.conf}%</div>
+                      {sig.result?<div style={{fontSize:10,fontWeight:700,color:sig.result==="WIN"?"#00ff88":"#ff4d6a",background:sig.result==="WIN"?"rgba(0,255,136,0.1)":"rgba(255,60,80,0.1)",borderRadius:4,padding:"2px 7px"}}>{sig.result==="WIN"?"PROFIT":"LOSS"}</div>:<div style={{fontSize:10,color:sub,opacity:0.4}}>wait...</div>}
+                      <a href={poURL(sig.assetId)} target="_blank" rel="noopener noreferrer" style={{fontSize:10,fontWeight:700,padding:"3px 8px",borderRadius:5,textDecoration:"none",background:"rgba(0,180,216,0.12)",border:"1px solid rgba(0,180,216,0.35)",color:"#00cfff"}}>Link</a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ACCURACY TAB */}
+        {tab==="accuracy"&&(
+          <div>
+            <div style={{fontSize:9,color:sub,letterSpacing:2,marginBottom:12}}>SAWIRKA GUUSHA</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:14}}>
+              {[
+                {l:"Guud ahaan",total:stats.wins+stats.losses,wins:stats.wins},
+                {l:"XOOGGAN 88%+",total:allHist.filter(s=>s.conf>=88&&s.result).length,wins:allHist.filter(s=>s.conf>=88&&s.result==="WIN").length},
+                {l:"FIICAN 80-87%",total:allHist.filter(s=>s.conf>=80&&s.conf<88&&s.result).length,wins:allHist.filter(s=>s.conf>=80&&s.conf<88&&s.result==="WIN").length},
+                {l:"BUY",total:allHist.filter(s=>s.dir==="UP"&&s.result).length,wins:allHist.filter(s=>s.dir==="UP"&&s.result==="WIN").length},
+                {l:"SELL",total:allHist.filter(s=>s.dir==="DOWN"&&s.result).length,wins:allHist.filter(s=>s.dir==="DOWN"&&s.result==="WIN").length},
+              ].map(row=>{
+                const pct=row.total>0?Math.round(row.wins/row.total*100):0;
+                const col=pct>=70?"#00ff88":pct>=55?"#ffd60a":"#ff4d6a";
+                return(
+                  <div key={row.l} style={{background:card,border:`1px solid ${bdr}`,borderRadius:11,padding:"13px 14px"}}>
+                    <div style={{fontSize:10,color:sub,marginBottom:7}}>{row.l}</div>
+                    <div style={{fontSize:28,fontWeight:900,color:col}}>{pct}%</div>
+                    <div style={{fontSize:10,color:sub,marginTop:3}}>{row.wins}/{row.total}</div>
+                    <div style={{marginTop:8,height:5,background:"rgba(255,255,255,0.07)",borderRadius:3,overflow:"hidden"}}>
+                      <div style={{width:`${pct}%`,height:"100%",background:col,borderRadius:3,transition:"width 0.8s"}}/>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{fontSize:9,color:sub,letterSpacing:2,marginBottom:8}}>ASSET KASTA</div>
+            <div style={{display:"flex",flexDirection:"column",gap:6}}>
+              {ASSETS.map(asset=>{
+                const aS=allHist.filter(s=>s.asset===asset.symbol&&s.result);
+                const aW=aS.filter(s=>s.result==="WIN").length;
+                if(!aS.length)return null;
+                const pct=Math.round(aW/aS.length*100);
+                const col=pct>=70?"#00ff88":pct>=55?"#ffd60a":"#ff4d6a";
+                return(
+                  <div key={asset.symbol} style={{background:card,border:`1px solid ${bdr}`,borderRadius:9,padding:"9px 13px",display:"flex",alignItems:"center",gap:10}}>
+                    <div style={{fontSize:11,fontWeight:700,minWidth:70}}>{asset.symbol}</div>
+                    <div style={{flex:1,height:5,background:"rgba(255,255,255,0.07)",borderRadius:3,overflow:"hidden"}}>
+                      <div style={{width:`${pct}%`,height:"100%",background:col,borderRadius:3}}/>
+                    </div>
+                    <div style={{fontSize:13,fontWeight:800,color:col,minWidth:36,textAlign:"right"}}>{pct}%</div>
+                    <div style={{fontSize:9,color:sub}}>{aS.length}</div>
+                  </div>
+                );
+              })}
+              {allHist.filter(s=>s.result).length===0&&<div style={{textAlign:"center",padding:"30px",color:sub,fontSize:12}}>Bilow scan si aad u aragto xogta</div>}
+            </div>
+          </div>
+        )}
+
+        {/* MARTINGALE TAB */}
+        {tab==="martingale"&&(
+          <div>
+            <div style={{fontSize:9,color:sub,letterSpacing:2,marginBottom:14}}>MARTINGALE CALCULATOR</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:16}}>
+              <div style={{background:card,border:`1px solid ${bdr}`,borderRadius:11,padding:"13px"}}>
+                <div style={{fontSize:10,color:sub,marginBottom:7}}>Lacagta 1aad ($)</div>
+                <input type="number" value={mgBase} min={1} step={1} onChange={e=>setMgBase(Math.max(1,parseFloat(e.target.value)||1))} style={{...inp}}/>
+              </div>
+              <div style={{background:card,border:`1px solid ${bdr}`,borderRadius:11,padding:"13px"}}>
+                <div style={{fontSize:10,color:sub,marginBottom:7}}>Multiplier x</div>
+                <input type="number" value={mgMul} min={1.1} step={0.1} onChange={e=>setMgMul(Math.max(1.1,parseFloat(e.target.value)||2))} style={{...inp}}/>
+              </div>
+              <div style={{background:card,border:`1px solid ${bdr}`,borderRadius:11,padding:"13px"}}>
+                <div style={{fontSize:10,color:sub,marginBottom:7}}>Losses Hadda</div>
+                <div style={{display:"flex",gap:6,alignItems:"center"}}>
+                  <button onClick={()=>setMgLoss(v=>Math.max(0,v-1))} style={{background:"rgba(255,60,80,0.15)",border:"1px solid rgba(255,60,80,0.3)",color:"#ff4d6a",borderRadius:6,padding:"5px 11px",fontSize:16}}>-</button>
+                  <div style={{flex:1,textAlign:"center",fontSize:22,fontWeight:900,color:mgLoss===0?"#00ff88":mgLoss<=2?"#ffd60a":"#ff4d6a"}}>{mgLoss}</div>
+                  <button onClick={()=>setMgLoss(v=>Math.min(5,v+1))} style={{background:"rgba(0,255,136,0.1)",border:"1px solid rgba(0,255,136,0.3)",color:"#00ff88",borderRadius:6,padding:"5px 11px",fontSize:16}}>+</button>
+                </div>
+              </div>
+            </div>
+            <div style={{display:"flex",flexDirection:"column",gap:7}}>
+              {mgSteps.map((step,i)=>{
+                const isNow=i===mgLoss,done=i<mgLoss;
+                const col=isNow?"#ffd60a":done?"#ff4d6a":sub;
+                return(
+                  <div key={step.n} style={{background:isNow?"rgba(255,214,10,0.07)":done?"rgba(255,60,80,0.05)":card,border:`1px solid ${isNow?"rgba(255,214,10,0.4)":done?"rgba(255,60,80,0.18)":bdr}`,borderRadius:10,padding:"12px 15px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                    <div style={{display:"flex",alignItems:"center",gap:11}}>
+                      <div style={{width:30,height:30,borderRadius:7,background:isNow?"rgba(255,214,10,0.2)":done?"rgba(255,60,80,0.15)":"rgba(255,255,255,0.05)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:900,color:col}}>
+                        {done?"X":isNow?"->":step.n}
+                      </div>
+                      <div>
+                        <div style={{fontSize:12,fontWeight:700,color:isNow?"#ffd60a":txt}}>Qaadista #{step.n} {isNow&&<span style={{fontSize:10,opacity:0.7}}>HADDA</span>}</div>
+                        <div style={{fontSize:10,color:sub}}>Khataro: ${step.risk}</div>
+                      </div>
+                    </div>
+                    <div style={{textAlign:"right"}}>
+                      <div style={{fontSize:20,fontWeight:900,color:isNow?"#ffd60a":done?"#ff4d6a":ac}}>${step.amt}</div>
+                      <div style={{fontSize:9,color:sub,marginTop:2}}>Net ~${parseFloat((step.amt*0.92-(i>0?mgSteps[i-1].risk:0)).toFixed(2))}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{marginTop:12,padding:"11px 14px",background:"rgba(0,180,216,0.07)",border:"1px solid rgba(0,180,216,0.15)",borderRadius:9,fontSize:11,color:"#00b4d8",lineHeight:1.8}}>
+              Talo: Signal loss ka timaado, lacagta labar u dhig. 5 loss isku xigaan hadduu noqdo, jooji oo dib u bilow.
+            </div>
+          </div>
+        )}
+
+        <div style={{marginTop:20,padding:"12px 15px",background:"rgba(255,200,0,0.05)",border:"1px solid rgba(255,200,0,0.15)",borderRadius:10,fontSize:11,textAlign:"center",lineHeight:1.8,color:"#ffd60a"}}>
+          Digniin: Marka hore <strong>Demo</strong> ku tijaabiyo — ka dib <strong>Real Account</strong> ka gal. Ganacsiga waxay leedahay khataro weyn.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
