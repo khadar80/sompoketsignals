@@ -5,26 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doogsin Ice Cream - Laascaanood</title>
     <style>
-        /* Background-ka oo xambaarsan daruuro, roob iyo qabow */
+        /* Naqshadda guud ee Background-ka (Roob, Baraf iyo Qabow) */
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: linear-gradient(135deg, #2c3e50, #3498db, #ecf0f1); 
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            background: linear-gradient(180deg, #1e272e 0%, #2f3640 40%, #57606f 100%);
             margin: 0; 
             padding: 0; 
             color: #2c3e50;
             position: relative;
-            overflow-x: hidden;
+            min-height: 100vh;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Saamaynta dhibcaha roobka soo daadanaya */
+        /* Saamaynta dhibcaha roobka iyo xiddigaha qabowga ee hoos u daadanaya */
         body::before {
             content: "";
             position: fixed;
@@ -32,65 +24,71 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: transparent url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><line x1="10" y1="0" x2="10" y2="20" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/></svg>') repeat;
-            opacity: 0.8;
-            animation: rain 0.8s linear infinite;
+            background: transparent url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30"><circle cx="5" cy="5" r="1" fill="rgba(255,255,255,0.4)"/><line x1="15" y1="0" x2="10" y2="25" stroke="rgba(255,255,255,0.2)" stroke-width="1"/></svg>') repeat;
+            opacity: 0.95;
+            animation: rainAnimation 1.2s linear infinite;
             z-index: -1;
             pointer-events: none;
         }
 
-        @keyframes rain {
+        @keyframes rainAnimation {
             0% { background-position: 0px 0px; }
-            100% { background-position: 20px 400px; }
+            100% { background-position: 50px 500px; }
         }
         
         /* Header-ka Sare */
-        .ice-header { background: linear-gradient(135deg, rgba(255, 118, 117, 0.9), rgba(225, 112, 85, 0.9)); color: white; padding: 50px 20px; text-align: center; border-bottom-left-radius: 35px; border-bottom-right-radius: 35px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
-        .ice-header h1 { margin: 0; font-size: 3.2rem; text-shadow: 3px 3px 6px rgba(0,0,0,0.3); font-weight: 800; letter-spacing: 1px; }
-        .ice-header p { margin: 12px 0 0 0; font-size: 1.4rem; font-weight: 500; text-shadow: 1px 1px 3px rgba(0,0,0,0.2); }
+        .ice-header { background: linear-gradient(135deg, #ff7675, #e17055); color: white; padding: 45px 20px; text-align: center; border-bottom-left-radius: 35px; border-bottom-right-radius: 35px; box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+        .ice-header h1 { margin: 0; font-size: 3.2rem; text-shadow: 3px 3px 6px rgba(0,0,0,0.3); font-weight: 800; }
+        .ice-header p { margin: 12px 0 0 0; font-size: 1.3rem; font-weight: 500; opacity: 0.95; line-height: 1.5; }
         
-        /* Goobta */
-        .location-badge { display: inline-block; background-color: #ffeaa7; color: #d63031; padding: 8px 18px; border-radius: 25px; font-weight: bold; margin-top: 18px; font-size: 0.95rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        /* Qaybta Numberada kaliya ee Header-ka hoostiisa */
+        .header-contacts { margin-top: 15px; font-size: 1.2rem; font-weight: bold; background: rgba(0, 0, 0, 0.15); display: inline-block; padding: 8px 25px; border-radius: 20px; letter-spacing: 1px; }
+
+        .location-badge { display: inline-block; background-color: #ffeaa7; color: #d63031; padding: 8px 18px; border-radius: 25px; font-weight: bold; margin-top: 15px; font-size: 0.95rem; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
 
         /* Weelka guud */
         .main-container { max-width: 1200px; margin: 45px auto; padding: 0 20px; }
-        .section-title { text-align: center; font-size: 2.2rem; color: #ffffff; margin-bottom: 35px; font-weight: 700; text-shadow: 2px 2px 4px rgba(0,0,0,0.4); }
-        .section-title::after { content: ''; display: block; width: 70px; height: 5px; background: #ffeaa7; margin: 12px auto 0; border-radius: 3px; }
+        .section-title { text-align: center; font-size: 2.4rem; color: #ffffff; margin-bottom: 35px; font-weight: 700; text-shadow: 2px 2px 5px rgba(0,0,0,0.5); }
+        .section-title::after { content: ''; display: block; width: 80px; height: 5px; background: #ff7675; margin: 12px auto 0; border-radius: 3px; }
         
-        .ice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        .ice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 35px; }
         
         /* Box-ka Jalaatada */
-        .ice-card { background: rgba(255, 255, 255, 0.93); border-radius: 22px; overflow: hidden; box-shadow: 0 12px 25px rgba(0,0,0,0.15); transition: transform 0.3s, box-shadow 0.3s; border: 1px solid #ffeaa7; display: flex; flex-direction: column; text-align: center; padding: 30px; backdrop-filter: blur(5px); }
-        .ice-card:hover { transform: translateY(-10px); box-shadow: 0 18px 35px rgba(52, 152, 219, 0.4); }
+        .ice-card { background: rgba(255, 255, 255, 0.95); border-radius: 24px; overflow: hidden; box-shadow: 0 15px 30px rgba(0,0,0,0.2); transition: transform 0.3s, box-shadow 0.3s; border: 1px solid rgba(255, 118, 117, 0.2); display: flex; flex-direction: column; text-align: center; padding: 30px; backdrop-filter: blur(5px); }
+        .ice-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(255, 118, 117, 0.3); }
         
         .ice-icon-container { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px; }
-        .ice-icon { font-size: 4rem; display: inline-block; }
+        .ice-icon { font-size: 4.2rem; display: inline-block; }
         
-        .ice-name { font-size: 1.6rem; color: #2d3436; margin: 12px 0; font-weight: bold; }
-        .ice-desc { color: #2c3e50; font-size: 1rem; line-height: 1.6; flex-grow: 1; margin-bottom: 25px; font-weight: 500; }
+        .ice-name { font-size: 1.65rem; color: #2d3436; margin: 12px 0; font-weight: bold; }
+        .ice-desc { color: #2c3e50; font-size: 1.05rem; line-height: 1.6; flex-grow: 1; margin-bottom: 25px; }
         
-        /* Midabyada Noocyada */
         .flavor-mango { border-top: 6px solid #ffb142; }
         .flavor-berry { border-top: 6px solid #ff7675; }
         .flavor-milk { border-top: 6px solid #fdcb6e; }
         .flavor-box { border-top: 6px solid #0984e3; }
 
-        /* Badhamada Dalbada */
-        .btn-group { display: flex; flex-direction: column; gap: 10px; }
-        .order-btn { color: white; padding: 11px 20px; border: none; border-radius: 25px; font-weight: bold; text-decoration: none; display: inline-block; transition: background 0.2s, transform 0.1s; box-shadow: 0 4px 10px rgba(0,0,0,0.15); font-size: 0.95rem; }
-        .order-btn:active { transform: scale(0.98); }
+        /* Qaybta Badhamada Dalbada */
+        .btn-container { display: flex; flex-direction: column; gap: 10px; }
+        .order-btn { color: white; padding: 12px 20px; border: none; border-radius: 25px; font-weight: bold; text-decoration: none; display: inline-block; transition: background 0.2s, transform 0.1s; font-size: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .order-btn:active { transform: scale(0.97); }
         
-        .btn-num1 { background-color: #2ecc71; }
-        .btn-num1:hover { background-color: #27ae60; }
-        .btn-num2 { background-color: #3498db; }
-        .btn-num2:hover { background-color: #2980b9; }
+        .btn-line1 { background-color: #ff7675; }
+        .btn-line1:hover { background-color: #e17055; }
+        .btn-line2 { background-color: #0984e3; }
+        .btn-line2:hover { background-color: #0284c7; }
     </style>
 </head>
 <body>
 
     <div class="ice-header">
         <h1>Doogsin Ice Cream</h1>
-        <p>🌧️ Sida dhibicda roobka oo kale ku qabow dhexdeeda Laascaanood! ❄️🍦</p>
+        <p>🌧️ Sida dhibicda roobka guga oo kale ku qabow adoo dhex jooga kulaylka Laascaanood! ❄️🍦</p>
+        
+        <div class="header-contacts">
+            634170248 | 634496551
+        </div>
+        <br>
         <div class="location-badge">📍 Laascaanood</div>
     </div>
 
@@ -104,11 +102,10 @@
                     <span class="ice-icon">🥭</span>
                     <span class="ice-icon">🍦</span>
                 </div>
-                <h3 class="ice-name" style="color: #cc8e35;">Dhadhanka Cambaha</h3>
-                <p class="ice-desc">Wuxuu ka kooban yahay hilibka saafiga ah ee cambaha dabiiciga ah. Waa doorashada koowaad ee qof kasta oo jecel macaanka iyo midho fershi ah.</p>
-                <div class="btn-group">
-                    <a href="https://wa.me/252634170248?text=Asc%20Doogsin%20Ice%20Cream,%20waxaan%20rabaa%20inaan%20dalbado%20Jalaatada%20*Dhadhanka%20Cambaha*." target="_blank" class="order-btn btn-num1">Dalbo ( khadar )</a>
-                    <a href="https://wa.me/252634496551?text=Asc%20Doogsin%20Ice%20Cream,%20waxaan%20rabaa%20inaan%20dalbado%20Jalaatada%20*Dhadhanka%20Cambaha*." target="_blank" class="order-btn btn-num2">Dalbo ( Line 2 )</a>
+                <h3 class="ice-name" style="color: #e67e22;">Dhadhanka Cambaha Sifaysan</h3>
+                <p class="ice-desc">Wuxuu xambaarsan yahay macaanka iyo dharaga cambaha dabiiciga ah ee fershiga ah. Waa mid maskaxda iyo wadnahaba durbadiiba qaboojisa oo nafaqo leh!</p>
+                <div class="btn-container">
+                    <a href="https://wa.me/252634170248?text=Asc%20Doogsin%20Ice%20Cream,%20waxaan%20rabaa%20inaan%20dalbado%20Jalaatada%20*Dhadhanka%20Cambaha*." target="_blank" class="order-btn btn-line1" style="background-color: #ffb142;">Dalbo Hada</a>
                 </div>
             </div>
 
@@ -117,11 +114,10 @@
                     <span class="ice-icon">🍓</span>
                     <span class="ice-icon">🍨</span>
                 </div>
-                <h3 class="ice-name" style="color: #d63031;">Dhadhanka Silaanyada</h3>
-                <p class="ice-desc">Dhadhan deggen oo carfaya oo isugu jira labbo midab oo soo jiidasho leh. Aad bay u jecel yihiin dhalinyarada iyo carruurtu xilliyada kulaylaha.</p>
-                <div class="btn-group">
-                    <a href="https://wa.me/252634170248?text=Asc%20Doogsin%20Ice%20Cream,%20waxaan%20rabaa%20inaan%20dalbado%20Jalaatada%20*Dhadhanka%20Silaanyada*." target="_blank" class="order-btn btn-num1">Dalbo ( khadar )</a>
-                    <a href="https://wa.me/252634496551?text=Asc%20Doogsin%20Ice%20Cream,%20waxaan%20rabaa%20inaan%20dalbado%20Jalaatada%20*Dhadhanka%20Silaanyada*." target="_blank" class="order-btn btn-num2">Dalbo ( Line 2 )</a>
+                <h3 class="ice-name" style="color: #e74c3c;">Dhadhanka Silaanyada Cas</h3>
+                <p class="ice-desc">Dhadhan carries ah oo isugu jira labbo midab oo indhaha soo jiidaya. Aad bay u jecel yihiin dhalinyarada iyo carruurtu xilliyada galabtii ee kuleylaha.</p>
+                <div class="btn-container">
+                    <a href="https://wa.me/252634170248?text=Asc%20Doogsin%20Ice%20Cream,%20waxaan%20rabaa%20inaan%20dalbado%20Jalaatada%20*Dhadhanka%20Silaanyada*." target="_blank" class="order-btn btn-line1">Dalbo Hada</a>
                 </div>
             </div>
             
@@ -130,11 +126,10 @@
                     <span class="ice-icon">🥛</span>
                     <span class="ice-icon">🍦</span>
                 </div>
-                <h3 class="ice-name" style="color: #ccaa00;">Dhadhanka Caanaha & Vanilla</h3>
-                <p class="ice-desc">Waa jalaatada asalka ah ee ku dhisantay caanaha kareemka ah iyo carfiso deggen. Waxay inoo diyaarsan tahay qaab koofid ah iyo koobab casri ah.</p>
-                <div class="btn-group">
-                    <a href="https://wa.me/252634170248?text=Asc%20Doogsin%20Ice%20Cream,%20waxaan%20rabaa%20inaan%20dalbado%20Jalaatada%20*Dhadhanka%20Caanaha%20and%20Vanilla*." target="_blank" class="order-btn btn-num1">Dalbo ( khadar )</a>
-                    <a href="https://wa.me/252634496551?text=Asc%20Doogsin%20Ice%20Cream,%20waxaan%20rabaa%20inaan%20dalbado%20Jalaatada%20*Dhadhanka%20Caanaha%20and%20Vanilla*." target="_blank" class="order-btn btn-num2">Dalbo ( Line 2 )</a>
+                <h3 class="ice-name" style="color: #f1c40f;">Caanaha Kareemka & Vanilla</h3>
+                <p class="ice-desc">Waa boqorka jalaatada asalka ah ee ku dhisantay caanaha naas-nuujinta ah iyo kareemka jilicsan. Dhadhan qoto dheer oo afkaaga ka baxayn durbadiiba.</p>
+                <div class="btn-container">
+                    <a href="https://wa.me/252634170248?text=Asc%20Doogsin%20Ice%20Cream,%20waxaan%20rabaa%20inaan%20dalbado%20Jalaatada%20*Dhadhanka%20Caanaha%20and%20Vanilla*." target="_blank" class="order-btn btn-line1" style="background-color: #fdcb6e; color: #2d3436;">Dalbo Hada</a>
                 </div>
             </div>
             
@@ -143,11 +138,10 @@
                     <span class="ice-icon">📦</span>
                     <span class="ice-icon">❄️</span>
                 </div>
-                <h3 class="ice-name" style="color: #0984e3;">Khasnadaha Jumlada</h3>
+                <h3 class="ice-name" style="color: #2980b9;">Khasnadaha Jumlada</h3>
                 <p class="ice-desc">Ma leedahay dukaan ama maqaaxi ku taal dhexdeeda Laascaanood? Waxaan kuu diyaarinaynaa khasnadaha xasiinka ah oo si jumlo ah kuugu imanaya adoo jooga goobtaada.</p>
-                <div class="btn-group">
-                    <a href="https://wa.me/252634170248?text=Asc%20Doogsin%20Ice%20Cream,%20waxaan%20rabaa%20faahfaahin%20ku%20saabsan%20*Khasnadaha%20Jumlada*." target="_blank" class="order-btn btn-num1">Khadar ( WhatsApp )</a>
-                    <a href="https://wa.me/252634496551?text=Asc%20Doogsin%20Ice%20Cream,%20waxaan%20rabaa%20faahfaahin%20ku%20saabsan%20*Khasnadaha%20Jumlada*." target="_blank" class="order-btn btn-num2">Line 2 ( WhatsApp )</a>
+                <div class="btn-container">
+                    <a href="https://wa.me/252634170248?text=Asc%20Doogsin%20Ice%20Cream,%20waxaan%20rabaa%20faahfaahin%20ku%20saabsan%20*Khasnadaha%20Jumlada*." target="_blank" class="order-btn btn-line2">La Xiriir Maamulka</a>
                 </div>
             </div>
             
