@@ -3,64 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Qaybta Xayeysiiska & Jalaatada</title>
+    <title>Guryaha Jalaatada Laascaanood</title>
     <style>
-        body { font-family: sans-serif; background-color: #fcf8f2; margin: 0; padding: 40px 20px; }
-        .promo-container { max-width: 1200px; margin: 0 auto; text-align: center; }
-        .promo-title { font-size: 2.5rem; color: #2c3e50; margin-bottom: 10px; }
-        .promo-subtitle { font-size: 1.1rem; color: #7f8c8d; margin-bottom: 40px; }
-        .promo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #fff9f1; margin: 0; padding: 0; color: #2c3e50; }
         
-        /* Kaadhadhka Naqshadda */
-        .promo-card { background: #ffffff; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); padding: 30px; transition: transform 0.3s, box-shadow 0.3s; border-top: 6px solid #3498db; position: relative; overflow: hidden; }
-        .promo-card:hover { transform: translateY(-10px); box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+        /* Header-ka Sare */
+        .ice-header { background: linear-gradient(135deg, #ff7675, #fab1a0); color: white; padding: 40px 20px; text-align: center; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .ice-header h1 { margin: 0; font-size: 2.8rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.15); }
+        .ice-header p { margin: 10px 0 0 0; font-size: 1.2rem; font-style: italic; opacity: 0.9; }
         
-        /* Qaybta Jalaatada midabkeeda gaarka ah */
-        .ice-cream-card { border-top-color: #ff7675; background: linear-gradient(to bottom, #ffffff, #fff5f5); }
+        /* Goobta */
+        .location-badge { display: inline-block; background-color: #ffeaa7; color: #d63031; padding: 6px 15px; border-radius: 20px; font-weight: bold; margin-top: 15px; font-size: 0.9rem; }
+
+        /* Khasnadaha / Qaybaha Jalaatada */
+        .main-container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .section-title { text-align: center; font-size: 2rem; color: #2d3436; margin-bottom: 30px; position: relative; }
+        .section-title::after { content: ''; display: block; width: 60px; height: 4px; background: #ff7675; margin: 10px auto 0; border-radius: 2px; }
         
-        .promo-icon { font-size: 3.5rem; margin-bottom: 20px; display: inline-block; animation: bounce 2s infinite alternate; }
-        @keyframes bounce { 0% { transform: translateY(0); } 100% { transform: translateY(-5px); } }
+        .ice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
         
-        .card-title { font-size: 1.6rem; color: #2c3e50; margin-bottom: 15px; font-weight: bold; }
-        .card-text { color: #555; font-size: 0.98rem; line-height: 1.6; margin-bottom: 25px; }
+        /* Box-ka Jalaatada (Khasnadda) */
+        .ice-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.05); transition: transform 0.3s, box-shadow 0.3s; border: 1px solid #ffeaa7; display: flex; flex-direction: column; text-align: center; padding: 25px; }
+        .ice-card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(255, 118, 117, 0.2); }
         
-        /* Badhamada */
-        .promo-btn { background-color: #3498db; color: white; padding: 12px 28px; border: none; border-radius: 25px; font-weight: bold; text-decoration: none; display: inline-block; transition: background-color 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .promo-btn:hover { opacity: 0.9; }
+        .ice-icon { font-size: 4rem; margin-bottom: 15px; display: inline-block; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        
+        .ice-name { font-size: 1.5rem; color: #2d3436; margin: 10px 0; font-weight: bold; }
+        .ice-desc { color: #636e72; font-size: 0.95rem; line-height: 1.6; flex-grow: 1; margin-bottom: 20px; }
+        
+        /* Qaboojiyaha & Mashiinnada */
+        .freezer-card { border-top: 6px solid #0984e3; background: linear-gradient(to bottom, #ffffff, #f0f8ff); }
+        .garrafa-card { border-top: 6px solid #e17055; background: linear-gradient(to bottom, #ffffff, #fff5f0); }
+        .cone-card { border-top: 6px solid #fdcb6e; background: linear-gradient(to bottom, #ffffff, #fffdf0); }
+
+        /* Badhamada Dalbada */
+        .order-btn { background-color: #ff7675; color: white; padding: 12px 30px; border: none; border-radius: 25px; font-weight: bold; text-decoration: none; display: inline-block; transition: background 0.2s; box-shadow: 0 4px 10px rgba(255, 118, 117, 0.3); }
+        .order-btn:hover { background-color: #e17055; }
+        .freezer-btn { background-color: #0984e3; box-shadow: 0 4px 10px rgba(9, 132, 227, 0.3); }
+        .freezer-btn:hover { background-color: #00cec9; }
     </style>
 </head>
 <body>
-    <div class="promo-container">
-        <h2 class="promo-title">Adeegyada & Waxsoosaarka</h2>
-        <p class="promo-subtitle">Dooro mid ka mid ah adeegyada ama alaabta naga kaa caawinaya kor u qaadista ganacsigaaga</p>
-        <div class="promo-grid">
+
+    <div class="ice-header">
+        <h1>Guryaha Jalaatada ee Laascaanood</h1>
+        <p>Jalaato fershi ah oo lagu diyaariyey mashiinnada ugu casrisan iyo habka hiddaha ah</p>
+        <div class="location-badge">📍 Far Shaldhaandley, Laascaanood</div>
+    </div>
+
+    <div class="main-container">
+        <h2 class="section-title">Khasnadda & Noocyada Jalaatada</h2>
+        
+        <div class="ice-grid">
             
-            <div class="promo-card ice-cream-card">
-                <div class="promo-icon">🍦🍨</div>
-                <h3 class="card-title" style="color: #d63031;">Jalaato Macaan (Ice Cream)</h3>
-                <p class="card-text">Waxaan kuu haynaa jalaato aad u macaan oo lagu diyaariyey habka ugu casrisan, lehna dhadhan kala duwan oo maskaxdaada qaboojinaya.</p>
-                <a href="https://wa.me/252634170248?text=Asc%20Maamule,%20waxaan%20rabaa%20inaan%20dalbado%20*Jalaatada%20Macaan%20(Ice%20Cream)*." target="_blank" class="promo-btn" style="background-color: #ff7675;">Dalbo Hada</a>
+            <div class="ice-card garrafa-card">
+                <div class="ice-icon">🪵🍧</div>
+                <h3 class="ice-name" style="color: #e17055;">Garrafa Ice Cream</h3>
+                <p class="ice-desc">Jalaatada caanka ah ee lagu dhex sameeyo weelka birta ah ee barafka iyo milixda lagu wareejiyo. Waa jalaato dabiici ah oo jilicsan, lehna dhadhan cajiib ah.</p>
+                <a href="https://wa.me/252634170248?text=Asc%20Guryaha%20Jalaatada%20Laascaanood,%20waxaan%20rabaa%20inaan%20dalbado%20*Jalaatada%20Habka%20Garrafa*." target="_blank" class="order-btn" style="background-color: #e17055;">Dalbo Hada</a>
             </div>
 
-            <div class="promo-card">
-                <div class="promo-icon">🎨</div>
-                <h3 class="card-title">Naqshadaynta Casriga Ah</h3>
-                <p class="card-text">Waxaan kuu samaynaynaa naqshado heersare ah oo soo jiidanaya indhaha macaamiishaada iyo suuqyada.</p>
-                <a href="https://wa.me/252634170248?text=Asc%20Maamule,%20waxaan%20rabaa%20inaan%20dalbado%20adeegga%20*Naqshadaynta%20Casriga%20Ah*." target="_blank" class="promo-btn">Dalbo Hada</a>
+            <div class="ice-card cone-card">
+                <div class="ice-icon">🍦</div>
+                <h3 class="ice-name" style="color: #b2bec3;">Soft Cone Ice Cream</h3>
+                <p class="ice-desc">Jalaatada jilicsan ee mashiinka tooska ah looga soo shubo, ee lagu gado buskudka koofida ah. Waxaad ka helaysaa dhadhanka Silaanyada (Strawberry) iyo Vanilla.</p>
+                <a href="https://wa.me/252634170248?text=Asc%20Guryaha%20Jalaatada%20Laascaanood,%20waxaan%20rabaa%20inaan%20dalbado%20*Jalaatada%20Buskudka%20Lagu%20Shubo%20(Cone)*." target="_blank" class="order-btn" style="background-color: #fdcb6e; color: #2d3436;">Dalbo Hada</a>
             </div>
             
-            <div class="promo-card" style="border-top-color: #2ecc71;">
-                <div class="promo-icon">📦</div>
-                <h3 class="card-title">Baakadaha & Daabacaadda</h3>
-                <p class="card-text">Waxaan diyaar u nahay inaan kuu soo saarno agab daabacan oo baakado heer sare ah oo ganacsigaaga kor u qaada.</p>
-                <a href="https://wa.me/252634170248?text=Asc%20Maamule,%20waxaan%20rabaa%20inaan%20dalbado%20adeegga%20*Baakadaha%20and%20Daabacaadda*." target="_blank" class="promo-btn" style="background-color: #2ecc71;">Dalbo Hada</a>
+            <div class="ice-card" style="border-top: 6px solid #fd79a8; background: linear-gradient(to bottom, #ffffff, #fff0f5);">
+                <div class="ice-icon">🍨🧁</div>
+                <h3 class="ice-name" style="color: #fd79a8;">Koobabka & Baaldiyada</h3>
+                <p class="ice-desc">Ku habboon xafladaha, dhalashada ama guriga. Waxaad ka iibsan kartaa koobab waaweyn iyo baaldiyo qoyska oo dhan ku filan oo isugu jira midabada kala duwan.</p>
+                <a href="https://wa.me/252634170248?text=Asc%20Guryaha%20Jalaatada%20Laascaanood,%20waxaan%20rabaa%20inaan%20dalbado%20*Baaldi%20/%20Koob%20weyn%20oo%20Jalaato%20ah*." target="_blank" class="order-btn" style="background-color: #fd79a8;">Dalbo Hada</a>
             </div>
             
-            <div class="promo-card" style="border-top-color: #9b59b6;">
-                <div class="promo-icon">📈</div>
-                <h3 class="card-title">Falanqaynta & Suuqgeynta</h3>
-                <p class="card-text">Horey u mari ganacsigaaga adoo isticmaalaya tabaha ugu dambeeyay ee suuqgeynta casriga ah.</p>
-                <a href="https://wa.me/252634170248?text=Asc%20Maamule,%20waxaan%20rabaa%20inaan%20dalbado%20adeegga%20*Falanqaynta%20and%20Suuqgeynta*." target="_blank" class="promo-btn" style="background-color: #9b59b6;">Dalbo Hada</a>
+            <div class="ice-card freezer-card">
+                <div class="ice-icon">❄️🧊</div>
+                <h3 class="ice-name" style="color: #0984e3;">Khasnadda Xasiinka (Freezer)</h3>
+                <p class="ice-desc">Waxaan sidoo kale diyaarinnaa khasnado jalaato ah oo xiran, kuwaas oo loogu talagalay dukaamada iyo meelaha raba inay jalaatada si jumlada ah u sii iibiyaan iyadoo barafaysan.</p>
+                <a href="https://wa.me/252634170248?text=Asc%20Guryaha%20Jalaatada%20Laascaanood,%20waxaan%20rabaa%20faahfaahin%20ku%20saabsan%20*Khasnadaha%20and%20Jumlada%20Jalaatada*." target="_blank" class="order-btn freezer-btn">La Xiriir Maamulka</a>
             </div>
             
         </div>
