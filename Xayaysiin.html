@@ -20,21 +20,21 @@
             overflow-x: hidden;
         }
 
-        /* Roobka Neecawda ah */
+        /* Roobka Neecawda ah - Lagu hagaajiyey qaab jilicsan */
         .rain-layer {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: transparent; pointer-events: none; z-index: 1;
         }
         .rain-layer::before {
-            content: "🌧️ ❄️ 🌧️ ❄️ 🌧️ ❄️ 🌧️ ❄️";
+            content: "❄️ 🌧️ ❄️ 🌧️ ❄️ 🌧️ ❄️";
             position: absolute; top: -50px; left: 0; width: 100%;
-            font-size: 24px; white-space: nowrap; opacity: 0.12;
-            animation: fallAnimation 4s linear infinite;
+            font-size: 20px; white-space: nowrap; opacity: 0.08;
+            animation: fallAnimation 6s linear infinite;
         }
         @keyframes fallAnimation {
             0% { top: -50px; transform: translateX(0); }
-            100% { top: 100vh; transform: translateX(50px); }
+            100% { top: 100vh; transform: translateX(30px); }
         }
         
         /* Header-ka Sare */
@@ -45,7 +45,7 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.5); position: relative; z-index: 2;
         }
 
-        /* LOGO NAQSHADEEFA: Goobada cad ee Astaanta weyn (Jalaatadii sideedii baa loo daayey) */
+        /* LOGO: Astaanta weyn (Jalaatadii sideedii) */
         .main-logo {
             width: 90px;
             height: 90px;
@@ -133,7 +133,7 @@
         <div class="main-logo">🍦</div>
         
         <h1>Doogsin Ice Cream</h1>
-        <p>Macaan iyo caraf isku duba-dhacay, iyo qabow nafta u roon! Doogsin Ice Cream waa doonista qof kasta oo jooga Laascaanood. 🍦🌧></p>
+        <p>Macaan iyo caraf isku duba-dhacay, iyo qabow nafta u roon! Doogsin Ice Cream waa doonista qof kasta oo jooga Laascaanood. 🍦🌧️</p>
         <div class="header-contacts">634170248 | 634496551</div>
         <br>
         <div class="location-badge">📍 Laascaanood</div>
