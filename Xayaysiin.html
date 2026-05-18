@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Badbaado Ice Cream - Laascaanood</title>
+    <title>Nugaal Ice Cream - Laascaanood</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #fffaf5; margin: 0; padding: 0; color: #2c3e50; }
         
         /* Header-ka Sare */
         .ice-header { background: linear-gradient(135deg, #ff7675, #e17055); color: white; padding: 50px 20px; text-align: center; border-bottom-left-radius: 35px; border-bottom-right-radius: 35px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
         .ice-header h1 { margin: 0; font-size: 3rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); font-weight: 800; }
-        .ice-header p { margin: 12px 0 0 0; font-size: 1.25rem; font-style: italic; opacity: 0.95; font-weight: 500; }
+        .ice-header p { margin: 12px 0 0 0; font-size: 1.3rem; font-weight: 500; opacity: 0.95; }
         
         /* Goobta */
         .location-badge { display: inline-block; background-color: #ffeaa7; color: #d63031; padding: 8px 18px; border-radius: 25px; font-weight: bold; margin-top: 18px; font-size: 0.95rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
@@ -26,7 +26,8 @@
         .ice-card { background: white; border-radius: 22px; overflow: hidden; box-shadow: 0 12px 25px rgba(0,0,0,0.04); transition: transform 0.3s, box-shadow 0.3s; border: 1px solid #ffeaa7; display: flex; flex-direction: column; text-align: center; padding: 30px; }
         .ice-card:hover { transform: translateY(-10px); box-shadow: 0 18px 35px rgba(255, 118, 117, 0.18); }
         
-        .ice-icon { font-size: 4.2rem; margin-bottom: 15px; display: inline-block; animation: float 3s ease-in-out infinite; }
+        .ice-icon-container { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .ice-icon { font-size: 4rem; display: inline-block; animation: float 3s ease-in-out infinite; }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
         
         .ice-name { font-size: 1.6rem; color: #2d3436; margin: 12px 0; font-weight: bold; }
@@ -39,54 +40,4 @@
         .flavor-box { border-top: 6px solid #0984e3; background: linear-gradient(to bottom, #ffffff, #f1f8ff); }
 
         /* Badhamada Dalbada */
-        .order-btn { background-color: #ff7675; color: white; padding: 13px 32px; border: none; border-radius: 25px; font-weight: bold; text-decoration: none; display: inline-block; transition: background 0.2s; box-shadow: 0 5px 12px rgba(255, 118, 117, 0.3); font-size: 1rem; }
-        .order-btn:hover { background-color: #e17055; }
-        .freezer-btn { background-color: #0984e3; box-shadow: 0 5px 12px rgba(9, 132, 227, 0.3); }
-        .freezer-btn:hover { background-color: #0284c7; }
-    </style>
-</head>
-<body>
-
-    <div class="ice-header">
-        <h1>Badbaado Ice Cream</h1>
-        <p>Dhadhan carfaya iyo qaboojiye maskaxda huriya, loogu talagalay bulshada qaaliga ah</p>
-        <div class="location-badge">📍 Laascaanood</div>
-    </div>
-
-    <div class="main-container">
-        <h2 class="section-title">Noocyada Dhadhanka (Flavors) Caanka Ah</h2>
-        
-        <div class="ice-grid">
-            
-            <div class="ice-card flavor-mango">
-                <div class="ice-icon">🥭</div>
-                <h3 class="ice-name" style="color: #cc8e35;">Dhadhanka Cambaha</h3>
-                <p class="ice-desc">Wuxuu ka kooban yahay hilibka saafiga ah ee cambaha dabiiciga ah. Waa doorashada koowaad ee qof kasta oo jecel macaanka iyo hstraight-ka midho fershi ah.</p>
-                <a href="https://wa.me/252634170248?text=Asc%20Badbaado%20Ice%20Cream,%20waxaan%20rabaa%20inaan%20dalbado%20Jalaatada%20*Dhadhanka%20Cambaha*." target="_blank" class="order-btn" style="background-color: #ffb142;">Dalbo Hada</a>
-            </div>
-
-            <div class="ice-card flavor-berry">
-                <div class="ice-icon">🍓</div>
-                <h3 class="ice-name" style="color: #d63031;">Dhadhanka Silaanyada</h3>
-                <p class="ice-desc">Dhadhan deggen oo carries ah oo isugu jira labbo midab oo soo jiidasho leh. Aad bay u jecel yihiin dhalinyarada iyo carruurtu xilliyada kulaylaha.</p>
-                <a href="https://wa.me/252634170248?text=Asc%20Badbaado%20Ice%20Cream,%20waxaan%20rabaa%20inaan%20dalbado%20Jalaatada%20*Dhadhanka%20Silaanyada*." target="_blank" class="order-btn">Dalbo Hada</a>
-            </div>
-            
-            <div class="ice-card flavor-milk">
-                <div class="ice-icon">🥛🍦</div>
-                <h3 class="ice-name" style="color: #b2bec3;">Dhadhanka Caanaha & Vanilla</h3>
-                <p class="ice-desc">Waa jalaatada asalka ah ee ku dhisantay caanaha kareemka ah iyo carfiso deggen. Waxay inoo diyaarsan tahay qaab koofid ah iyo koobab casri ah.</p>
-                <a href="https://wa.me/252634170248?text=Asc%20Badbaado%20Ice%20Cream,%20waxaan%20rabaa%20inaan%20dalbado%20Jalaatada%20*Dhadhanka%20Caanaha%20and%20Vanilla*." target="_blank" class="order-btn" style="background-color: #fdcb6e; color: #2d3436;">Dalbo Hada</a>
-            </div>
-            
-            <div class="ice-card flavor-box">
-                <div class="ice-icon">📦❄️</div>
-                <h3 class="ice-name" style="color: #0984e3;">Khasnadaha Jumlada</h3>
-                <p class="ice-desc">Ma leedahay dukaan ama maqaaxi ku taal dhexdeeda Laascaanood? Waxaan kuu diyaarinaynaa khasnadaha xasiinka ah oo si jumlo ah kuugu imanaya adoo jooga goobtaada.</p>
-                <a href="https://wa.me/252634170248?text=Asc%20Badbaado%20Ice%20Cream,%20waxaan%20rabaa%20faahfaahin%20ku%20saabsan%20*Khasnadaha%20Jumlada%20ee%20Laascaanood*." target="_blank" class="order-btn freezer-btn">La Xiriir Maamulka</a>
-            </div>
-            
-        </div>
-    </div>
-</body>
-</html>
+        .order-btn { background-color: #ff7675; color: white; padding: 13px 32px; border: none; border-radius: 25px; font-weight: bold; text-decoration: none; display: inline-block; transition: background 0.2s; box-shadow: 0
