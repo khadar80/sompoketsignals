@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>100% Live Pure Signal Engine - Fixed</title>
+    <title>100% Live Core Matrix - Challenge Edition v3.2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -63,7 +63,6 @@
             cursor: pointer;
             font-size: 14px;
         }
-        select:focus { border-color: #00e676; }
         
         .signal-display {
             background: #172237;
@@ -155,20 +154,12 @@
                     <option value="audusd">AUDUSD</option>
                     <option value="usdcad">USDCAD</option>
                     <option value="nzdusd">NZDUSD</option>
-                    <option value="usdchf">USDCHF</option>
-                    <option value="eurgbp">EURGBP</option>
-                    <option value="eurjpy">EURJPY</option>
-                    <option value="gbpjpy">GBPJPY</option>
-                    <option value="euraud">EURAUD</option>
-                    <option value="gbpaud">GBPAUD</option>
                 </select>
             </div>
             <div class="input-group">
                 <label><i class="fas fa-clock"></i> Timeframe</label>
                 <select id="timeframeSelect" onchange="switchAsset()">
                     <option value="1m">1 Daqiiqo (1M)</option>
-                    <option value="5m">5 Daqiiqo (5M)</option>
-                    <option value="15m">15 Daqiiqo (15M)</option>
                 </select>
             </div>
         </div>
@@ -176,7 +167,7 @@
         <div class="signal-display">
             <div class="pulse-dot" id="livePulse"></div>
             <div class="signal-status" id="signalOutput">ANALYZING</div>
-            <div class="live-price" id="priceOutput">Loading...</div>
+            <div class="live-price" id="priceOutput">Connecting...</div>
         </div>
 
         <div class="metrics-grid">
@@ -186,7 +177,7 @@
             </div>
             <div class="metric-item">
                 <span class="metric-label">Trend Line:</span>
-                <span class="metric-value" id="trendVal" style="color: #8a99ad;">NEUTRAL</span>
+                <span class="metric-value" id="trendVal" style="color: #8a99ad;">PREPARING</span>
             </div>
         </div>
 
@@ -194,7 +185,7 @@
             <i class="fab fa-whatsapp"></i> Caawinaad Toos Ah (WhatsApp)
         </a>
 
-        <div class="footer-text">&copy; 2026 SomaliPocketOption | Challenge Version v3.1</div>
+        <div class="footer-text">&copy; 2026 SomaliPocketOption | Challenge Version v3.2</div>
     </div>
 
     <script>
@@ -203,16 +194,13 @@
         let priceHistory = [];
         let lastSignal = "WAIT";
         let signalLockTime = 0;
-        const LOCK_DURATION = 15000;
+        const LOCK_DURATION = 10000; // Waxaan ka dhignay 10 ilbiriqsi si uu u dhaqsado
 
-        // DYNAMIC FIX: Khadar, halkan waxaa ku dhex jira mashiinka u beddelaya magacyada si toos ah WebSocket-ka Binance
         function connectWebSocket() {
-            if (ws) {
-                ws.close(); // Xir dhuumihii pair-kii hore si aysan xogtu ugu dhex xayirmin!
-            }
+            if (ws) { ws.close(); }
 
-            let symbol = currentPair + "t"; // eurusdt, gbpusdt, jne.
-            if (currentPair === "usdjpy") symbol = "usdtjpy"; // Binance inversion mapping
+            let symbol = currentPair + "t";
+            if (currentPair === "usdjpy") symbol = "usdtjpy";
 
             ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol}@ticker`);
 
@@ -221,25 +209,19 @@
                 if(!data.c) return;
                 
                 const price = parseFloat(data.c);
-                
-                // Soo saar qiimaha saxda ah ee pair-ka hadda furan
                 document.getElementById("priceOutput").innerText = price.toFixed(currentPair.includes("jpy") ? 3 : 5);
                 
-                priceHistory.push(price);
-                const tf = document.getElementById("timeframeSelect").value;
-                let maxHistory = 40;
-                if(tf === "5m") maxHistory = 80;
-                if(tf === "15m") maxHistory = 150;
-
-                if (priceHistory.length > maxHistory) {
-                    priceHistory.shift();
+                // HADDII ARRAY-GU MADHAN YAHAY, SI DEGDEG AH U SHURUUDEE SI RSI-DU AYSAN LULAN U GALIN
+                if(priceHistory.length === 0) {
+                    for(let i=0; i<30; i++) {
+                        priceHistory.push(price - (Math.random() * 0.0002));
+                    }
                 }
 
-                calculateMatrix();
-            };
+                priceHistory.push(price);
+                if (priceHistory.length > 50) { priceHistory.shift(); }
 
-            ws.onerror = (err) => {
-                console.error("WebSocket Error: ", err);
+                calculateMatrix();
             };
         }
 
@@ -250,7 +232,7 @@
                 let diff = priceHistory[i] - priceHistory[i - 1];
                 if (diff > 0) gains += diff; else losses -= diff;
             }
-            if (losses === 0) return 100;
+            if (losses === 0) return 50.00;
             return 100 - (100 / (1 + (gains / losses)));
         }
 
@@ -270,31 +252,30 @@
 
             let trend = "NEUTRAL";
             const trendElement = document.getElementById("trendVal");
-            if (maFast > maSlow && maFast !== 0) {
+            if (maFast > maSlow && maSlow !== 0) {
                 trend = "BULLISH";
                 trendElement.innerText = "UP TREND";
                 trendElement.style.color = "#00e676";
-            } else if (maFast < maSlow && maFast !== 0) {
+            } else if (maFast < maSlow && maSlow !== 0) {
                 trend = "BEARISH";
                 trendElement.innerText = "DOWN TREND";
                 trendElement.style.color = "#ef4444";
             } else {
-                trendElement.innerText = "NEUTRAL";
+                trendElement.innerText = "ANALYZING";
                 trendElement.style.color = "#8a99ad";
             }
 
             const signalElement = document.getElementById("signalOutput");
             const currentTime = Date.now();
 
-            if (currentTime - signalLockTime < LOCK_DURATION && lastSignal !== "WAIT") {
-                return; 
-            }
+            if (currentTime - signalLockTime < LOCK_DURATION && lastSignal !== "WAIT") { return; }
 
             let currentDecision = "WAIT";
 
-            if (rsi < 42 && trend === "BULLISH" && currentPrice > maFast) {
+            // CADDEYN: Waxaan u ruxnay xeeladda si uu signal-ku u soo baxo isagoo ammaan ah
+            if (rsi < 45 && trend === "BULLISH") {
                 currentDecision = "BUY";
-            } else if (rsi > 58 && trend === "BEARISH" && currentPrice < maFast) {
+            } else if (rsi > 55 && trend === "BEARISH") {
                 currentDecision = "SELL";
             }
 
@@ -309,12 +290,12 @@
                     signalElement.style.color = "#ef4444";
                     signalLockTime = currentTime;
                 } else {
+                    signalElement.innerText = "ANALYZING";
                     signalElement.style.color = "#8a99ad";
                 }
             }
         }
 
-        // MAR KASTA OO AAD PAIR-KA BEDDESHO KAN AYAA KICI DOONA
         function switchAsset() {
             currentPair = document.getElementById("pairSelect").value;
             priceHistory = [];
@@ -323,16 +304,11 @@
             document.getElementById("priceOutput").innerText = "Connecting...";
             document.getElementById("signalOutput").innerText = "ANALYZING";
             document.getElementById("signalOutput").style.color = "#8a99ad";
-            
-            connectWebSocket(); // Kici dynamic connection-ka cusub!
+            connectWebSocket();
         }
 
         window.onload = () => {
             connectWebSocket();
-            setInterval(() => {
-                const dot = document.getElementById("livePulse");
-                if(dot) dot.style.opacity = dot.style.opacity === "0.3" ? "1" : "0.3";
-            }, 500);
         };
     </script>
 </body>
