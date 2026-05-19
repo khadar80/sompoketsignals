@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Somali Elite Signals Hub 🇸🇴</title>
+    <title>Somali PocketOption Advanced Hub v2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -12,242 +12,274 @@
             padding: 0;
         }
         body {
-            background-color: #06090e;
-            color: #e8f0fe;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0b0f19;
+            color: #f1f5f9;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .dashboard {
+            max-width: 600px;
+            width: 100%;
+            background: #111827;
+            border: 1px solid #1f2937;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #1f2937;
+            padding-bottom: 15px;
+        }
+        .header h1 {
+            color: #10b981;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .quote {
+            font-size: 12px;
+            color: #9ca3af;
+            font-style: italic;
+            margin-top: 5px;
+        }
+        .control-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .input-group {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 15px;
+            gap: 5px;
         }
-        .container {
-            max-width: 520px;
-            width: 100%;
-            background: #0f1622;
-            padding: 25px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            text-align: center;
-            border: 1px solid #1e293b;
-        }
-        h1 {
-            font-size: 26px;
-            margin-bottom: 10px;
-            color: #00e676;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .motivation-text {
-            color: #00e676;
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 15px;
-            line-height: 1.5;
-        }
-        
-        /* Live Ticker Tape Style */
-        .ticker-wrapper {
-            margin-bottom: 15px;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #1e293b;
-        }
-
-        .selector-box {
-            margin-bottom: 15px;
-            background: #172237;
-            padding: 12px;
-            border-radius: 8px;
-            text-align: left;
-        }
-        .selector-box label {
+        .input-group label {
             font-size: 11px;
-            color: #94a3b8;
-            display: block;
-            margin-bottom: 6px;
-            font-weight: bold;
-            letter-spacing: 0.5px;
-        }
-        .select-input {
-            width: 100%;
-            padding: 10px;
-            background: #0f1622;
-            border: 1px solid #1e293b;
-            border-radius: 6px;
-            color: #ffffff;
-            font-size: 15px;
-            font-weight: bold;
-            outline: none;
-            cursor: pointer;
-        }
-        
-        /* Timeframe Selection Styled Dropdown */
-        .time-select {
-            width: 100%;
-            padding: 10px;
-            background: #0f1622;
-            border: 1px solid #1e293b;
-            border-radius: 6px;
-            color: #00e676;
-            font-size: 15px;
-            font-weight: bold;
-            outline: none;
-            cursor: pointer;
-        }
-
-        /* Widgets Containers */
-        .widget-wrapper {
-            background: #172237;
-            padding: 8px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #1e293b;
-            min-height: 220px;
-        }
-        .section-title {
-            font-size: 12px;
-            color: #ff9800;
-            font-weight: bold;
-            text-align: left;
-            margin-bottom: 8px;
-            padding-left: 5px;
             text-transform: uppercase;
+            color: #9ca3af;
+            font-weight: bold;
             letter-spacing: 0.5px;
         }
-        
-        #gaugeContainer { min-height: 220px; }
-        
-        .btn {
+        .input-group select, .input-group input {
+            background: #1f2937;
+            border: 1px solid #374151;
+            padding: 10px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            outline: none;
+            cursor: pointer;
+        }
+        .input-group select:focus {
+            border-color: #10b981;
+        }
+        .widget-section {
+            background: #1f2937;
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #374151;
+        }
+        .widget-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #f59e0b;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        /* Martingale Section */
+        .martingale-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .m-box {
+            background: #111827;
+            padding: 8px;
+            border-radius: 6px;
+            text-align: center;
+            border: 1px solid #374151;
+        }
+        .m-box span {
+            display: block;
+            font-size: 10px;
+            color: #9ca3af;
+        }
+        .m-box strong {
+            font-size: 14px;
+            color: #ffffff;
+        }
+        .m-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            text-align: left;
+        }
+        .m-table th {
+            color: #9ca3af;
+            padding: 4px;
+            border-bottom: 1px solid #374151;
+        }
+        .m-table td {
+            padding: 6px 4px;
+            border-bottom: 1px solid #111827;
+        }
+        .btn-link {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
-            width: 100%;
             padding: 12px;
-            margin: 10px 0;
-            border: none;
             border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
             text-decoration: none;
-            transition: background 0.3s ease;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 10px;
+            transition: opacity 0.2s;
         }
-        .btn-whatsapp { background: #25d366; color: #ffffff; }
-        .btn-tiktok { background: #ff0050; color: white; }
-        .footer { margin-top: 15px; font-size: 12px; color: #475569; }
+        .btn-whatsapp { background-color: #25d366; }
+        .btn-tiktok { background-color: #ff0050; }
+        .btn-link:hover { opacity: 0.9; }
+        .footer {
+            text-align: center;
+            font-size: 11px;
+            color: #4b5563;
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Somali Signals Hub 🇸🇴</h1>
-        <div class="motivation-text">"Guushu kuma timaaddo dhalanteed, waxay ku dhalataa go'aan adag, samir iyo edbin ganacsi. Maareey maalkaaga!"</div>
-
-        <div class="ticker-wrapper" id="tickerContainer"></div>
-
-        <div class="selector-box">
-            <label><i class="fas fa-coins"></i> DOORO LACAGTA AAD RABTO (FOREX PAIR)</label>
-            <select class="select-input" id="assetSelector" onchange="onWidgetUpdate()">
-                <optgroup label="Major Forex Pairs">
-                    <option value="EURUSD">EUR/USD (Euro / US Dollar)</option>
-                    <option value="GBPUSD">GBP/USD (British Pound / US Dollar)</option>
-                    <option value="USDJPY">USD/JPY (US Dollar / Japanese Yen)</option>
-                    <option value="AUDUSD">AUD/USD (Australian Dollar / US Dollar)</option>
-                    <option value="USDCAD">USD/CAD (US Dollar / Canadian Dollar)</option>
-                    <option value="USDCHF">USD/CHF (US Dollar / Swiss Franc)</option>
-                    <option value="NZDUSD">NZD/USD (New Zealand Dollar / US Dollar)</option>
-                </optgroup>
-                <optgroup label="Euro Crosses">
-                    <option value="EURGBP">EUR/GBP (Euro / British Pound)</option>
-                    <option value="EURJPY">EUR/JPY (Euro / Japanese Yen)</option>
-                    <option value="EURAUD">EUR/AUD (Euro / Australian Dollar)</option>
-                    <option value="EURCAD">EUR/CAD (Euro / Canadian Dollar)</option>
-                    <option value="EURCHF">EUR/CHF (Euro / Swiss Franc)</option>
-                    <option value="EURNZD">EUR/NZD (Euro / New Zealand Dollar)</option>
-                </optgroup>
-                <optgroup label="GBP Crosses">
-                    <option value="GBPJPY">GBP/JPY (British Pound / Japanese Yen)</option>
-                    <option value="GBPAUD">GBP/AUD (British Pound / Australian Dollar)</option>
-                    <option value="GBPCAD">GBP/CAD (British Pound / Canadian Dollar)</option>
-                    <option value="GBPCHF">GBP/CHF (British Pound / Swiss Franc)</option>
-                    <option value="GBPNZD">GBP/NZD (British Pound / New Zealand Dollar)</option>
-                </optgroup>
-                <optgroup label="Minor Crosses">
-                    <option value="AUDJPY">AUD/JPY</option>
-                    <option value="CADJPY">CAD/JPY</option>
-                    <option value="CHFJPY">CHF/JPY</option>
-                    <option value="NZDJPY">NZD/JPY</option>
-                </optgroup>
-            </select>
+    <div class="dashboard">
+        <div class="header">
+            <h1><i class="fas fa-chart-line"></i> Somali Signals Pro Hub v2</h1>
+            <div class="quote">"Guushu kuma timaaddo dhalanteed, waxay ku dhalataa go'aan adag iyo edbin ganacsi."</div>
         </div>
 
-        <div class="selector-box">
-            <label><i class="fas fa-clock"></i> DOORO TIMEFRAME-KA (EXPIRY TIME)</label>
-            <select class="time-select" id="timeframeSelector" onchange="onWidgetUpdate()">
-                <option value="1m">1 Daqiiqo (1M - Scalping)</option>
-                <option value="5m">5 Daqiiqo (5M - Fast Trade)</option>
-                <option value="15m">15 Daqiiqo (15M - Standard)</option>
-                <option value="1h">1 Saac (1H - Intraday)</option>
-                <option value="4h">4 Saacadood (4H - Swing)</option>
-                <option value="1d">1 Maalinti (1D - Long Term)</option>
-            </select>
+        <div class="control-panel">
+            <div class="input-group">
+                <label><i class="fas fa-euro-sign"></i> Dooro Asset-ka</label>
+                <select id="assetSelect" onchange="updateAllWidgets()">
+                    <option value="EURUSD">EUR/USD</option>
+                    <option value="GBPUSD">GBP/USD</option>
+                    <option value="USDJPY">USD/JPY</option>
+                    <option value="AUDUSD">AUD/USD</option>
+                    <option value="USDCAD">USD/CAD</option>
+                    <option value="EURJPY">EUR/JPY</option>
+                    <option value="GBPJPY">GBP/JPY</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label><i class="fas fa-clock"></i> Timeframe-ka</label>
+                <select id="timeframeSelect" onchange="updateAllWidgets()">
+                    <option value="1m">1 Daqiiqo (1M)</option>
+                    <option value="5m">5 Daqiiqo (5M)</option>
+                    <option value="15m">15 Daqiiqo (15M)</option>
+                    <option value="1h">1 Saac (1H)</option>
+                    <option value="1d">1 Maalin (1D)</option>
+                </select>
+            </div>
         </div>
 
-        <div class="section-title"><i class="fas fa-bolt"></i> Go'aanka Signal-ka Live-ka ah (BUY / SELL)</div>
-        <div class="widget-wrapper" id="gaugeContainer"></div>
+        <div class="widget-section">
+            <div class="widget-title"><i class="fas fa-broadcast-tower"></i> Qiimaha Tooska ah ee Suuqa (Live Chart)</div>
+            <div id="chart_container" style="height: 200px; width: 100%;"></div>
+        </div>
 
-        <a href="https://wa.me/252907492663" target="_blank" class="btn btn-whatsapp">
+        <div class="widget-section">
+            <div class="widget-title"><i class="fas fa-tachometer-alt"></i> Go'aanka Signal-ka (20+ Indicators Live Metric)</div>
+            <div id="gauge_container" style="height: 220px; width: 100%;"></div>
+        </div>
+
+        <div class="widget-section">
+            <div class="widget-title"><i class="fas fa-calculator"></i> Xisaabiyaha Maareynta Galka (Martingale Calculator)</div>
+            <div class="martingale-grid">
+                <div class="m-box">
+                    <span>Galka Koof (Start)</span>
+                    <strong style="color: #10b981;">$10</strong>
+                </div>
+                <div class="m-box">
+                    <span>Iskudhufan (Multiplier)</span>
+                    <strong style="color: #f59e0b;">x2.1</strong>
+                </div>
+                <div class="m-box">
+                    <span>Xariijimaha (Steps)</span>
+                    <strong style="color: #ef4444;">6 Steps</strong>
+                </div>
+            </div>
+            <table class="m-table">
+                <thead>
+                    <tr>
+                        <th>Tallaabada</th>
+                        <th>Lacagta Galka ($)</th>
+                        <th>Wadar Luntay ($)</th>
+                        <th>Faa'iido saafo ah ($)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Qaadista #1</td><td><strong>$10</strong></td><td>$10</td><td style="color:#10b981;">+$8.50</td></tr>
+                    <tr><td>Qaadista #2</td><td><strong>$21</strong></td><td>$31</td><td style="color:#10b981;">+$9.32</td></tr>
+                    <tr><td>Qaadista #3</td><td><strong>$44.1</strong></td><td>$75.1</td><td style="color:#10b981;">+$9.57</td></tr>
+                    <tr><td>Qaadista #4</td><td><strong>$92.61</strong></td><td>$167.71</td><td style="color:#10b981;">+$10.12</td></tr>
+                    <tr><td>Qaadista #5</td><td><strong>$194.48</strong></td><td>$362.19</td><td style="color:#10b981;">+$11.21</td></tr>
+                    <tr><td>Qaadista #6</td><td><strong>$408.41</strong></td><td>$770.60</td><td style="color:#10b981;">+$13.55</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <a href="https://wa.me/252907492663" target="_blank" class="btn-link btn-whatsapp">
             <i class="fab fa-whatsapp"></i> Caawinaad Toos Ah (WhatsApp)
         </a>
-        <a href="https://www.tiktok.com/@khadar_kuwarizma" target="_blank" class="btn btn-tiktok">
+        <a href="https://www.tiktok.com/@khadar_kuwarizma" target="_blank" class="btn-link btn-tiktok">
             <i class="fab fa-tiktok"></i> Nagala Soco TikTok
         </a>
 
         <div class="footer">
-            &copy; 2026 SomaliPocketOption. All rights reserved.
+            &copy; 2026 ALNUUR STORE & BIID DESIGN. All rights reserved.
         </div>
     </div>
 
-    <script>
-        // Ticker Tape widget (Multi-source data fed from diverse global feeds)
-        function loadTickerTapeWidget() {
-            const container = document.getElementById("tickerContainer");
-            container.innerHTML = "";
-            const tickerScript = document.createElement("script");
-            tickerScript.type = "text/javascript";
-            tickerScript.src = "https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js";
-            tickerScript.async = true;
-            tickerScript.innerHTML = JSON.stringify({
-                "symbols": [
-                    {"proName": "FX_IDC:EURUSD", "title": "EUR/USD"},
-                    {"proName": "FX_IDC:GBPUSD", "title": "GBP/USD"},
-                    {"proName": "FX_IDC:USDJPY", "title": "USD/JPY"},
-                    {"proName": "FX_IDC:AUDUSD", "title": "AUD/USD"},
-                    {"proName": "FX_IDC:USDCAD", "title": "USD/CAD"}
-                ],
-                "showSymbolLogo": true,
-                "colorTheme": "dark",
-                "isTransparent": true,
-                "displayMode": "adaptive",
-                "locale": "en"
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script type="text/javascript">
+        function loadLiveChart(symbol) {
+            document.getElementById("chart_container").innerHTML = "";
+            new TradingView.widget({
+                "width": "100%",
+                "height": 200,
+                "symbol": "FX:" + symbol,
+                "interval": "1",
+                "timezone": "Etc/UTC",
+                "theme": "dark",
+                "style": "1",
+                "locale": "en",
+                "toolbar_bg": "#f1f3f6",
+                "enable_publishing": false,
+                "hide_side_toolbar": true,
+                "allow_symbol_change": false,
+                "container_id": "chart_container"
             });
-            container.appendChild(tickerScript);
         }
 
-        // Live Technical Engine (Brings instantaneous BUY/SELL meters directly)
-        function loadGaugeWidget(symbol, timeframe) {
-            const container = document.getElementById("gaugeContainer");
-            container.innerHTML = ""; 
-            const widgetScript = document.createElement("script");
-            widgetScript.type = "text/javascript";
-            widgetScript.src = "https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js";
-            widgetScript.async = true;
-            widgetScript.innerHTML = JSON.stringify({
+        function loadTechnicalGauge(symbol, timeframe) {
+            const container = document.getElementById("gauge_container");
+            container.innerHTML = "";
+            const script = document.createElement("script");
+            script.type = "text/javascript";
+            script.src = "https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js";
+            script.async = true;
+            script.innerHTML = JSON.stringify({
                 "interval": timeframe,
                 "width": "100%",
                 "isTransparent": true,
@@ -258,18 +290,20 @@
                 "locale": "en",
                 "colorTheme": "dark"
             });
-            container.appendChild(widgetScript);
+            container.appendChild(script);
         }
 
-        function onWidgetUpdate() {
-            const selectedAsset = document.getElementById("assetSelector").value;
-            const selectedTimeframe = document.getElementById("timeframeSelector").value;
-            loadGaugeWidget(selectedAsset, selectedTimeframe);
+        function updateAllWidgets() {
+            const asset = document.getElementById("assetSelect").value;
+            const timeframe = document.getElementById("timeframeSelect").value;
+            loadLiveChart(asset);
+            loadTechnicalGauge(asset, timeframe);
         }
 
+        // Initial setup on window load
         window.onload = function() {
-            loadTickerTapeWidget();
-            loadGaugeWidget("EURUSD", "1m"); // Default loading setup
+            loadLiveChart("EURUSD");
+            loadTechnicalGauge("EURUSD", "1m");
         };
     </script>
 </body>
