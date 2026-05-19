@@ -1,863 +1,279 @@
 <!DOCTYPE html>
 <html lang="so">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Signals · Somali.PocketOption</title>
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#080d14;font-family:'Courier New',monospace}
-::-webkit-scrollbar{width:3px}
-::-webkit-scrollbar-thumb{background:#1e3a2a;border-radius:2px}
-@keyframes sIn{from{transform:translateX(60px);opacity:0}to{transform:translateX(0);opacity:1}}
-@keyframes fUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
-@keyframes glow{0%,100%{box-shadow:0 0 8px rgba(0,200,100,0.25)}50%{box-shadow:0 0 22px rgba(0,200,100,0.6)}}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
-button,select,input{font-family:'Courier New',monospace;cursor:pointer}
-</style>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Signals · Somali.PocketOption</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{background:#080d14;font-family:'Courier New',monospace;color:#e8f0fe}
+        ::-webkit-scrollbar{width:3px}
+        ::-webkit-scrollbar-thumb{background:#1e3a2a;border-radius:2px}
+        @keyframes sIn {from{transform:translateX(60px);opacity:0}to{transform:translateX(0);opacity:1}}
+        @keyframes fUp {from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes pulse {0%,100%{opacity:1}50%{opacity:0.3}}
+        @keyframes glow {0%,100%{box-shadow:0 0 8px rgba(0,200,100,0.25)}50%{box-shadow:0 0 22px rgba(0,200,100,0.6)}}
+        @keyframes blink {0%,100%{opacity:1}50%{opacity:0.2}}
+        button,select,input{font-family:'Courier New',monospace;cursor:pointer;outline:none}
+    </style>
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel">
-const {useState,useEffect,useRef,useCallback}=React;
+    <div id="root"></div>
 
-// ── OTC ASSETS ──
-const OTC_ASSETS=[
-  {symbol:"EUR/USD",id:"EURUSD_otc",base:1.085,type:"otc"},
-  {symbol:"GBP/USD",id:"GBPUSD_otc",base:1.265,type:"otc"},
-  {symbol:"USD/JPY",id:"USDJPY_otc",base:155.4,type:"otc"},
-  {symbol:"AUD/USD",id:"AUDUSD_otc",base:0.645,type:"otc"},
-  {symbol:"EUR/GBP",id:"EURGBP_otc",base:0.857,type:"otc"},
-  {symbol:"USD/CAD",id:"USDCAD_otc",base:1.365,type:"otc"},
-  {symbol:"USD/CHF",id:"USDCHF_otc",base:0.902,type:"otc"},
-  {symbol:"NZD/USD",id:"NZDUSD_otc",base:0.595,type:"otc"},
-  {symbol:"EUR/JPY",id:"EURJPY_otc",base:168.5,type:"otc"},
-  {symbol:"GBP/JPY",id:"GBPJPY_otc",base:196.2,type:"otc"},
-];
+    <script type="text/babel">
+        const {useState, useEffect, useRef} = React;
 
-// ── NON-OTC (FOREX) ASSETS — PocketOption-ka ku jira kaliya ──
-// Kuwan waa pairs-ka dhabta ah ee PocketOption Non-OTC section-ka
-const FOREX_ASSETS=[
-  {symbol:"EUR/USD",id:"EURUSD",base:1.085,type:"forex"},
-  {symbol:"GBP/USD",id:"GBPUSD",base:1.265,type:"forex"},
-  {symbol:"USD/JPY",id:"USDJPY",base:155.4,type:"forex"},
-  {symbol:"AUD/USD",id:"AUDUSD",base:0.645,type:"forex"},
-  {symbol:"USD/CAD",id:"USDCAD",base:1.365,type:"forex"},
-  {symbol:"USD/CHF",id:"USDCHF",base:0.902,type:"forex"},
-  {symbol:"EUR/JPY",id:"EURJPY",base:168.5,type:"forex"},
-  {symbol:"GBP/JPY",id:"GBPJPY",base:196.2,type:"forex"},
-  {symbol:"EUR/GBP",id:"EURGBP",base:0.857,type:"forex"},
-  {symbol:"AUD/JPY",id:"AUDJPY",base:100.2,type:"forex"},
-];
+        // ── OTC ASSETS ──
+        const OTC_ASSETS=[
+            {symbol:"EUR/USD",id:"EURUSD_otc",base:1.085,type:"otc"},
+            {symbol:"GBP/USD",id:"GBPUSD_otc",base:1.265,type:"otc"},
+            {symbol:"USD/JPY",id:"USDJPY_otc",base:155.4,type:"otc"},
+            {symbol:"AUD/USD",id:"AUDUSD_otc",base:0.645,type:"otc"},
+            {symbol:"EUR/GBP",id:"EURGBP_otc",base:0.857,type:"otc"},
+            {symbol:"USD/CAD",id:"USDCAD_otc",base:1.365,type:"otc"},
+            {symbol:"USD/CHF",id:"USDCHF_otc",base:0.902,type:"otc"},
+            {symbol:"NZD/USD",id:"NZDUSD_otc",base:0.595,type:"otc"},
+            {symbol:"EUR/JPY",id:"EURJPY_otc",base:168.5,type:"otc"},
+            {symbol:"GBP/JPY",id:"GBPJPY_otc",base:196.2,type:"otc"},
+        ];
 
-const TFS=["30s","1m","2m","5m","15m"];
-const TF_SEC={"30s":30,"1m":60,"2m":120,"5m":300,"15m":900};
+        // ── NON-OTC (FOREX) ASSETS ──
+        const FOREX_ASSETS=[
+            {symbol:"EUR/USD",id:"EURUSD",base:1.085,type:"forex"},
+            {symbol:"GBP/USD",id:"GBPUSD",base:1.265,type:"forex"},
+            {symbol:"USD/JPY",id:"USDJPY",base:155.4,type:"forex"},
+            {symbol:"AUD/USD",id:"AUDUSD",base:0.645,type:"forex"},
+            {symbol:"USD/CAD",id:"USDCAD",base:1.365,type:"forex"},
+            {symbol:"USD/CHF",id:"USDCHF",base:0.902,type:"forex"},
+            {symbol:"EUR/JPY",id:"EURJPY",base:168.5,type:"forex"},
+            {symbol:"GBP/JPY",id:"GBPJPY",base:196.2,type:"forex"},
+            {symbol:"EUR/GBP",id:"EURGBP",base:0.857,type:"forex"},
+            {symbol:"AUD/JPY",id:"AUDJPY",base:100.2,type:"forex"},
+        ];
 
-// ── FOREX MARKET HOURS (UTC) ──
-// Forex furan: Isniinta 00:00 UTC ilaa Jimcaha 21:00 UTC
-// Sessions: Sydney(21-06), Tokyo(00-09), London(07-16), NewYork(12-21)
-function getForexStatus(){
-  const now=new Date();
-  const utcDay=now.getUTCDay(); // 0=Sun,1=Mon,...,6=Sat
-  const utcH=now.getUTCHours();
-  const utcM=now.getUTCMinutes();
-  const utcTotal=utcH*60+utcM;
+        const TFS=["30s","1m","2m","5m","15m"];
+        const TF_SEC={"30s":30,"1m":60,"2m":120,"5m":300,"15m":900};
+        const FINNHUB_KEY="d7rpt1hr01qm28g78f90";
 
-  // Weekend: Saturday after 21:00 UTC OR Sunday before 22:00 UTC
-  const isWeekend=(utcDay===6&&utcTotal>=21*60)||(utcDay===0&&utcTotal<22*60)||utcDay===6&&utcTotal>=21*60;
-  
-  if(isWeekend){
-    // Calculate when market reopens
-    let minsToOpen;
-    if(utcDay===6){minsToOpen=((7*24*60)-(utcTotal-21*60))%(7*24*60); minsToOpen=(24*60-utcTotal+21*60)+(24*60);}
-    else{minsToOpen=(22*60)-utcTotal;}
-    const h=Math.floor(Math.abs(minsToOpen)/60),m=Math.abs(minsToOpen)%60;
-    return{open:false,session:"XIDHAN",reason:`Weekend · ${h}h ${m}m gudahood`,color:"#ff4d6a"};
-  }
-
-  // Active sessions
-  const sessions=[];
-  if(utcTotal>=0&&utcTotal<9*60)sessions.push("Tokyo");
-  if(utcTotal>=21*60||utcTotal<6*60)sessions.push("Sydney");
-  if(utcTotal>=7*60&&utcTotal<16*60)sessions.push("London");
-  if(utcTotal>=12*60&&utcTotal<21*60)sessions.push("New York");
-
-  // Best trading time: London+NY overlap (12:00-16:00 UTC)
-  const isOverlap=utcTotal>=12*60&&utcTotal<16*60;
-  const isLowLiq=sessions.length===0||(sessions.length===1&&sessions[0]==="Sydney");
-
-  if(isLowLiq){
-    return{open:true,session:"LOW LIQUIDITY",reason:"Sydney only · Signals weak",color:"#ffd60a",quality:"low"};
-  }
-
-  return{
-    open:true,
-    session:sessions.join(" + "),
-    reason:isOverlap?"Overlap · Best signals":"Active session",
-    color:isOverlap?"#00ff88":"#00b4d8",
-    quality:isOverlap?"best":"good"
-  };
-}
-
-// PocketOption URLs
-function poURL(asset){
-  return `https://pocketoption.com/en/cabinet/demo-quick-high-low/?asset=${asset.id}`;
-}
-
-const FINNHUB_KEY="d7rpt1hr01qm28g78f90";
-
-// Finnhub symbol map
-const FH_SYMBOL={
-  "EUR/USD":"OANDA:EUR_USD",
-  "GBP/USD":"OANDA:GBP_USD",
-  "USD/JPY":"OANDA:USD_JPY",
-  "AUD/USD":"OANDA:AUD_USD",
-  "USD/CAD":"OANDA:USD_CAD",
-  "USD/CHF":"OANDA:USD_CHF",
-  "EUR/JPY":"OANDA:EUR_JPY",
-  "GBP/JPY":"OANDA:GBP_JPY",
-  "EUR/GBP":"OANDA:EUR_GBP",
-  "AUD/JPY":"OANDA:AUD_JPY",
-};
-
-// Fetch real current price from Finnhub
-async function fetchRealPrice(symbol){
-  try{
-    const fhSym=FH_SYMBOL[symbol];
-    if(!fhSym)return null;
-    const r=await fetch(`https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(fhSym)}&token=${FINNHUB_KEY}`);
-    const d=await r.json();
-    if(d&&d.c&&d.c>0)return parseFloat(d.c);
-    return null;
-  }catch(e){return null;}
-}
-
-// Fetch real candle history from Finnhub for signal analysis
-async function fetchCandles(symbol,resolution){
-  try{
-    const fhSym=FH_SYMBOL[symbol];
-    if(!fhSym)return null;
-    const to=Math.floor(Date.now()/1000);
-    // Resolution mapping: Finnhub supports 1,5,15,30,60,D
-    const resMap={"30s":"1","1m":"1","2m":"5","5m":"5","15m":"15"};
-    const res=resMap[resolution]||"1";
-    const from=to-(40*parseInt(res)*60); // enough candles
-    const url=`https://finnhub.io/api/v1/forex/candle?symbol=${encodeURIComponent(fhSym)}&resolution=${res}&from=${from}&to=${to}&token=${FINNHUB_KEY}`;
-    const r=await fetch(url);
-    const d=await r.json();
-    if(d&&d.s==="ok"&&d.c&&d.c.length>=10){
-      return d.c.slice(-40); // last 40 close prices
-    }
-    return null;
-  }catch(e){return null;}
-}
-
-function genPrice(p){return parseFloat((p+(Math.random()-0.495)*p*0.002).toFixed(5));}
-
-function analyze(hist){
-  const p=hist&&hist.length>=10?hist:Array.from({length:14},(_,i)=>1+i*0.001);
-  const n=p.length;let g=0,l=0;
-  for(let i=1;i<n;i++){const d=p[i]-p[i-1];d>0?g+=d:l+=Math.abs(d);}
-  const rsi=100-100/(1+(g/n)/((l/n)||0.0001));
-  const ema=(arr,k)=>arr.slice(-k).reduce((a,b,i)=>i===0?b:a*(1-2/(k+1))+b*(2/(k+1)),arr[0]);
-  const e5=ema(p,5),e14=ema(p,14);
-  const mean=p.reduce((a,b)=>a+b,0)/n;
-  const std=Math.sqrt(p.reduce((a,b)=>a+Math.pow(b-mean,2),0)/n);
-  const last=p[n-1];
-  let up=0,dn=0;
-  if(rsi<32)up+=3;else if(rsi<45)up+=1;
-  if(rsi>68)dn+=3;else if(rsi>55)dn+=1;
-  if(e5>e14)up+=2;else dn+=2;
-  if(last<=mean-2*std)up+=3;else if(last>=mean+2*std)dn+=3;
-  // NO random for real data — pure indicator based
-  const dir=up>=dn?"UP":"DOWN";
-  const score=Math.max(up,dn);
-  const conf=Math.min(94,Math.floor(72+score*2.5));
-  let strat="Multi-Indicator";
-  if(rsi<32||rsi>68)strat="RSI Extreme Zone";
-  else if(last<=mean-2*std||last>=mean+2*std)strat="Bollinger Reversal";
-  else if(Math.abs(e5-e14)>std*0.3)strat="EMA Trend Cross";
-  else if(up>dn+1)strat="Bullish Confluence";
-  else if(dn>up+1)strat="Bearish Confluence";
-  else strat="S/R Bounce";
-  return{dir,conf,strat};
-}
-
-function analyzeOTC(hist){
-  // OTC uses slight randomness since prices are fake anyway
-  const base=analyze(hist);
-  base.conf=Math.min(94,base.conf+Math.floor(Math.random()*6));
-  return base;
-}
-
-function playBeep(up){
-  try{
-    const ctx=new(window.AudioContext||window.webkitAudioContext)();
-    const osc=ctx.createOscillator(),gain=ctx.createGain();
-    osc.connect(gain);gain.connect(ctx.destination);
-    osc.frequency.value=up?880:440;osc.type="sine";
-    gain.gain.setValueAtTime(0.3,ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.5);
-    osc.start();osc.stop(ctx.currentTime+0.5);
-  }catch(e){}
-}
-
-function MiniChart({data,color}){
-  const W=68,H=30;
-  if(!data||data.length<2)return React.createElement("svg",{width:W,height:H});
-  const min=Math.min(...data),max=Math.max(...data),range=max-min||0.0001;
-  const bw=Math.max(2,W/data.length-0.8);
-  const bars=data.map((v,i)=>{
-    const pv=i>0?data[i-1]:v,isUp=v>=pv;
-    const x=(i/(data.length-1))*(W-bw);
-    const yh=H-((Math.max(v,pv)-min)/range)*(H-4)-2;
-    const yl=H-((Math.min(v,pv)-min)/range)*(H-4)-2;
-    return React.createElement("rect",{key:i,x,y:yh,width:bw,height:Math.max(2,yl-yh),fill:isUp?"#00ff88":"#ff4d6a",opacity:0.8,rx:0.5});
-  });
-  const pts=data.map((v,i)=>`${(i/(data.length-1))*W},${H-((v-min)/range)*(H-4)-2}`).join(" ");
-  return React.createElement("svg",{width:W,height:H},...bars,
-    React.createElement("polyline",{points:pts,fill:"none",stroke:color,strokeWidth:"1",opacity:"0.5"})
-  );
-}
-
-// Sync ring — shows real clock seconds aligned to timeframe
-function SyncRing({tf,startTime}){
-  const [now,setNow]=useState(Date.now());
-  useEffect(()=>{
-    const t=setInterval(()=>setNow(Date.now()),200);
-    return()=>clearInterval(t);
-  },[]);
-  const tfSec=TF_SEC[tf]||60;
-  // Align to real clock: e.g. 1m candles close at :00 each minute
-  const elapsed=Math.floor((now-startTime)/1000);
-  const remaining=tfSec-((elapsed)%tfSec);
-  const pct=remaining/tfSec;
-  const r=18,c=2*Math.PI*r;
-  const col=pct>0.5?"#00ff88":pct>0.25?"#ffd60a":"#ff4d6a";
-  const urgent=remaining<=5;
-  return(
-    <svg width={44} height={44}>
-      <circle cx={22} cy={22} r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth={3}/>
-      <circle cx={22} cy={22} r={r} fill="none" stroke={col} strokeWidth={3}
-        strokeDasharray={c} strokeDashoffset={c*(1-pct)} strokeLinecap="round"
-        transform="rotate(-90 22 22)" style={{transition:"stroke-dashoffset 0.2s linear"}}/>
-      <text x={22} y={26} textAnchor="middle" fill={col} fontSize={11} fontWeight="bold"
-        fontFamily="monospace" style={{animation:urgent?"blink 0.5s infinite":"none"}}>{remaining}</text>
-    </svg>
-  );
-}
-
-function StrBadge({conf}){
-  if(conf>=88)return <span style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:11,fontWeight:800,padding:"4px 10px",borderRadius:6,background:"rgba(255,214,10,0.18)",color:"#ffd60a",border:"1px solid rgba(255,214,10,0.4)"}}>XOOGGAN {conf}%</span>;
-  if(conf>=80)return <span style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:11,fontWeight:800,padding:"4px 10px",borderRadius:6,background:"rgba(0,255,136,0.13)",color:"#00ff88",border:"1px solid rgba(0,255,136,0.3)"}}>FIICAN {conf}%</span>;
-  return <span style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:11,fontWeight:800,padding:"4px 10px",borderRadius:6,background:"rgba(255,255,255,0.06)",color:"#aaa",border:"1px solid rgba(255,255,255,0.12)"}}>CAADI {conf}%</span>;
-}
-
-function App(){
-  const [dark,setDark]=useState(true);
-  const [tab,setTab]=useState("signals");
-  const [panel,setPanel]=useState("markets");
-  const [mode,setMode]=useState("otc"); // "otc" | "forex"
-  const ASSETS=mode==="otc"?OTC_ASSETS:FOREX_ASSETS;
-
-  const [prices,setPrices]=useState(()=>Object.fromEntries([...OTC_ASSETS,...FOREX_ASSETS].map(a=>[a.symbol+a.type,a.base])));
-  const [hist,setHist]=useState(()=>Object.fromEntries([...OTC_ASSETS,...FOREX_ASSETS].map(a=>[a.symbol+a.type,[]])));
-  const [signals,setSignals]=useState([]);
-  const [allHist,setAllHist]=useState([]);
-  const [selAsset,setSelAsset]=useState(OTC_ASSETS[0]);
-  const [selTF,setSelTF]=useState("1m");
-  const [scanning,setScanning]=useState(false);
-  const [onlyMe,setOnlyMe]=useState(false);
-  const [soundOn,setSoundOn]=useState(true);
-  const [autoOpen,setAutoOpen]=useState(true);
-  const [stats,setStats]=useState({total:0,wins:0,losses:0});
-  const [notif,setNotif]=useState(null);
-  const [mgBase,setMgBase]=useState(10);
-  const [mgMul,setMgMul]=useState(2.1);
-  const [mgLoss,setMgLoss]=useState(0);
-  const [forexStatus,setForexStatus]=useState(getForexStatus());
-  const [apiStatus,setApiStatus]=useState("idle"); // idle | loading | ok | error
-  const [apiStatus,setApiStatus]=useState("connecting"); // "connecting"|"live"|"error"
-  const [realPrices,setRealPrices]=useState({});
-
-  useEffect(()=>{
-    setForexStatus(getForexStatus());
-    const t=setInterval(()=>setForexStatus(getForexStatus()),30000);
-    return()=>clearInterval(t);
-  },[]);
-
-  // Fetch real forex prices from Finnhub every 10s
-  useEffect(()=>{
-    async function fetchAll(){
-      try{
-        const results={};
-        for(const a of FOREX_ASSETS){
-          const p=await fetchRealPrice(a.symbol);
-          if(p)results[a.symbol+"forex"]=p;
-          await new Promise(r=>setTimeout(r,120)); // rate limit spacing
-        }
-        if(Object.keys(results).length>0){
-          setPrices(prev=>({...prev,...results}));
-          setHist(h=>{
-            const n={...h};
-            Object.entries(results).forEach(([key,val])=>{
-              const arr=[...(h[key]||[]),val];
-              n[key]=arr.length>40?arr.slice(-40):arr;
-            });
-            return n;
-          });
-          setRealPrices(results);
-          setApiStatus("live");
-        }
-      }catch(e){setApiStatus("error");}
-    }
-    fetchAll();
-    const t=setInterval(fetchAll,10000);
-    return()=>clearInterval(t);
-  },[]);
-
-  const scanRef=useRef(null),priceRef=useRef(null);
-  const pricesRef=useRef(prices),histRef=useRef(hist);
-  useEffect(()=>{pricesRef.current=prices;},[prices]);
-  useEffect(()=>{histRef.current=hist;},[hist]);
-
-  // When mode changes, update selAsset
-  useEffect(()=>{
-    const newAssets=mode==="otc"?OTC_ASSETS:FOREX_ASSETS;
-    const found=newAssets.find(a=>a.symbol===selAsset.symbol);
-    setSelAsset(found||newAssets[0]);
-  },[mode]);
-
-  const bg=dark?"#080d14":"#f0f4f8";
-  const card=dark?"rgba(255,255,255,0.035)":"rgba(0,0,0,0.05)";
-  const bdr=dark?"rgba(255,255,255,0.08)":"rgba(0,0,0,0.12)";
-  const txt=dark?"#e8f0fe":"#0d1a2e";
-  const sub=dark?"rgba(255,255,255,0.4)":"rgba(0,0,0,0.4)";
-  const ac="#00ff88";
-
-  // Price ticker — OTC fake, Forex real from Finnhub
-  useEffect(()=>{
-    // OTC: update every 1.2s with simulated prices
-    priceRef.current=setInterval(()=>{
-      setPrices(p=>{
-        const n={...p};
-        OTC_ASSETS.forEach(a=>{n[a.symbol+a.type]=genPrice(p[a.symbol+a.type]||a.base);});
-        return n;
-      });
-      setHist(h=>{
-        const n={...h};
-        OTC_ASSETS.forEach(a=>{
-          const key=a.symbol+a.type;
-          const arr=[...(h[key]||[]),pricesRef.current[key]||a.base];
-          n[key]=arr.length>40?arr.slice(-40):arr;
-        });
-        return n;
-      });
-    },1200);
-
-    // Forex: fetch real prices from Finnhub every 10s
-    async function fetchAllForex(){
-      for(const a of FOREX_ASSETS){
-        const real=await fetchRealPrice(a.symbol);
-        if(real&&real>0){
-          const key=a.symbol+a.type;
-          setPrices(p=>({...p,[key]:real}));
-          setHist(h=>{
-            const arr=[...(h[key]||[]),real];
-            return{...h,[key]:arr.length>40?arr.slice(-40):arr};
-          });
-        }
-        await new Promise(r=>setTimeout(r,300)); // rate limit buffer
-      }
-    }
-    fetchAllForex(); // run immediately
-    const fxTimer=setInterval(fetchAllForex,10000);
-
-    return()=>{clearInterval(priceRef.current);clearInterval(fxTimer);};
-  },[]);
-
-  // Scanner
-  useEffect(()=>{
-    if(scanning){
-      scanRef.current=setInterval(async()=>{
-        const pool=onlyMe?[selAsset]:ASSETS;
-        const asset=pool[Math.floor(Math.random()*pool.length)];
-
-        // Block signal if forex market is closed
-        if(asset.type==="forex"&&!forexStatus.open) return;
-        const isLowQual=asset.type==="forex"&&forexStatus.quality==="low";
-
-        // Get candle data — real for forex, simulated for OTC
-        let candleData=null;
-        let isRealSignal=false;
-        if(asset.type==="forex"){
-          setApiStatus("loading");
-          candleData=await fetchCandles(asset.symbol,selTF);
-          if(candleData&&candleData.length>=10){
-            isRealSignal=true;
-            setApiStatus("ok");
-            // Update hist with real candles
-            setHist(h=>({...h,[asset.symbol+"forex"]:candleData}));
-          } else {
-            setApiStatus("error");
-          }
-        }
-        if(!candleData){
-          const key=asset.symbol+asset.type;
-          candleData=histRef.current[key]||[];
-        }
-
-        const{dir,conf,strat}=asset.type==="forex"&&isRealSignal
-          ?analyze(candleData)
-          :analyzeOTC(candleData);
-
-        const tfSec=TF_SEC[selTF]||60;
-        const nowMs=Date.now();
-        const candleStart=Math.floor(nowMs/(tfSec*1000))*(tfSec*1000);
-        const sig={
-          id:nowMs+Math.random(),
-          asset:asset.symbol,
-          assetId:asset.id,
-          assetType:asset.type,
-          assetObj:asset,
-          dir,conf,strat,tf:selTF,
-          time:new Date().toLocaleTimeString(),
-          startTime:candleStart,
-          lowQual:isLowQual||false,
-          isReal:isRealSignal,
-          result:null,
+        const FH_SYMBOL={
+            "EUR/USD":"OANDA:EUR_USD", "GBP/USD":"OANDA:GBP_USD", "USD/JPY":"OANDA:USD_JPY",
+            "AUD/USD":"OANDA:AUD_USD", "USD/CAD":"OANDA:USD_CAD", "USD/CHF":"OANDA:USD_CHF",
+            "EUR/JPY":"OANDA:EUR_JPY", "GBP/JPY":"OANDA:GBP_JPY", "EUR/GBP":"OANDA:EUR_GBP",
+            "AUD/JPY":"OANDA:AUD_JPY"
         };
-        setSignals(s=>[sig,...s].slice(0,30));
-        setAllHist(s=>[sig,...s].slice(0,200));
-        setStats(s=>({...s,total:s.total+1}));
-        setNotif(sig);
-        setPanel("signals");
-        if(soundOn)playBeep(dir==="UP");
-        if(autoOpen) setTimeout(()=>window.open(poURL(asset),"_blank"),400);
-        setTimeout(()=>setNotif(n=>n&&n.id===sig.id?null:n),5000);
-        const msLeft=(candleStart+tfSec*1000)-nowMs;
-        setTimeout(()=>{
-          // For real signals: result stays pending (user enters manually)
-          // For OTC/simulated: auto-simulate result
-          if(!isRealSignal){
-            const won=Math.random()<0.5+(conf-70)*0.018;
-            const result=won?"WIN":"LOSS";
-            setSignals(s=>s.map(x=>x.id===sig.id?{...x,result}:x));
-            setAllHist(s=>s.map(x=>x.id===sig.id?{...x,result}:x));
-            setStats(s=>({...s,wins:s.wins+(won?1:0),losses:s.losses+(won?0:1)}));
-            playBeep(won);
-          }
-        },Math.max(msLeft,3000));
-      },8000);
-    }else{clearInterval(scanRef.current);}
-    return()=>clearInterval(scanRef.current);
-  },[scanning,selTF,onlyMe,selAsset,soundOn,autoOpen,ASSETS,forexStatus]);
 
-  const wr=(stats.wins+stats.losses)>0?Math.round(stats.wins/(stats.wins+stats.losses)*100):0;
-  const mgSteps=Array.from({length:6},(_,i)=>({n:i+1,amt:parseFloat((mgBase*Math.pow(mgMul,i)).toFixed(2)),risk:parseFloat((mgBase*(Math.pow(mgMul,i+1)-1)/(mgMul-1)).toFixed(2))}));
-  const pending=signals.filter(s=>!s.result).length;
-  const inp={background:dark?"#0d1520":"#e8eef4",border:`1px solid ${bdr}`,color:txt,borderRadius:7,padding:"7px 9px",fontSize:12,width:"100%"};
+        function getForexStatus(){
+            const now=new Date(); const utcDay=now.getUTCDay(); const utcH=now.getUTCHours(); const utcM=now.getUTCMinutes();
+            const utcTotal=utcH*60+utcM;
+            const isWeekend=(utcDay===6&&utcTotal>=21*60)||(utcDay===0&&utcTotal<22*60);
+            if(isWeekend){
+                let minsToOpen = utcDay===6 ? (24*60-utcTotal+21*60)+(24*60) : (22*60)-utcTotal;
+                const h=Math.floor(Math.abs(minsToOpen)/60),m=Math.abs(minsToOpen)%60;
+                return{open:false,session:"XIDHAN",reason:`Weekend · ${h}h ${m}m gudahood`,color:"#ff4d6a"};
+            }
+            const sessions=[];
+            if(utcTotal>=0&&utcTotal<9*60)sessions.push("Tokyo");
+            if(utcTotal>=21*60||utcTotal<6*60)sessions.push("Sydney");
+            if(utcTotal>=7*60&&utcTotal<16*60)sessions.push("London");
+            if(utcTotal>=12*60&&utcTotal<21*60)sessions.push("New York");
+            const isOverlap=utcTotal>=12*60&&utcTotal<16*60;
+            if(sessions.length===0||(sessions.length===1&&sessions[0]==="Sydney")){
+                return{open:true,session:"LOW LIQUIDITY",reason:"Sydney only · Signals weak",color:"#ffd60a",quality:"low"};
+            }
+            return{open:true,session:sessions.join(" + "),reason:isOverlap?"Overlap · Best signals":"Active session",color:isOverlap?"#00ff88":"#00b4d8",quality:isOverlap?"best":"good"};
+        }
 
-  return(
-    <div style={{minHeight:"100vh",background:bg,color:txt,fontFamily:"'Courier New',monospace",overflowX:"hidden"}}>
-      <div style={{position:"fixed",inset:0,zIndex:0,backgroundImage:"linear-gradient(rgba(0,200,100,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,100,0.02) 1px,transparent 1px)",backgroundSize:"40px 40px",pointerEvents:"none"}}/>
+        function poURL(asset){ return `https://pocketoption.com/en/cabinet/demo-quick-high-low/?asset=${asset.id}`; }
+        function genPrice(p){return parseFloat((p+(Math.random()-0.495)*p*0.002).toFixed(5));}
 
-      {/* TOAST NOTIFICATION */}
-      {notif&&(
-        <div style={{position:"fixed",top:14,right:14,zIndex:9999,background:notif.dir==="UP"?"rgba(0,200,80,0.2)":"rgba(255,50,70,0.2)",border:`2px solid ${notif.dir==="UP"?"#00ff88":"#ff4d6a"}`,borderRadius:14,padding:"12px 16px",backdropFilter:"blur(20px)",animation:"sIn 0.3s ease",minWidth:240,boxShadow:`0 0 30px ${notif.dir==="UP"?"rgba(0,255,136,0.3)":"rgba(255,77,106,0.3)"}`}}>
-          <div style={{fontSize:9,opacity:0.6,marginBottom:3,letterSpacing:1}}>SIGNAL CUSUB {notif.assetType==="otc"?"· OTC":"· FOREX"}</div>
-          <div style={{fontSize:18,fontWeight:900,color:notif.dir==="UP"?"#00ff88":"#ff4d6a",marginBottom:3}}>
-            {notif.dir==="UP"?"BUY":"SELL"} — {notif.asset}
-          </div>
-          <div style={{fontSize:10,opacity:0.7}}>{notif.strat} · {notif.tf} · {notif.conf}%</div>
-          {autoOpen&&<div style={{fontSize:9,color:"#00cfff",marginTop:5,opacity:0.8}}>PocketOption si toos ah u furmayaa...</div>}
-        </div>
-      )}
+        async function fetchRealPrice(symbol){
+            try{
+                const fhSym=FH_SYMBOL[symbol]; if(!fhSym)return null;
+                const r=await fetch(`https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(fhSym)}&token=${FINNHUB_KEY}`);
+                const d=await r.json(); if(d&&d.c&&d.c>0)return parseFloat(d.c); return null;
+            }catch(e){return null;}
+        }
 
-      <div style={{position:"relative",zIndex:1,maxWidth:620,margin:"0 auto",padding:"12px 10px"}}>
+        async function fetchCandles(symbol,resolution){
+            try{
+                const fhSym=FH_SYMBOL[symbol]; if(!fhSym)return null;
+                const to=Math.floor(Date.now()/1000);
+                const resMap={"30s":"1","1m":"1","2m":"5","5m":"5","15m":"15"};
+                const res=resMap[resolution]||"1";
+                const from=to-(40*parseInt(res)*60);
+                const r=await fetch(`https://finnhub.io/api/v1/forex/candle?symbol=${encodeURIComponent(fhSym)}&resolution=${res}&from=${from}&to=${to}&token=${FINNHUB_KEY}`);
+                const d=await r.json(); if(d&&d.s==="ok"&&d.c&&d.c.length>=10)return d.c.slice(-40); return null;
+            }catch(e){return null;}
+        }
 
-        {/* HEADER */}
-        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
-          <div style={{display:"flex",alignItems:"center",gap:9}}>
-            <div style={{width:38,height:38,borderRadius:9,background:"linear-gradient(135deg,#00ff88,#00b4d8)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,fontWeight:900,color:"#000"}}>S</div>
-            <div>
-              <div style={{fontSize:12,fontWeight:800}}>Signals · Somali.<span style={{color:ac}}>PocketOption</span></div>
-              <div style={{fontSize:8,opacity:0.4,letterSpacing:2}}>OTC & FOREX SIGNALS · 24/7</div>
-            </div>
-          </div>
-          <div style={{display:"flex",gap:5,alignItems:"center"}}>
-            <button onClick={()=>setSoundOn(v=>!v)} style={{background:card,border:`1px solid ${bdr}`,borderRadius:7,padding:"5px 9px",fontSize:13,color:txt}}>{soundOn?"🔔":"🔕"}</button>
-            <button onClick={()=>setDark(v=>!v)} style={{background:card,border:`1px solid ${bdr}`,borderRadius:7,padding:"5px 9px",fontSize:13,color:txt}}>{dark?"Light":"Dark"}</button>
-            <div style={{display:"flex",alignItems:"center",gap:4,background:scanning?"rgba(0,255,136,0.1)":card,border:`1px solid ${scanning?ac:bdr}`,borderRadius:18,padding:"4px 10px",animation:scanning?"glow 2s infinite":"none"}}>
-              <div style={{width:6,height:6,borderRadius:"50%",background:scanning?ac:"#555",animation:scanning?"pulse 1s infinite":"none"}}/>
-              <span style={{fontSize:10,fontWeight:700,color:scanning?ac:sub}}>{scanning?"LIVE":"OFF"}</span>
-            </div>
-          </div>
-        </div>
+        function analyze(hist){
+            const p=hist&&hist.length>=10?hist:Array.from({length:14},(_,i)=>1+i*0.001); const n=p.length;let g=0,l=0;
+            for(let i=1;i<n;i++){const d=p[i]-p[i-1];d>0?g+=d:l+=Math.abs(d);}
+            const rsi=100-100/(1+(g/n)/((l/n)||0.0001));
+            const ema=(arr,k)=>arr.slice(-k).reduce((a,b,i)=>i===0?b:a*(1-2/(k+1))+b*(2/(k+1)),arr[0]);
+            const e5=ema(p,5),e14=ema(p,14);
+            const mean=p.reduce((a,b)=>a+b,0)/n; const std=Math.sqrt(p.reduce((a,b)=>a+Math.pow(b-mean,2),0)/n);
+            const last=p[n-1]; let up=0,dn=0;
+            if(rsi<32)up+=3;else if(rsi<45)up+=1; if(rsi>68)dn+=3;else if(rsi>55)dn+=1;
+            if(e5>e14)up+=2;else dn+=2; if(last<=mean-2*std)up+=3;else if(last>=mean+2*std)dn+=3;
+            const dir=up>=dn?"UP":"DOWN"; const score=Math.max(up,dn); const conf=Math.min(94,Math.floor(72+score*2.5));
+            let strat="Multi-Indicator";
+            if(rsi<32||rsi>68)strat="RSI Extreme Zone"; else if(last<=mean-2*std||last>=mean+2*std)strat="Bollinger Reversal";
+            else if(Math.abs(e5-e14)>std*0.3)strat="EMA Trend Cross"; else if(up>dn+1)strat="Bullish Confluence";
+            else if(dn>up+1)strat="Bearish Confluence"; else strat="S/R Bounce";
+            return{dir,conf,strat};
+        }
 
-        {/* OTC / FOREX SWITCH */}
-        <div style={{display:"flex",background:card,border:`1px solid ${bdr}`,borderRadius:11,padding:3,gap:3,marginBottom:mode==="forex"?8:12}}>
-          <button onClick={()=>setMode("otc")} style={{flex:1,padding:"9px",borderRadius:8,border:"none",fontSize:12,fontWeight:800,background:mode==="otc"?"rgba(0,180,216,0.2)":"transparent",color:mode==="otc"?"#00cfff":sub,transition:"all 0.2s"}}>
-            OTC Markets
-            <span style={{display:"block",fontSize:8,opacity:0.6,marginTop:1}}>24/7 · Xidhan ma aha</span>
-          </button>
-          <button onClick={()=>setMode("forex")} style={{flex:1,padding:"9px",borderRadius:8,border:"none",fontSize:12,fontWeight:800,background:mode==="forex"?"rgba(0,255,136,0.15)":"transparent",color:mode==="forex"?ac:sub,transition:"all 0.2s"}}>
-            Forex (Non-OTC)
-            <span style={{display:"block",fontSize:8,opacity:0.6,marginTop:1}}>Suuqa furan · Waqti gaar</span>
-          </button>
-        </div>
+        function analyzeOTC(hist){ const base=analyze(hist); base.conf=Math.min(94,base.conf+Math.floor(Math.random()*6)); return base; }
 
-        {/* FOREX MARKET STATUS BANNER */}
-        {mode==="forex"&&(
-          <div style={{marginBottom:12,padding:"10px 13px",background:forexStatus.open?(forexStatus.quality==="low"?"rgba(255,214,10,0.08)":"rgba(0,255,136,0.07)"):"rgba(255,60,80,0.1)",border:`1px solid ${forexStatus.color}44`,borderRadius:10,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-            <div>
-              <div style={{display:"flex",alignItems:"center",gap:7}}>
-                <div style={{width:8,height:8,borderRadius:"50%",background:forexStatus.color,animation:forexStatus.open?"pulse 2s infinite":"none"}}/>
-                <span style={{fontSize:11,fontWeight:800,color:forexStatus.color}}>{forexStatus.session}</span>
-              </div>
-              <div style={{fontSize:9,color:sub,marginTop:3}}>{forexStatus.reason}</div>
-            </div>
-            <div style={{textAlign:"right"}}>
-              {!forexStatus.open?(
-                <div style={{fontSize:10,fontWeight:700,color:"#ff4d6a",background:"rgba(255,60,80,0.15)",border:"1px solid rgba(255,60,80,0.3)",borderRadius:6,padding:"4px 10px"}}>XIDHAN</div>
-              ):forexStatus.quality==="low"?(
-                <div style={{fontSize:10,fontWeight:700,color:"#ffd60a",background:"rgba(255,214,10,0.12)",border:"1px solid rgba(255,214,10,0.3)",borderRadius:6,padding:"4px 10px"}}>DACIIF</div>
-              ):(
-                <div style={{fontSize:10,fontWeight:700,color:"#00ff88",background:"rgba(0,255,136,0.12)",border:"1px solid rgba(0,255,136,0.3)",borderRadius:6,padding:"4px 10px"}}>FURAN</div>
-              )}
-            </div>
-          </div>
-        )}
+        function playBeep(up){
+            try{
+                const ctx=new(window.AudioContext||window.webkitAudioContext)(); const osc=ctx.createOscillator(),gain=ctx.createGain();
+                osc.connect(gain);gain.connect(ctx.destination); osc.frequency.value=up?880:440;osc.type="sine";
+                gain.gain.setValueAtTime(0.3,ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.5);
+                osc.start();osc.stop(ctx.currentTime+0.5);
+            }catch(e){}
+        }
 
-        {/* FOREX CLOSED WARNING — block scan */}
-        {mode==="forex"&&!forexStatus.open&&(
-          <div style={{marginBottom:12,padding:"12px 14px",background:"rgba(255,60,80,0.08)",border:"1px solid rgba(255,60,80,0.25)",borderRadius:10}}>
-            <div style={{fontSize:12,fontWeight:800,color:"#ff4d6a",marginBottom:4}}>Suuqa Forex waa xidhan yahay</div>
-            <div style={{fontSize:10,color:sub,lineHeight:1.7}}>{forexStatus.reason}<br/>OTC u bedel si aad signals u hesho hadda.</div>
-          </div>
-        )}
+        function MiniChart({data,color}){
+            const W=68,H=30; if(!data||data.length<2)return <svg width={W} height={H}/>;
+            const min=Math.min(...data),max=Math.max(...data),range=max-min||0.0001; const bw=Math.max(2,W/data.length-0.8);
+            const bars=data.map((v,i)=>{
+                const pv=i>0?data[i-1]:v,isUp=v>=pv; const x=(i/(data.length-1))*(W-bw);
+                const yh=H-((Math.max(v,pv)-min)/range)*(H-4)-2; const yl=H-((Math.min(v,pv)-min)/range)*(H-4)-2;
+                return <rect key={i} x={x} y={yh} width={bw} height={Math.max(2,yl-yh)} fill={isUp?"#00ff88":"#ff4d6a"} opacity={0.8} rx={0.5}/>;
+            });
+            const pts=data.map((v,i)=>`${(i/(data.length-1))*W},${H-((v-min)/range)*(H-4)-2}`).join(" ");
+            return <svg width={W} height={H}>{bars}<polyline points={pts} fill="none" stroke={color} strokeWidth="1" opacity="0.5"/></svg>;
+        }
 
-        {/* STATS */}
-        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:7,marginBottom:12}}>
-          {[{l:"SIGNALS",v:stats.total,c:"#00b4d8"},{l:"PROFIT",v:stats.wins,c:"#00ff88"},{l:"LOSS",v:stats.losses,c:"#ff4d6a"},{l:"WIN RATE",v:`${wr}%`,c:wr>=70?"#00ff88":wr>=55?"#ffd60a":"#ff4d6a"}].map(s=>(
-            <div key={s.l} style={{background:card,border:`1px solid ${bdr}`,borderRadius:9,padding:"9px 6px",textAlign:"center"}}>
-              <div style={{fontSize:18,fontWeight:800,color:s.c}}>{s.v}</div>
-              <div style={{fontSize:8,color:sub,marginTop:2,letterSpacing:1}}>{s.l}</div>
-            </div>
-          ))}
-        </div>
+        function SyncRing({tf,startTime}){
+            const [now,setNow]=useState(Date.now());
+            useEffect(()=>{ const t=setInterval(()=>setNow(Date.now()),200); return()=>clearInterval(t); },[]);
+            const tfSec=TF_SEC[tf]||60; const elapsed=Math.floor((now-startTime)/1000); const remaining=Math.max(0, tfSec-((elapsed)%tfSec)); const pct=remaining/tfSec;
+            const r=18,c=2*Math.PI*r; const col=pct>0.5?"#00ff88":pct>0.25?"#ffd60a":"#ff4d6a"; const urgent=remaining<=5;
+            return(
+                <svg width={44} height={44}>
+                    <circle cx={22} cy={22} r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth={3}/>
+                    <circle cx={22} cy={22} r={r} fill="none" stroke={col} strokeWidth={3} strokeDasharray={c} strokeDashoffset={c*(1-pct)} strokeLinecap="round" transform="rotate(-90 22 22)" style={{transition:"stroke-dashoffset 0.2s linear"}}/>
+                    <text x={22} y={26} textAnchor="middle" fill={col} fontSize={11} fontWeight="bold" fontFamily="monospace" style={{animation:urgent?"blink 0.5s infinite":"none"}}>{remaining}</text>
+                </svg>
+            );
+        }
 
-        {/* CONTROLS */}
-        <div style={{background:card,border:`1px solid ${bdr}`,borderRadius:12,padding:"12px",marginBottom:12}}>
-          <div style={{display:"flex",flexWrap:"wrap",gap:9,alignItems:"flex-end"}}>
-            <div style={{flex:1,minWidth:130}}>
-              <div style={{fontSize:8,color:sub,marginBottom:4,letterSpacing:1}}>ASSET ({mode==="otc"?"OTC":"FOREX"})</div>
-              <select value={selAsset.symbol} onChange={e=>setSelAsset(ASSETS.find(a=>a.symbol===e.target.value))}
-                style={{...inp}}>
-                {ASSETS.map(a=><option key={a.symbol} value={a.symbol}>{a.symbol}</option>)}
-              </select>
-            </div>
-            <div>
-              <div style={{fontSize:8,color:sub,marginBottom:4,letterSpacing:1}}>WAQTI</div>
-              <div style={{display:"flex",gap:4}}>
-                {TFS.map(tf=>(
-                  <button key={tf} onClick={()=>setSelTF(tf)} style={{background:selTF===tf?"rgba(0,255,136,0.15)":card,border:`1px solid ${selTF===tf?ac:bdr}`,color:selTF===tf?ac:sub,borderRadius:5,padding:"6px 7px",fontSize:10,fontWeight:700}}>{tf}</button>
-                ))}
-              </div>
-            </div>
-          </div>
+        function StrBadge({conf}){
+            if(conf>=88)return <span style={{display:"inline-flex",padding:"4px 10px",borderRadius:6,background:"rgba(255,214,10,0.18)",color:"#ffd60a",border:"1px solid rgba(255,214,10,0.4)",fontSize:11,fontWeight:800}}>XOOGGAN {conf}%</span>;
+            if(conf>=80)return <span style={{display:"inline-flex",padding:"4px 10px",borderRadius:6,background:"rgba(0,255,136,0.13)",color:"#00ff88",border:"1px solid rgba(0,255,136,0.3)",fontSize:11,fontWeight:800}}>FIICAN {conf}%</span>;
+            return <span style={{display:"inline-flex",padding:"4px 10px",borderRadius:6,background:"rgba(255,255,255,0.06)",color:"#aaa",border:"1px solid rgba(255,255,255,0.12)",fontSize:11,fontWeight:800}}>CAADI {conf}%</span>;
+        }
 
-          <div style={{display:"flex",flexWrap:"wrap",gap:8,marginTop:10,alignItems:"center"}}>
-            {/* Auto-open toggle */}
-            <button onClick={()=>setAutoOpen(v=>!v)} style={{background:autoOpen?"rgba(255,214,10,0.15)":card,border:`1px solid ${autoOpen?"#ffd60a":bdr}`,color:autoOpen?"#ffd60a":sub,borderRadius:8,padding:"7px 12px",fontSize:10,fontWeight:700,display:"flex",alignItems:"center",gap:5}}>
-              <span style={{fontSize:13}}>{autoOpen?"🔗":"🔗"}</span>
-              {autoOpen?"Auto-Open: ON":"Auto-Open: OFF"}
-            </button>
-            {/* Only me toggle */}
-            <button onClick={()=>setOnlyMe(v=>!v)} style={{background:onlyMe?"rgba(0,180,216,0.15)":card,border:`1px solid ${onlyMe?"#00b4d8":bdr}`,color:onlyMe?"#00b4d8":sub,borderRadius:8,padding:"7px 12px",fontSize:10,fontWeight:700,whiteSpace:"nowrap"}}>
-              {onlyMe?"KALIYA: "+selAsset.symbol:"DHAMAAN"}
-            </button>
-            {/* Scan button */}
-            <button
-              onClick={()=>{
-                if(mode==="forex"&&!forexStatus.open){return;}
-                setScanning(v=>!v);
-              }}
-              disabled={mode==="forex"&&!forexStatus.open}
-              style={{marginLeft:"auto",background:scanning?"rgba(255,60,80,0.15)":(mode==="forex"&&!forexStatus.open)?"rgba(255,255,255,0.04)":"linear-gradient(135deg,rgba(0,255,136,0.2),rgba(0,180,216,0.2))",border:`1px solid ${scanning?"#ff4d6a":(mode==="forex"&&!forexStatus.open)?bdr:ac}`,color:scanning?"#ff4d6a":(mode==="forex"&&!forexStatus.open)?sub:ac,borderRadius:9,padding:"9px 20px",fontSize:12,fontWeight:800,letterSpacing:1,animation:scanning?"glow 2s infinite":"none",opacity:(mode==="forex"&&!forexStatus.open)?0.4:1}}>
-              {scanning?"JOOJI":(mode==="forex"&&!forexStatus.open)?"XIDHAN":"BILOW SCAN"}
-            </button>
-          </div>
+        function App(){
+            const [dark,setDark]=useState(true); const [tab,setTab]=useState("signals"); const [panel,setPanel]=useState("markets"); const [mode,setMode]=useState("otc");
+            const ASSETS=mode==="otc"?OTC_ASSETS:FOREX_ASSETS;
+            const [prices,setPrices]=useState(()=>Object.fromEntries([...OTC_ASSETS,...FOREX_ASSETS].map(a=>[a.symbol+a.type,a.base])));
+            const [hist,setHist]=useState(()=>Object.fromEntries([...OTC_ASSETS,...FOREX_ASSETS].map(a=>[a.symbol+a.type,[]])));
+            const [signals,setSignals]=useState([]); const [allHist,setAllHist]=useState([]); const [selAsset,setSelAsset]=useState(OTC_ASSETS[0]);
+            const [selTF,setSelTF]=useState("1m"); const [scanning,setScanning]=useState(false); const [onlyMe,setOnlyMe]=useState(false);
+            const [soundOn,setSoundOn]=useState(true); const [autoOpen,setAutoOpen]=useState(true); const [stats,setStats]=useState({total:0,wins:0,losses:0});
+            const [notif,setNotif]=useState(null); const [mgBase,setMgBase]=useState(10); const [mgMul,setMgMul]=useState(2.1); const [mgLoss,setMgLoss]=useState(0);
+            const [forexStatus,setForexStatus]=useState(getForexStatus());
+            const [apiStatus,setApiStatus]=useState("connecting"); // FIXED: Removed duplicate declaration
 
-          {/* Auto-open info */}
-          {autoOpen&&(
-            <div style={{marginTop:8,padding:"7px 10px",background:"rgba(255,214,10,0.06)",border:"1px solid rgba(255,214,10,0.15)",borderRadius:7,fontSize:10,color:"#ffd60a"}}>
-              Signal timaado → PocketOption si toos ah ayuu u furi doonaa. Browser-ku popup u oggolow.
-            </div>
-          )}
-        </div>
+            useEffect(()=>{ setForexStatus(getForexStatus()); const t=setInterval(()=>setForexStatus(getForexStatus()),30000); return()=>clearInterval(t); },[]);
 
-        {/* TABS */}
-        <div style={{display:"flex",gap:5,marginBottom:12,flexWrap:"wrap"}}>
-          {[["signals","Signals"],["history","Taariikhda"],["accuracy","Guusha"],["martingale","Martingale"]].map(([id,lbl])=>(
-            <button key={id} onClick={()=>setTab(id)} style={{background:tab===id?"rgba(0,255,136,0.13)":card,border:`1px solid ${tab===id?ac:bdr}`,color:tab===id?ac:sub,borderRadius:7,padding:"7px 12px",fontSize:10,fontWeight:700}}>
-              {lbl}{id==="signals"&&pending>0&&<span style={{marginLeft:5,background:"#00cfff",color:"#000",borderRadius:9,padding:"1px 6px",fontSize:9,fontWeight:900}}>{pending}</span>}
-            </button>
-          ))}
-        </div>
+            useEffect(()=>{
+                async function fetchAll(){
+                    try{
+                        const results={};
+                        for(const a of FOREX_ASSETS){
+                            const p=await fetchRealPrice(a.symbol); if(p)results[a.symbol+"forex"]=p;
+                            await new Promise(r=>setTimeout(r,120));
+                        }
+                        if(Object.keys(results).length>0){
+                            setPrices(prev=>({...prev,...results}));
+                            setHist(h=>{
+                                const n={...h};
+                                Object.entries(results).forEach(([key,val])=>{ const arr=[...(h[key]||[]),val]; n[key]=arr.length>40?arr.slice(-40):arr; });
+                                return n;
+                            });
+                            setApiStatus("live");
+                        }
+                    }catch(e){setApiStatus("error");}
+                }
+                fetchAll(); const t=setInterval(fetchAll,10000); return()=>clearInterval(t);
+            },[]);
 
-        {/* ── SIGNALS TAB ── */}
-        {tab==="signals"&&(
-          <div>
-            <div style={{display:"flex",background:card,border:`1px solid ${bdr}`,borderRadius:9,padding:3,gap:3,marginBottom:10}}>
-              <button onClick={()=>setPanel("markets")} style={{flex:1,padding:"7px",borderRadius:6,border:"none",fontSize:10,fontWeight:700,background:panel==="markets"?"rgba(0,255,136,0.15)":"transparent",color:panel==="markets"?ac:sub}}>
-                {mode==="otc"?"OTC Markets":"Forex Markets"}
-              </button>
-              <button onClick={()=>setPanel("signals")} style={{flex:1,padding:"7px",borderRadius:6,border:"none",fontSize:10,fontWeight:700,background:panel==="signals"?"rgba(0,180,216,0.15)":"transparent",color:panel==="signals"?"#00cfff":sub,display:"flex",alignItems:"center",justifyContent:"center",gap:5}}>
-                Signals {pending>0&&<span style={{background:"#00cfff",color:"#000",borderRadius:9,padding:"1px 6px",fontSize:9,fontWeight:900}}>{pending}</span>}
-              </button>
-            </div>
+            const pricesRef=useRef(prices); const histRef=useRef(hist);
+            useEffect(()=>{pricesRef.current=prices;},[prices]); useEffect(()=>{histRef.current=hist;},[hist]);
 
-            {/* MARKETS PANEL */}
-            {panel==="markets"&&(
-              <div style={{animation:"fUp 0.25s ease"}}>
-                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
-                  <div style={{fontSize:8,color:sub,letterSpacing:2}}>{mode==="otc"?"OTC":"FOREX"} MARKETS · LIVE</div>
-                  <div style={{fontSize:9,color:mode==="otc"?"#00b4d8":ac,fontWeight:700}}>{mode==="otc"?"24/7 OPEN":"Market Hours"}</div>
-                </div>
-                <div style={{display:"flex",flexDirection:"column",gap:5}}>
-                  {ASSETS.map(asset=>{
-                    const key=asset.symbol+asset.type;
-                    const price=prices[key]||asset.base;
-                    const h=hist[key]||[];
-                    const prev=h.length>=2?h[h.length-2]:price;
-                    const up=price>=prev,sel=selAsset.symbol===asset.symbol&&selAsset.type===asset.type;
-                    return(
-                      <div key={key} onClick={()=>setSelAsset(asset)}
-                        style={{background:sel?(dark?"rgba(0,255,136,0.07)":"rgba(0,150,80,0.07)"):card,border:`1px solid ${sel?"rgba(0,255,136,0.4)":bdr}`,borderRadius:8,padding:"9px 11px",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                        <div style={{minWidth:60}}>
-                          <div style={{fontSize:11,fontWeight:700,color:sel?ac:txt}}>{asset.symbol}</div>
-                          <div style={{fontSize:8,color:mode==="otc"?"#00b4d8":"#00ff88",fontWeight:600}}>{mode==="otc"?"OTC":"FOREX"}</div>
+            useEffect(()=>{ const newAssets=mode==="otc"?OTC_ASSETS:FOREX_ASSETS; const found=newAssets.find(a=>a.symbol===selAsset.symbol); setSelAsset(found||newAssets[0]); },[mode]);
+
+            useEffect(()=>{
+                const timer=setInterval(()=>{
+                    setPrices(p=>{ const n={...p}; OTC_ASSETS.forEach(a=>{n[a.symbol+a.type]=genPrice(p[a.symbol+a.type]||a.base);}); return n; });
+                    setHist(h=>{ const n={...h}; OTC_ASSETS.forEach(a=>{ const key=a.symbol+a.type; const arr=[...(h[key]||[]),pricesRef.current[key]||a.base]; n[key]=arr.length>40?arr.slice(-40):arr; }); return n; });
+                },1200);
+                return()=>clearInterval(timer);
+            },[]);
+
+            useEffect(()=>{
+                let scanTimer;
+                if(scanning){
+                    scanTimer=setInterval(async()=>{
+                        const pool=onlyMe?[selAsset]:ASSETS; const asset=pool[Math.floor(Math.random()*pool.length)];
+                        if(asset.type==="forex"&&!forexStatus.open) return;
+                        const isLowQual=asset.type==="forex"&&forexStatus.quality==="low";
+                        let candleData=null; let isRealSignal=false;
+                        if(asset.type==="forex"){
+                            setApiStatus("loading"); candleData=await fetchCandles(asset.symbol,selTF);
+                            if(candleData&&candleData.length>=10){ isRealSignal=true; setApiStatus("ok"); setHist(h=>({...h,[asset.symbol+"forex"]:candleData})); }
+                            else { setApiStatus("error"); }
+                        }
+                        if(!candleData){ const key=asset.symbol+asset.type; candleData=histRef.current[key]||[]; }
+                        const{dir,conf,strat}=asset.type==="forex"&&isRealSignal ? analyze(candleData) : analyzeOTC(candleData);
+                        const tfSec=TF_SEC[selTF]||60; const nowMs=Date.now(); const candleStart=Math.floor(nowMs/(tfSec*1000))*(tfSec*1000);
+                        const sig={ id:nowMs+Math.random(), asset:asset.symbol, assetId:asset.id, assetType:asset.type, assetObj:asset, dir,conf,strat,tf:selTF, time:new Date().toLocaleTimeString(), startTime:candleStart, lowQual:isLowQual||false, isReal:isRealSignal, result:null };
+                        setSignals(s=>[sig,...s].slice(0,30)); setAllHist(s=>[sig,...s].slice(0,200)); setStats(s=>({...s,total:s.total+1})); setNotif(sig); setPanel("signals");
+                        if(soundOn)playBeep(dir==="UP"); if(autoOpen) setTimeout(()=>window.open(poURL(asset),"_blank"),400);
+                        setTimeout(()=>setNotif(n=>n&&n.id===sig.id?null:n),5000);
+                        const msLeft=(candleStart+tfSec*1000)-nowMs;
+                        setTimeout(()=>{
+                            if(!isRealSignal){
+                                const won=Math.random()<0.5+(conf-70)*0.018; const result=won?"WIN":"LOSS";
+                                setSignals(s=>s.map(x=>x.id===sig.id?{...x,result}:x)); setAllHist(s=>s.map(x=>x.id===sig.id?{...x,result}:x));
+                                setStats(s=>({...s,wins:s.wins+(won?1:0),losses:s.losses+(won?0:1)})); playBeep(won);
+                            }
+                        },Math.max(msLeft,3000));
+                    },8000);
+                }
+                return()=>clearInterval(scanTimer);
+            },[scanning,selTF,onlyMe,selAsset,soundOn,autoOpen,ASSETS,forexStatus]);
+
+            const wr=(stats.wins+stats.losses)>0?Math.round(stats.wins/(stats.wins+stats.losses)*100):0;
+            const mgSteps=Array.from({length:6},(_,i)=>({n:i+1,amt:parseFloat((mgBase*Math.pow(mgMul,i)).toFixed(2)),risk:parseFloat((mgBase*(Math.pow(mgMul,i+1)-1)/(mgMul-1)).toFixed(2))}));
+            const pending=signals.filter(s=>!s.result).length;
+            const bg=dark?"#080d14":"#f0f4f8"; const card=dark?"rgba(255,255,255,0.035)":"rgba(0,0,0,0.05)"; const bdr=dark?"rgba(255,255,255,0.08)":"rgba(0,0,0,0.12)";
+            const txt=dark?"#e8f0fe":"#0d1a2e"; const sub=dark?"rgba(255,255,255,0.4)":"rgba(0,0,0,0.4)"; const ac="#00ff88";
+            const inp={background:dark?"#0d1520":"#e8eef4",border:`1px solid ${bdr}`,color:txt,borderRadius:7,padding:"7px 9px",fontSize:12,width:"100%"};
+
+            return(
+                <div style={{minHeight:"100vh",background:bg,color:txt,fontFamily:"'Courier New',monospace",overflowX:"hidden",position:"relative"}}>
+                    <div style={{position:"fixed",inset:0,zIndex:0,backgroundImage:"linear-gradient(rgba(0,200,100,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,100,0.02) 1px,transparent 1px)",backgroundSize:"40px 40px",pointerEvents:"none"}}/>
+                    
+                    {notif&&(
+                        <div style={{position:"fixed",top:14,right:14,zIndex:9999,background:notif.dir==="UP"?"rgba(0,200,80,0.2)":"rgba(255,50,70,0.2)",border:`2px solid ${notif.dir==="UP"?"#00ff88":"#ff4d6a"}`,borderRadius:14,padding:"12px 16px",backdropFilter:"blur(20px)",animation:"sIn 0.3s ease",minWidth:240,boxShadow:`0 0 30px ${notif.dir==="UP"?"rgba(0,255,136,0.3)":"rgba(255,77,106,0.3)"}`}}>
+                            <div style={{fontSize:9,opacity:0.6,marginBottom:3,letterSpacing:1}}>SIGNAL CUSUB {notif.assetType==="otc"?"· OTC":"· FOREX"}</div>
+                            <div style={{fontSize:18,fontWeight:900,color:notif.dir==="UP"?"#00ff88":"#ff4d6a",marginBottom:3}}>{notif.dir==="UP"?"BUY":"SELL"} — {notif.asset}</div>
+                            <div style={{fontSize:10,opacity:0.7}}>{notif.strat} · {notif.tf} · {notif.conf}%</div>
+                            {autoOpen&&<div style={{fontSize:9,color:"#00cfff",marginTop:5,opacity:0.8}}>PocketOption si toos ah u furmayaa...</div>}
                         </div>
-                        <MiniChart data={h} color={up?"#00ff88":"#ff4d6a"}/>
-                        <div style={{textAlign:"right"}}>
-                          <div style={{fontSize:11,fontWeight:700,color:up?"#00ff88":"#ff4d6a"}}>{price>100?price.toFixed(2):price.toFixed(5)}</div>
-                          <div style={{fontSize:8,color:up?"#00ff88":"#ff4d6a"}}>{up?"UP":"DN"} {Math.abs(((price-prev)/prev)*100).toFixed(3)}%</div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+                    )}
 
-            {/* SIGNALS PANEL */}
-            {panel==="signals"&&(
-              <div style={{animation:"fUp 0.25s ease"}}>
-                <div style={{fontSize:8,color:sub,letterSpacing:2,marginBottom:8,display:"flex",alignItems:"center",gap:7}}>
-                  SIGNALS {scanning&&<span style={{color:ac,animation:"pulse 1s infinite"}}>● LIVE</span>}
-                  {autoOpen&&scanning&&<span style={{color:"#ffd60a",fontSize:8}}>· Auto-Open ON</span>}
-                </div>
-                {signals.length===0?(
-                  <div style={{background:card,border:`1px dashed ${bdr}`,borderRadius:11,padding:"45px 20px",textAlign:"center"}}>
-                    <div style={{fontSize:32,marginBottom:8}}>📡</div>
-                    <div style={{color:sub,fontSize:12}}>Signals ma jiraan weli</div>
-                    <div style={{color:sub,fontSize:9,marginTop:5,opacity:0.5}}>Guji BILOW SCAN</div>
-                  </div>
-                ):(
-                  <div style={{display:"flex",flexDirection:"column",gap:8}}>
-                    {signals.map(sig=>{
-                      const isUp=sig.dir==="UP";
-                      const isOtc=sig.assetType==="otc";
-                      return(
-                        <div key={sig.id} style={{background:isUp?"rgba(0,255,136,0.05)":"rgba(255,60,80,0.05)",border:`1px solid ${isUp?"rgba(0,255,136,0.22)":"rgba(255,60,80,0.22)"}`,borderRadius:11,padding:"12px 13px",animation:"fUp 0.3s ease"}}>
-                          {/* ROW 1: Timer + Asset + BUY/SELL */}
-                          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:7}}>
-                            <div style={{display:"flex",alignItems:"center",gap:8}}>
-                              <SyncRing tf={sig.tf} startTime={sig.startTime}/>
-                              <div>
-                                <div style={{display:"flex",alignItems:"center",gap:5,flexWrap:"wrap"}}>
-                                  <span style={{fontSize:13,fontWeight:800,color:isUp?"#00ff88":"#ff4d6a"}}>{sig.asset}</span>
-                                  <span style={{fontSize:8,fontWeight:700,padding:"2px 5px",borderRadius:4,background:isOtc?"rgba(0,180,216,0.15)":"rgba(0,255,136,0.12)",color:isOtc?"#00b4d8":"#00ff88",border:`1px solid ${isOtc?"rgba(0,180,216,0.3)":"rgba(0,255,136,0.3)"}`}}>{isOtc?"OTC":"FOREX"}</span>
-                                </div>
-                                <div style={{fontSize:8,color:sub,marginTop:1}}>{sig.time} · {sig.tf}</div>
-                              </div>
-                            </div>
-                            <div style={{fontSize:15,fontWeight:900,color:isUp?"#00ff88":"#ff4d6a",background:isUp?"rgba(0,255,136,0.12)":"rgba(255,60,80,0.12)",border:`1px solid ${isUp?"rgba(0,255,136,0.4)":"rgba(255,60,80,0.4)"}`,borderRadius:7,padding:"5px 13px"}}>
-                              {isUp?"BUY":"SELL"}
-                            </div>
-                          </div>
-                          {/* ROW 2: Strategy + low qual warning */}
-                          <div style={{fontSize:9,color:sub,marginBottom:sig.lowQual?5:8}}>{sig.strat}</div>
-                          {sig.lowQual&&(
-                            <div style={{fontSize:9,color:"#ffd60a",background:"rgba(255,214,10,0.08)",border:"1px solid rgba(255,214,10,0.2)",borderRadius:5,padding:"3px 8px",marginBottom:7,display:"inline-block"}}>
-                              Digniiin: Low liquidity · Signal daciif
-                            </div>
-                          )}
-                          {/* ROW 3: Badge + Real tag + Result + Link */}
-                          <div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:6}}>
-                            <StrBadge conf={sig.conf}/>
-                            {sig.isReal&&(
-                              <span style={{fontSize:9,fontWeight:800,padding:"3px 8px",borderRadius:5,background:"rgba(0,255,136,0.15)",color:"#00ff88",border:"1px solid rgba(0,255,136,0.4)"}}>
-                                REAL DATA
-                              </span>
-                            )}
-                            {sig.result?(
-                              <span style={{fontSize:10,fontWeight:700,color:sig.result==="WIN"?"#00ff88":"#ff4d6a",background:sig.result==="WIN"?"rgba(0,255,136,0.1)":"rgba(255,60,80,0.1)",borderRadius:5,padding:"3px 9px"}}>
-                                {sig.result==="WIN"?"PROFIT":"LOSS"}
-                              </span>
-                            ):sig.isReal?(
-                              <div style={{display:"flex",gap:5}}>
-                                <button onClick={()=>{setSignals(s=>s.map(x=>x.id===sig.id?{...x,result:"WIN"}:x));setAllHist(s=>s.map(x=>x.id===sig.id?{...x,result:"WIN"}:x));setStats(s=>({...s,wins:s.wins+1}));}} style={{fontSize:9,fontWeight:800,padding:"3px 9px",borderRadius:5,background:"rgba(0,255,136,0.15)",border:"1px solid rgba(0,255,136,0.4)",color:"#00ff88",cursor:"pointer"}}>PROFIT</button>
-                                <button onClick={()=>{setSignals(s=>s.map(x=>x.id===sig.id?{...x,result:"LOSS"}:x));setAllHist(s=>s.map(x=>x.id===sig.id?{...x,result:"LOSS"}:x));setStats(s=>({...s,losses:s.losses+1}));}} style={{fontSize:9,fontWeight:800,padding:"3px 9px",borderRadius:5,background:"rgba(255,60,80,0.12)",border:"1px solid rgba(255,60,80,0.35)",color:"#ff4d6a",cursor:"pointer"}}>LOSS</button>
-                              </div>
-                            ):null}
-                            <a href={poURL(sig.assetObj)} target="_blank" rel="noopener noreferrer"
-                              style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:10,fontWeight:800,padding:"4px 11px",borderRadius:6,textDecoration:"none",background:"linear-gradient(135deg,rgba(0,180,216,0.2),rgba(0,120,180,0.15))",border:"1px solid rgba(0,180,216,0.5)",color:"#00cfff"}}>
-                              Chart Fur
-                            </a>
-                            {!autoOpen&&(
-                              <button onClick={()=>window.open(poURL(sig.assetObj),"_blank")} style={{display:"inline-flex",alignItems:"center",gap:4,fontSize:10,fontWeight:800,padding:"4px 11px",borderRadius:6,background:"rgba(255,214,10,0.12)",border:"1px solid rgba(255,214,10,0.3)",color:"#ffd60a"}}>
-                                Fur Trade
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ── HISTORY TAB ── */}
-        {tab==="history"&&(
-          <div>
-            <div style={{fontSize:8,color:sub,letterSpacing:2,marginBottom:8}}>TAARIIKHDA · {allHist.length} SIGNALS</div>
-            {allHist.length===0?<div style={{background:card,border:`1px dashed ${bdr}`,borderRadius:11,padding:"50px",textAlign:"center",color:sub}}>Taariikhda waa madhan tahay</div>:(
-              <div style={{display:"flex",flexDirection:"column",gap:5,maxHeight:500,overflowY:"auto"}}>
-                {allHist.map((sig,i)=>(
-                  <div key={sig.id} style={{background:card,border:`1px solid ${bdr}`,borderRadius:8,padding:"8px 11px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                    <div style={{display:"flex",alignItems:"center",gap:8}}>
-                      <div style={{fontSize:9,color:sub,minWidth:22}}>#{allHist.length-i}</div>
-                      <div>
-                        <div style={{fontSize:10,fontWeight:700}}>{sig.asset}
-                          <span style={{marginLeft:4,fontSize:8,color:sig.assetType==="otc"?"#00b4d8":"#00ff88"}}>{sig.assetType==="otc"?"OTC":"FX"}</span>
-                        </div>
-                        <div style={{fontSize:8,color:sub}}>{sig.time} · {sig.tf}</div>
-                      </div>
-                    </div>
-                    <div style={{display:"flex",alignItems:"center",gap:6}}>
-                      <span style={{fontSize:11,fontWeight:800,color:sig.dir==="UP"?"#00ff88":"#ff4d6a"}}>{sig.dir==="UP"?"BUY":"SELL"}</span>
-                      <span style={{fontSize:9,color:sub}}>{sig.conf}%</span>
-                      {sig.result?<span style={{fontSize:9,fontWeight:700,color:sig.result==="WIN"?"#00ff88":"#ff4d6a",background:sig.result==="WIN"?"rgba(0,255,136,0.1)":"rgba(255,60,80,0.1)",borderRadius:4,padding:"2px 6px"}}>{sig.result==="WIN"?"PROFIT":"LOSS"}</span>:<span style={{fontSize:9,color:sub,opacity:0.4}}>wait</span>}
-                      <a href={poURL(sig.assetObj)} target="_blank" rel="noopener noreferrer" style={{fontSize:9,fontWeight:700,padding:"2px 7px",borderRadius:4,textDecoration:"none",background:"rgba(0,180,216,0.12)",border:"1px solid rgba(0,180,216,0.3)",color:"#00cfff"}}>Link</a>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ── ACCURACY TAB ── */}
-        {tab==="accuracy"&&(
-          <div>
-            <div style={{fontSize:8,color:sub,letterSpacing:2,marginBottom:10}}>SAWIRKA GUUSHA</div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:12}}>
-              {[
-                {l:"Guud ahaan",total:stats.wins+stats.losses,wins:stats.wins},
-                {l:"XOOGGAN 88%+",total:allHist.filter(s=>s.conf>=88&&s.result).length,wins:allHist.filter(s=>s.conf>=88&&s.result==="WIN").length},
-                {l:"OTC Signals",total:allHist.filter(s=>s.assetType==="otc"&&s.result).length,wins:allHist.filter(s=>s.assetType==="otc"&&s.result==="WIN").length},
-                {l:"Forex Signals",total:allHist.filter(s=>s.assetType==="forex"&&s.result).length,wins:allHist.filter(s=>s.assetType==="forex"&&s.result==="WIN").length},
-                {l:"BUY",total:allHist.filter(s=>s.dir==="UP"&&s.result).length,wins:allHist.filter(s=>s.dir==="UP"&&s.result==="WIN").length},
-                {l:"SELL",total:allHist.filter(s=>s.dir==="DOWN"&&s.result).length,wins:allHist.filter(s=>s.dir==="DOWN"&&s.result==="WIN").length},
-              ].map(row=>{
-                const pct=row.total>0?Math.round(row.wins/row.total*100):0;
-                const col=pct>=70?"#00ff88":pct>=55?"#ffd60a":"#ff4d6a";
-                return(
-                  <div key={row.l} style={{background:card,border:`1px solid ${bdr}`,borderRadius:10,padding:"11px 12px"}}>
-                    <div style={{fontSize:9,color:sub,marginBottom:5}}>{row.l}</div>
-                    <div style={{fontSize:26,fontWeight:900,color:col}}>{pct}%</div>
-                    <div style={{fontSize:9,color:sub,marginTop:2}}>{row.wins}/{row.total}</div>
-                    <div style={{marginTop:6,height:4,background:"rgba(255,255,255,0.07)",borderRadius:2,overflow:"hidden"}}>
-                      <div style={{width:`${pct}%`,height:"100%",background:col,transition:"width 0.8s"}}/>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* ── MARTINGALE TAB ── */}
-        {tab==="martingale"&&(
-          <div>
-            <div style={{fontSize:8,color:sub,letterSpacing:2,marginBottom:12}}>MARTINGALE CALCULATOR</div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:14}}>
-              {[
-                {l:"Lacagta 1aad ($)",val:mgBase,set:setMgBase,min:1,step:1},
-                {l:"Multiplier x",val:mgMul,set:setMgMul,min:1.1,step:0.1},
-              ].map(f=>(
-                <div key={f.l} style={{background:card,border:`1px solid ${bdr}`,borderRadius:10,padding:"11px"}}>
-                  <div style={{fontSize:9,color:sub,marginBottom:5}}>{f.l}</div>
-                  <input type="number" value={f.val} min={f.min} step={f.step} onChange={e=>f.set(Math.max(f.min,parseFloat(e.target.value)||f.min))} style={{...inp}}/>
-                </div>
-              ))}
-              <div style={{background:card,border:`1px solid ${bdr}`,borderRadius:10,padding:"11px"}}>
-                <div style={{fontSize:9,color:sub,marginBottom:5}}>Losses Hadda</div>
-                <div style={{display:"flex",gap:5,alignItems:"center"}}>
-                  <button onClick={()=>setMgLoss(v=>Math.max(0,v-1))} style={{background:"rgba(255,60,80,0.15)",border:"1px solid rgba(255,60,80,0.3)",color:"#ff4d6a",borderRadius:5,padding:"4px 10px",fontSize:16}}>-</button>
-                  <div style={{flex:1,textAlign:"center",fontSize:20,fontWeight:900,color:mgLoss===0?"#00ff88":mgLoss<=2?"#ffd60a":"#ff4d6a"}}>{mgLoss}</div>
-                  <button onClick={()=>setMgLoss(v=>Math.min(5,v+1))} style={{background:"rgba(0,255,136,0.1)",border:"1px solid rgba(0,255,136,0.3)",color:"#00ff88",borderRadius:5,padding:"4px 10px",fontSize:16}}>+</button>
-                </div>
-              </div>
-            </div>
-            <div style={{display:"flex",flexDirection:"column",gap:6}}>
-              {mgSteps.map((step,i)=>{
-                const isNow=i===mgLoss,done=i<mgLoss;
-                const col=isNow?"#ffd60a":done?"#ff4d6a":sub;
-                return(
-                  <div key={step.n} style={{background:isNow?"rgba(255,214,10,0.07)":done?"rgba(255,60,80,0.05)":card,border:`1px solid ${isNow?"rgba(255,214,10,0.4)":done?"rgba(255,60,80,0.18)":bdr}`,borderRadius:9,padding:"11px 13px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                    <div style={{display:"flex",alignItems:"center",gap:9}}>
-                      <div style={{width:28,height:28,borderRadius:6,background:isNow?"rgba(255,214,10,0.2)":done?"rgba(255,60,80,0.15)":"rgba(255,255,255,0.05)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:900,color:col}}>
-                        {done?"X":isNow?">":step.n}
-                      </div>
-                      <div>
-                        <div style={{fontSize:11,fontWeight:700,color:isNow?"#ffd60a":txt}}>Qaadista #{step.n} {isNow&&<span style={{fontSize:9,opacity:0.7}}>HADDA</span>}</div>
-                        <div style={{fontSize:9,color:sub}}>Khataro: ${step.risk}</div>
-                      </div>
-                    </div>
-                    <div style={{textAlign:"right"}}>
-                      <div style={{fontSize:18,fontWeight:900,color:isNow?"#ffd60a":done?"#ff4d6a":"#00ff88"}}>${step.amt}</div>
-                      <div style={{fontSize:8,color:sub}}>Net ~${parseFloat((step.amt*0.92-(i>0?mgSteps[i-1].risk:0)).toFixed(2))}</div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            <div style={{marginTop:10,padding:"10px 13px",background:"rgba(0,180,216,0.07)",border:"1px solid rgba(0,180,216,0.15)",borderRadius:8,fontSize:10,color:"#00b4d8",lineHeight:1.7}}>
-              Talo: Loss ka dib, lacagta labar u dhig. 5 loss isku xigaan hadduu noqdo, jooji.
-            </div>
-          </div>
-        )}
-
-        {/* DISCLAIMER */}
-        <div style={{marginTop:16,padding:"10px 13px",background:"rgba(255,200,0,0.05)",border:"1px solid rgba(255,200,0,0.15)",borderRadius:9,fontSize:10,textAlign:"center",lineHeight:1.7,color:"#ffd60a"}}>
-          Digniin: Marka hore <strong>Demo</strong> ku tijaabiyo — ka dib <strong>Real Account</strong> ka gal. Ganacsiga waxay leedahay khataro weyn.
-        </div>
-      </div>
-    </div>
-  );
-}
-
-ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
-</script>
-</body>
-</html>
+                    <div style={{position:"relative",zIndex:1,maxWidth:620,margin:"0 auto",padding:"12px 10px"}}>
+                        {/* HEADER */}
+                        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
+                            <div style={{display:"flex",alignItems:"center",gap:9}}>
+                      
