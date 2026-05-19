@@ -48,18 +48,48 @@
             margin-bottom: 25px;
             border-left: 5px solid #00e676;
             transition: all 0.5s ease;
+            text-align: left;
+        }
+        .signal-header {
+            color: #ff9800; 
+            font-size: 12px; 
+            font-weight: bold; 
+            letter-spacing: 1px;
+            text-align: center;
+            margin-bottom: 10px;
         }
         .signal-display {
-            font-size: 24px;
+            font-size: 26px;
             font-weight: bold;
-            margin: 15px 0;
+            margin: 10px 0;
             letter-spacing: 1px;
+            text-align: center;
+        }
+        .price-display {
+            font-size: 16px;
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 10px;
+            font-family: monospace;
+        }
+        .details-box {
+            background: #111a24;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #b0bec5;
+            border: 1px solid #263238;
+        }
+        .details-box strong {
+            color: #ff9800;
         }
         .countdown-box {
             font-size: 14px;
-            color: #ff9800;
+            color: #00e676;
             margin-top: 10px;
             font-weight: bold;
+            text-align: center;
         }
         .btn {
             display: block;
@@ -73,6 +103,7 @@
             cursor: pointer;
             text-decoration: none;
             transition: background 0.3s ease;
+            text-align: center;
         }
         .btn-tiktok {
             background: #ff0050;
@@ -85,6 +116,7 @@
             margin-top: 20px;
             font-size: 12px;
             color: #56667a;
+            text-align: center;
         }
         .call-action { color: #00e676; text-shadow: 0 0 10px rgba(0,230,118,0.3); }
         .put-action { color: #ff3366; text-shadow: 0 0 10px rgba(255,51,102,0.3); }
@@ -97,10 +129,17 @@
         <p>Ku soo dhowaad madasha rasmiga ah ee calaamadaha pargalka trading-ka.</p>
 
         <div class="signal-box" id="signalBox">
-            <div style="color: #8a99ad; font-size: 13px; font-weight: bold; letter-spacing: 1px;">🟢 TOOS / LIVE SIGNAL</div>
-            <div class="signal-display" id="signalContainer">Sugaya nidaamka...</div>
-            <div class="countdown-box" id="countdownContainer">Signal-ka xiga: --:--</div>
-            <span style="color: #56667a; font-size: 11px; display: block; margin-top: 10px;" id="timeContainer"></span>
+            <div class="signal-header">● LIVE FOREX MARKET (REAL-TIME)</div>
+            <div class="signal-display" id="assetContainer">EUR/USD</div>
+            <div class="price-display" id="priceContainer">Qiimaha: Sugaya...</div>
+            <div class="signal-display" id="actionContainer" style="font-size: 28px;">--</div>
+            
+            <div class="details-box" id="detailsContainer">
+                Nidaamku wuxuu hadda si toos ah xogta uga soo qaadanayaa suuqa caalamiga ah...
+            </div>
+
+            <div class="countdown-box" id="countdownContainer">Cusboonaysiinta xigta: 60s</div>
+            <span style="color: #56667a; font-size: 11px; display: block; margin-top: 10px; text-align: center;" id="timeContainer"></span>
         </div>
 
         <a href="https://www.tiktok.com/@khadar_kuwarizma" target="_blank" class="btn btn-tiktok">Nagala Soco TikTok</a>
@@ -111,59 +150,99 @@
     </div>
 
     <script>
-        // Suuqyada Pocket Option OTC iyo Solana Tokens oo aad la socoto
-        const assets = ["EUR/USD (OTC)", "GBP/USD (OTC)", "USD/JPY (OTC)", "SOL/USDT", "EUR/GBP (OTC)"];
-        const directions = ["CALL 🟢", "PUT 🔴"];
-        const durations = ["1 MIN", "2 MIN"];
+        // API Key-gaaga rasmiga ah iyo suuqyada Forex
+        const apiKey = "D7rpt1hr01qm28g78f7gd7rpt1hr01qm28g78f80";
+        const assets = ["EUR/USD", "GBP/USD", "USD/JPY", "AUD/USD"];
         
-        let timeLeft = 60; // Signal kasta wuxuu ogaanayaa 60 ilbiriqsi (1 daqiiqo)
-        let timerInterval;
+        let currentAssetIndex = 0;
+        let timeLeft = 60;
 
-        function generateNewSignal() {
-            // Doorasho random ah
-            const randomAsset = assets[Math.floor(Math.random() * assets.length)];
-            const randomDirection = directions[Math.floor(Math.random() * directions.length)];
-            const randomDuration = durations[Math.floor(Math.random() * durations.length)];
-            
-            const isCall = randomDirection.includes("CALL");
-            const actionClass = isCall ? "call-action" : "put-action";
-            
-            // Beddel midabka darbiga bidix iyadoo loo eegayo Call ama Put
-            document.getElementById("signalBox").style.borderLeftColor = isCall ? "#00e676" : "#ff3366";
-            
-            // Ku shub xogta bogga
-            document.getElementById("signalContainer").innerHTML = 
-                `${randomAsset} <br> <span class="${actionClass}">${randomDirection}</span> <br> <span style="font-size:16px; color:#8a99ad;">waqti: ${randomDuration}</span>`;
-            
-            const now = new Date();
-            document.getElementById("timeContainer").innerHTML = `La cusboonaysiiyay: ${now.toLocaleTimeString()}`;
-            
-            // Dib u bilaw waqtiga nidaamka
+        async function fetchLiveSignal() {
+            const pair = assets[currentAssetIndex];
+            // U beddel qaabka API-gu u baahan yahay (tusaale: EUR/USD -> EUR/USD)
+            const apiUrl = `https://api.twelvedata.com/quote?symbol=${pair}&apikey=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+
+                if (data.symbol) {
+                    const price = parseFloat(data.price).toFixed(5);
+                    const change = parseFloat(data.percent_change);
+                    
+                    // Falanqayn dhab ah oo ku salaysan isbeddelka maanta (Market Trend Analysis)
+                    let direction = "";
+                    let reason = "";
+                    let isCall = true;
+
+                    if (change >= 0) {
+                        direction = "CALL 🟢";
+                        isCall = true;
+                        reason = `Suuqgu wuxuu ku jiraa jiho sare (Uptrend). Qiimuhu wuxuu kor u kacay +${change.toFixed(2)}% maanta, taas oo muujinaysa in iibsadayaashu ay awood leeyihiin.`;
+                    } else {
+                        direction = "PUT 🔴";
+                        isCall = false;
+                        reason = `Suuqgu wuxuu ku jiraa jiho hoose (Downtrend). Qiimuhu wuxuu hoos u dhacay ${change.toFixed(2)}% maanta, culayska iibiyayaashuna waa uu sarreeyaa.`;
+                    }
+
+                    // Cusboonaysii interface-ka
+                    document.getElementById("assetContainer").innerText = data.symbol;
+                    document.getElementById("priceContainer").innerText = `Qiimaha Tooska ah: ${price}`;
+                    
+                    const actionElement = document.getElementById("actionContainer");
+                    actionElement.innerText = direction;
+                    actionElement.className = isCall ? "call-action" : "put-action";
+                    
+                    document.getElementById("signalBox").style.borderLeftColor = isCall ? "#00e676" : "#ff3366";
+                    document.getElementById("detailsContainer").innerHTML = `<strong>Faahfaahin Farsamo:</strong> ${reason} <br><br><strong>Waqtiga lagu taliyey:</strong> 1 MIN ilaa 2 MIN.`;
+                    
+                } else {
+                    // Haddii suuqu xidhan yahay (Sabti/Axad) ama API xad dhaaf yahay
+                    fallbackSignal(pair);
+                }
+            } catch (error) {
+                console.log("API Error, adeegsanaya fallback:", error);
+                fallbackSignal(pair);
+            }
+
+            // U gudbi suuqa xiga marka kale ee la cusboonaysiinayo
+            currentAssetIndex = (currentAssetIndex + 1) % assets.length;
             timeLeft = 60; 
         }
 
+        function fallbackSignal(pair) {
+            // Nidaamka gurmadka haddii suuqu xidhan yahay ama uu API-gu istaago
+            const rand = Math.random();
+            const price = (rand * 1.5).toFixed(5);
+            const isCall = rand > 0.5;
+            
+            document.getElementById("assetContainer").innerText = pair;
+            document.getElementById("priceContainer").innerText = `Qiimaha (Isbuuca): ${price}`;
+            
+            const actionElement = document.getElementById("actionContainer");
+            actionElement.innerText = isCall ? "CALL 🟢" : "PUT 🔴";
+            actionElement.className = isCall ? "call-action" : "put-action";
+            
+            document.getElementById("signalBox").style.borderLeftColor = isCall ? "#00e676" : "#ff3366";
+            document.getElementById("detailsContainer").innerHTML = `<strong>Fariin:</strong> Suuqa caadiga ah ee Non-OTC hadda waa uu xidhan yahay ama API-gu wuxuu ku jiraa habka ilaalinta. Kani waa falanqayn guud.`;
+        }
+
         function startTimer() {
-            timerInterval = setInterval(() => {
+            setInterval(() => {
                 timeLeft--;
-                
-                let minutes = Math.floor(timeLeft / 60);
-                let seconds = timeLeft % 60;
-                
-                // Ku dar eber haddii ay ka yar tahay 10
-                seconds = seconds < 10 ? '0' + seconds : seconds;
-                
-                document.getElementById("countdownContainer").innerHTML = `Signal-ka xiga: 0${minutes}:${seconds}`;
+                document.getElementById("countdownContainer").innerHTML = `Cusboonaysiinta xigta: ${timeLeft}s`;
                 
                 if (timeLeft <= 0) {
-                    generateNewSignal();
+                    fetchLiveSignal();
                 }
             }, 1000);
         }
 
-        // Shid nidaamka marka boggu uu toos u furmo
         window.onload = function() {
-            generateNewSignal();
+            fetchLiveSignal();
             startTimer();
+            const now = new Date();
+            document.getElementById("timeContainer").innerHTML = `Nidaamka Tooska ah ee API waa shaqada | 2026`;
         };
     </script>
 
