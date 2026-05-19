@@ -76,7 +76,32 @@
             border-radius: 10px;
             margin-bottom: 20px;
             border: 1px solid #263238;
-            min-height: 400px;
+            min-height: 440px;
+        }
+        /* Qaybta casharrada tooska ah */
+        .lesson-box {
+            background: #1b2735;
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ff9800;
+            text-align: left;
+            min-height: 120px;
+            transition: all 0.5s ease-in-out;
+        }
+        .lesson-title {
+            font-size: 14px;
+            color: #ff9800;
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .lesson-content {
+            font-size: 13px;
+            color: #b0bec5;
+            line-height: 1.6;
         }
         .btn {
             display: block;
@@ -115,17 +140,51 @@
         <div class="selector-box">
             <label>DOORO LACAGTA AAD RABTO (ASSET)</label>
             <select class="select-input" id="assetSelector" onchange="changeLiveAsset()">
-                <option value="FX:EURUSD">EUR/USD</option>
-                <option value="FX:GBPUSD">GBP/USD</option>
-                <option value="FX:USDJPY">USD/JPY</option>
-                <option value="FX:AUDUSD">AUD/USD</option>
-                <option value="FX:EURGBP">EUR/GBP</option>
-                <option value="FX:USDCAD">USD/CAD</option>
+                <optgroup label="Major Pairs (Kuwa ugu waaweyn)">
+                    <option value="FX:EURUSD">EUR/USD</option>
+                    <option value="FX:GBPUSD">GBP/USD</option>
+                    <option value="FX:USDJPY">USD/JPY</option>
+                    <option value="FX:AUDUSD">AUD/USD</option>
+                    <option value="FX:USDCAD">USD/CAD</option>
+                    <option value="FX:USDCHF">USD/CHF</option>
+                    <option value="FX:NZDUSD">NZD/USD</option>
+                </optgroup>
+                <optgroup label="Euro Crosses">
+                    <option value="FX:EURGBP">EUR/GBP</option>
+                    <option value="FX:EURJPY">EUR/JPY</option>
+                    <option value="FX:EURAUD">EUR/AUD</option>
+                    <option value="FX:EURCAD">EUR/CAD</option>
+                    <option value="FX:EURCHF">EUR/CHF</option>
+                    <option value="FX:EURNZD">EUR/NZD</option>
+                </optgroup>
+                <optgroup label="GBP Crosses">
+                    <option value="FX:GBPJPY">GBP/JPY</option>
+                    <option value="FX:GBPAUD">GBP/AUD</option>
+                    <option value="FX:GBPCAD">GBP/CAD</option>
+                    <option value="FX:GBPCHF">GBP/CHF</option>
+                    <option value="FX:GBPNZD">GBP/NZD</option>
+                </optgroup>
+                <optgroup label="Other Minor Pairs">
+                    <option value="FX:AUDJPY">AUD/JPY</option>
+                    <option value="FX:AUDCAD">AUD/CAD</option>
+                    <option value="FX:AUDCHF">AUD/CHF</option>
+                    <option value="FX:AUDNZD">AUD/NZD</option>
+                    <option value="FX:CADJPY">CAD/JPY</option>
+                    <option value="FX:CADCHF">CAD/CHF</option>
+                    <option value="FX:CHFJPY">CHF/JPY</option>
+                    <option value="FX:NZDJPY">NZD/JPY</option>
+                    <option value="FX:NZDCAD">NZD/CAD</option>
+                    <option value="FX:NZDCHF">NZD/CHF</option>
+                </optgroup>
             </select>
         </div>
 
-        <div class="widget-wrapper" id="widgetContainer">
-            </div>
+        <div class="widget-wrapper" id="widgetContainer"></div>
+
+        <div class="lesson-box">
+            <div class="lesson-title" id="lessonTitle">📚 CASHARKA MAANTA: Sugaya...</div>
+            <div class="lesson-content" id="lessonContent">Xogta casharrada ayaa hadda xisaabtamaysa...</div>
+        </div>
 
         <a href="https://www.tiktok.com/@khadar_kuwarizma" target="_blank" class="btn btn-tiktok">Nagala Soco TikTok</a>
 
@@ -134,26 +193,60 @@
         </div>
     </div>
 
-    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" async>
-    </script>
-
     <script>
+        // Liiska casharrada maaliyadeed ee qofka u soo baxaya si toos ah
+        const tradingLessons = [
+            {
+                title: "📚 XEERKA RISK MANAGEMENT (1%)",
+                content: "Waligaa hal trade ha u isticmaalin wax ka badan 1% ilaa 2% oo kamid ah lacagta kuugu jirta akaount-kaaga. Tani waxay kaa caawinaysaa inaad suuqa sii joogto xataa haddii aad dhowr jeer khasaarto."
+            },
+            {
+                title: "🕯️ CODKA CANDLESTICK PATTERNS",
+                content: "Markaad aragto shumaca 'Hammer' ama 'Pin Bar' oo ku dhuftay aagga Support-ka, waxay muujinaysaa in iibsadayaashu (Buyers) suuqa soo galeen, nidaamkuna uu u dhow yahay iib kor u kac ah (BUY)."
+            },
+            {
+                title: "📉 KELIYA RAAC TREND-KA SUUQA",
+                content: "Xikmadda suuqa waxay leedahay: 'The trend is your friend'. Haddii suuqu yahay Uptrend, kaliya raadi fursado BUY ah. Ha isku dayin inaad ka hor ttagto jiho xooggan oo suuqu u socdo."
+            },
+            {
+                title: "🧠 EDXIBTA GANACSIGA (TRADING DISCIPLINE)",
+                content: "Khasaaruhu waa qayb kamid ah ganacsiga. Haddii aad lumiso 3 trade oo isku xiga maanta, dami kombiyuutarka ama moobilka. Ha isku dayin inaad aargudato (Revenge Trading) waayo waxaad lumin doontaa lacag kale."
+            },
+            {
+                title: "📊 MAREEYA TRADING PLAN-KAAGA",
+                content: "Kahor inta uusan suuqu furmin, deji inta dollar oo aad rabto inaad faa'iido ahaan u samayso (Take Profit) iyo inta aad u dulqaadan karto khasaare ahaan (Stop Loss). Markaad hadafkaga gaarto, ka bax suuqa."
+            }
+        ];
+
+        let currentLessonIndex = 0;
+
+        function rotateLessons() {
+            const titleElement = document.getElementById("lessonTitle");
+            const contentElement = document.getElementById("lessonContent");
+            
+            // Ku shubista casharka xiga
+            const currentLesson = tradingLessons[currentLessonIndex];
+            titleElement.innerText = currentLesson.title;
+            contentElement.innerText = currentLesson.content;
+
+            // Isku wareejinta index-ka
+            currentLessonIndex = (currentLessonIndex + 1) % tradingLessons.length;
+        }
+
         function loadTradingViewWidget(symbol) {
             const container = document.getElementById("widgetContainer");
-            container.innerHTML = ""; // Nadiifinta widget-kii hore
+            container.innerHTML = ""; 
 
-            // Abuurista qaab-dhismeedka Widget-ka dhabta ah ee TradingView
             const widgetScript = document.createElement("script");
             widgetScript.type = "text/javascript";
             widgetScript.src = "https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js";
             widgetScript.async = true;
 
-            // Habaynta qaabka widget-ka (100% Live market analysis)
             const widgetConfig = {
                 "interval": "1m",
                 "width": "100%",
                 "isTransparent": true,
-                "height": 420,
+                "height": 440,
                 "symbol": symbol,
                 "showIntervalTabs": true,
                 "displayMode": "single",
@@ -170,9 +263,10 @@
             loadTradingViewWidget(selectedSymbol);
         }
 
-        // Marka boggu uu soo tago, si toos ah u fur EUR/USD
         window.onload = function() {
             loadTradingViewWidget("FX:EURUSD");
+            rotateLessons(); // Soo saar casharkii ugu horeeyey
+            setInterval(rotateLessons, 20000); // 20-kii ilbiriqsiba mar isbeddel automatic ah
         };
     </script>
 
