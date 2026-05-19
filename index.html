@@ -20,7 +20,7 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            padding: 20px;
+            padding: 10px;
         }
         .container {
             max-width: 500px;
@@ -31,6 +31,7 @@
             box-shadow: 0 8px 24px rgba(0,0,0,0.5);
             text-align: center;
             border: 1px solid #1f2d3d;
+            overflow: hidden;
         }
         h1 {
             font-size: 26px;
@@ -45,9 +46,18 @@
             color: #00e676;
             font-size: 13px;
             font-weight: 600;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             line-height: 1.5;
         }
+        
+        /* Live Ticker Tape Container */
+        .ticker-wrapper {
+            margin-bottom: 15px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #1f2d3d;
+        }
+
         .selector-box {
             margin-bottom: 15px;
             background: #1b2735;
@@ -76,7 +86,6 @@
             cursor: pointer;
         }
         
-        /* Timeframe Buttons Style */
         .time-btn-group {
             display: flex;
             justify-content: center;
@@ -101,13 +110,13 @@
             border-color: #00e676;
         }
 
-        /* Qaybaha kala duwan ee Widgets-ka */
         .widget-wrapper {
             background: #1b2735;
             padding: 10px;
             border-radius: 10px;
             margin-bottom: 15px;
             border: 1px solid #263238;
+            min-height: 440px;
         }
         .section-title {
             font-size: 12px;
@@ -119,9 +128,6 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        #gaugeContainer { min-height: 220px; }
-        #chartContainer { height: 240px; }
-        #summaryContainer { min-height: 440px; }
         
         .btn {
             display: flex;
@@ -150,6 +156,8 @@
         <h1>Somali Signals 🇸🇴</h1>
         <div class="motivation-text">"Guushu kuma timaaddo dhalanteed, waxay ku dhalataa go'aan adag, samir iyo edbin ganacsi. Maareey maalkaaga!"</div>
 
+        <div class="ticker-wrapper" id="tickerContainer"></div>
+
         <div class="selector-box">
             <label>DOORO LACAGTA AAD RABTO (ASSET)</label>
             <select class="select-input" id="assetSelector" onchange="onWidgetUpdate()">
@@ -168,14 +176,12 @@
                     <option value="EURAUD">EUR/AUD</option>
                     <option value="EURCAD">EUR/CAD</option>
                     <option value="EURCHF">EUR/CHF</option>
-                    <option value="EURNZD">EUR/NZD</option>
                 </optgroup>
                 <optgroup label="GBP Crosses">
                     <option value="GBPJPY">GBP/JPY</option>
                     <option value="GBPAUD">GBP/AUD</option>
                     <option value="GBPCAD">GBP/CAD</option>
                     <option value="GBPCHF">GBP/CHF</option>
-                    <option value="GBPNZD">GBP/NZD</option>
                 </optgroup>
             </select>
         </div>
@@ -189,13 +195,7 @@
             </div>
         </div>
 
-        <div class="section-title"><i class="fas fa-bolt"></i> Go'aanka Signal-ka Live-ka ah</div>
-        <div class="widget-wrapper" id="gaugeContainer"></div>
-
-        <div class="section-title"><i class="fas fa-chart-line"></i> Shaxda Shumacda (Live Chart)</div>
-        <div class="widget-wrapper" id="chartContainer"></div>
-
-        <div class="section-title"><i class="fas fa-calculator"></i> Codadka Tilmaamayaasha Farsamo</div>
+        <div class="section-title"><i class="fas fa-chart-pie"></i> Falanqaynta Suuqa iyo Signal-ka Live-ka ah</div>
         <div class="widget-wrapper" id="summaryContainer"></div>
 
         <a href="https://wa.me/252907492663" target="_blank" class="btn btn-whatsapp">
@@ -214,52 +214,32 @@
         let selectedAsset = "EURUSD";
         let selectedTimeframe = "1m";
 
-        // Soo xoraynta Saacadda Go'aanka (Gauge)
-        function loadGaugeWidget(symbol, timeframe) {
-            const container = document.getElementById("gaugeContainer");
-            container.innerHTML = ""; 
-            const widgetScript = document.createElement("script");
-            widgetScript.type = "text/javascript";
-            widgetScript.src = "https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js";
-            widgetScript.async = true;
-            widgetScript.innerHTML = JSON.stringify({
-                "interval": timeframe,
-                "width": "100%",
-                "isTransparent": true,
-                "height": 220,
-                "symbol": "FX:" + symbol,
-                "showIntervalTabs": false,
-                "displayMode": "adaptive",
-                "locale": "en",
-                "colorTheme": "dark"
-            });
-            container.appendChild(widgetScript);
-        }
-
-        // Soo xoraynta Garaafka Shumacda (Live Chart)
-        function loadChartWidget(symbol) {
-            const container = document.getElementById("chartContainer");
+        // Soo xoraynta Live Ticker Tape (Khadka socda ee qiimaha suuqyada aduunka)
+        function loadTickerTapeWidget() {
+            const container = document.getElementById("tickerContainer");
             container.innerHTML = "";
-            const chartScript = document.createElement("script");
-            chartScript.type = "text/javascript";
-            chartScript.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
-            chartScript.async = true;
-            chartScript.innerHTML = JSON.stringify({
-                "symbol": "FX:" + symbol,
-                "width": "100%",
-                "height": "100%",
-                "locale": "en",
-                "dateRange": "1d",
+            const tickerScript = document.createElement("script");
+            tickerScript.type = "text/javascript";
+            tickerScript.src = "https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js";
+            tickerScript.async = true;
+            tickerScript.innerHTML = JSON.stringify({
+                "symbols": [
+                    {"proName": "FX_IDC:EURUSD", "title": "EUR/USD"},
+                    {"proName": "FX_IDC:GBPUSD", "title": "GBP/USD"},
+                    {"proName": "FX_IDC:USDJPY", "title": "USD/JPY"},
+                    {"proName": "FX_IDC:AUDUSD", "title": "AUD/USD"},
+                    {"proName": "FX_IDC:USDCAD", "title": "USD/CAD"}
+                ],
+                "showSymbolLogo": true,
                 "colorTheme": "dark",
-                "trendLineColor": "rgba(0, 230, 118, 1)",
-                "underLineColor": "rgba(0, 230, 118, 0.1)",
                 "isTransparent": true,
-                "autosize": true
+                "displayMode": "adaptive",
+                "locale": "en"
             });
-            container.appendChild(chartScript);
+            container.appendChild(tickerScript);
         }
 
-        // Soo xoraynta Tiroyinka Falanqaynta (Summary)
+        // Soo xoraynta Mitirka rasmiga ah (Technical Summary Widget)
         function loadSummaryWidget(symbol, timeframe) {
             const container = document.getElementById("summaryContainer");
             container.innerHTML = ""; 
@@ -283,8 +263,6 @@
 
         function onWidgetUpdate() {
             selectedAsset = document.getElementById("assetSelector").value;
-            loadGaugeWidget(selectedAsset, selectedTimeframe);
-            loadChartWidget(selectedAsset);
             loadSummaryWidget(selectedAsset, selectedTimeframe);
         }
 
@@ -293,14 +271,12 @@
             document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
-            loadGaugeWidget(selectedAsset, selectedTimeframe);
             loadSummaryWidget(selectedAsset, selectedTimeframe);
         }
 
         window.onload = function() {
-            loadGaugeWidget("EURUSD", "1m");
-            loadChartWidget("EURUSD");
-            loadSummaryWidget("EURUSD", "1m");
+            loadTickerTapeWidget(); // Khadka socda wuxuu dhashaa hal jeer
+            loadSummaryWidget("EURUSD", "1m"); // Mitirka Live-ka ah
         };
     </script>
 </body>
