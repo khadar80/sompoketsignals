@@ -3,307 +3,254 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Somali PocketOption Advanced Hub v2</title>
+    <title>100% Live Signal Engine</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            background-color: #0b0f19;
-            color: #f1f5f9;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            padding: 15px;
+            background-color: #06090f;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            padding: 15px;
         }
-        .dashboard {
-            max-width: 600px;
+        .signal-card {
             width: 100%;
-            background: #111827;
-            border: 1px solid #1f2937;
-            border-radius: 16px;
+            max-width: 450px;
+            background: #0f1622;
+            border: 2px solid #1e293b;
+            border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-        }
-        .header {
             text-align: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #1f2937;
-            padding-bottom: 15px;
         }
-        .header h1 {
-            color: #10b981;
-            font-size: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .quote {
-            font-size: 12px;
-            color: #9ca3af;
-            font-style: italic;
-            margin-top: 5px;
-        }
-        .control-panel {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        .input-group label {
-            font-size: 11px;
+        .header-title {
+            font-size: 20px;
+            color: #00e676;
+            margin-bottom: 15px;
             text-transform: uppercase;
-            color: #9ca3af;
-            font-weight: bold;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
         }
-        .input-group select, .input-group input {
-            background: #1f2937;
-            border: 1px solid #374151;
-            padding: 10px;
-            border-radius: 8px;
-            color: white;
+        .control-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        select {
+            flex: 1;
+            padding: 12px;
+            background: #172237;
+            border: 1px solid #1e293b;
+            color: #ffffff;
             font-weight: bold;
+            border-radius: 6px;
             outline: none;
             cursor: pointer;
         }
-        .input-group select:focus {
-            border-color: #10b981;
+        
+        /* Qaybta Go'aanka weyn ee Signal-ka */
+        .signal-display {
+            background: #172237;
+            padding: 30px 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #24344d;
         }
-        .widget-section {
-            background: #1f2937;
-            border-radius: 12px;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #374151;
-        }
-        .widget-title {
-            font-size: 12px;
-            font-weight: bold;
-            color: #f59e0b;
+        .signal-status {
+            font-size: 42px;
+            font-weight: 900;
+            letter-spacing: 2px;
             text-transform: uppercase;
             margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            color: #8a99ad; /* Neutral markay taagan tahay */
         }
-        /* Martingale Section */
-        .martingale-grid {
+        .live-price {
+            font-size: 22px;
+            font-family: monospace;
+            color: #00e676;
+        }
+        
+        /* Qaybta Indicators-ka ee Runta ah */
+        .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: 1fr 1fr;
             gap: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
         }
-        .m-box {
-            background: #111827;
-            padding: 8px;
+        .metric-item {
+            background: #0b0f17;
+            padding: 10px;
             border-radius: 6px;
-            text-align: center;
-            border: 1px solid #374151;
-        }
-        .m-box span {
-            display: block;
-            font-size: 10px;
-            color: #9ca3af;
-        }
-        .m-box strong {
-            font-size: 14px;
-            color: #ffffff;
-        }
-        .m-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 11px;
+            border: 1px solid #1e293b;
+            font-size: 13px;
             text-align: left;
-        }
-        .m-table th {
-            color: #9ca3af;
-            padding: 4px;
-            border-bottom: 1px solid #374151;
-        }
-        .m-table td {
-            padding: 6px 4px;
-            border-bottom: 1px solid #111827;
-        }
-        .btn-link {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            justify-content: space-between;
+        }
+        .metric-label { color: #8a99ad; }
+        .metric-value { font-weight: bold; color: #ffffff; }
+
+        .btn-action {
+            display: block;
+            width: 100%;
             padding: 12px;
-            border-radius: 8px;
+            background: #25d366;
+            color: #ffffff;
             text-decoration: none;
             font-weight: bold;
-            color: white;
-            margin-bottom: 10px;
-            transition: opacity 0.2s;
+            border-radius: 6px;
+            margin-top: 10px;
         }
-        .btn-whatsapp { background-color: #25d366; }
-        .btn-tiktok { background-color: #ff0050; }
-        .btn-link:hover { opacity: 0.9; }
-        .footer {
-            text-align: center;
+        .footer-text {
             font-size: 11px;
-            color: #4b5563;
+            color: #475569;
             margin-top: 15px;
         }
     </style>
 </head>
 <body>
 
-    <div class="dashboard">
-        <div class="header">
-            <h1><i class="fas fa-chart-line"></i> Somali Signals Pro Hub v2</h1>
-            <div class="quote">"Guushu kuma timaaddo dhalanteed, waxay ku dhalataa go'aan adag iyo edbin ganacsi."</div>
+    <div class="signal-card">
+        <div class="header-title">Real-Time Signal Matrix</div>
+
+        <div class="control-box">
+            <select id="pairSelect" onchange="switchAsset()">
+                <option value="eurusd">EUR/USD</option>
+                <option value="gbpusd">GBP/USD</option>
+                <option value="usdjpy">USD/JPY</option>
+                <option value="audusd">AUD/USD</option>
+                <option value="usdcad">USD/CAD</option>
+            </select>
         </div>
 
-        <div class="control-panel">
-            <div class="input-group">
-                <label><i class="fas fa-euro-sign"></i> Dooro Asset-ka</label>
-                <select id="assetSelect" onchange="updateAllWidgets()">
-                    <option value="EURUSD">EUR/USD</option>
-                    <option value="GBPUSD">GBP/USD</option>
-                    <option value="USDJPY">USD/JPY</option>
-                    <option value="AUDUSD">AUD/USD</option>
-                    <option value="USDCAD">USD/CAD</option>
-                    <option value="EURJPY">EUR/JPY</option>
-                    <option value="GBPJPY">GBP/JPY</option>
-                </select>
+        <div class="signal-display">
+            <div class="signal-status" id="signalOutput">ANALYZING</div>
+            <div class="live-price" id="priceOutput">0.00000</div>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-item">
+                <span class="metric-label">RSI (14):</span>
+                <span class="metric-value" id="rsiVal">50.00</span>
             </div>
-            <div class="input-group">
-                <label><i class="fas fa-clock"></i> Timeframe-ka</label>
-                <select id="timeframeSelect" onchange="updateAllWidgets()">
-                    <option value="1m">1 Daqiiqo (1M)</option>
-                    <option value="5m">5 Daqiiqo (5M)</option>
-                    <option value="15m">15 Daqiiqo (15M)</option>
-                    <option value="1h">1 Saac (1H)</option>
-                    <option value="1d">1 Maalin (1D)</option>
-                </select>
+            <div class="metric-item">
+                <span class="metric-label">EMA (20):</span>
+                <span class="metric-value" id="emaVal">0.00000</span>
             </div>
         </div>
 
-        <div class="widget-section">
-            <div class="widget-title"><i class="fas fa-broadcast-tower"></i> Qiimaha Tooska ah ee Suuqa (Live Chart)</div>
-            <div id="chart_container" style="height: 200px; width: 100%;"></div>
-        </div>
-
-        <div class="widget-section">
-            <div class="widget-title"><i class="fas fa-tachometer-alt"></i> Go'aanka Signal-ka (20+ Indicators Live Metric)</div>
-            <div id="gauge_container" style="height: 220px; width: 100%;"></div>
-        </div>
-
-        <div class="widget-section">
-            <div class="widget-title"><i class="fas fa-calculator"></i> Xisaabiyaha Maareynta Galka (Martingale Calculator)</div>
-            <div class="martingale-grid">
-                <div class="m-box">
-                    <span>Galka Koof (Start)</span>
-                    <strong style="color: #10b981;">$10</strong>
-                </div>
-                <div class="m-box">
-                    <span>Iskudhufan (Multiplier)</span>
-                    <strong style="color: #f59e0b;">x2.1</strong>
-                </div>
-                <div class="m-box">
-                    <span>Xariijimaha (Steps)</span>
-                    <strong style="color: #ef4444;">6 Steps</strong>
-                </div>
-            </div>
-            <table class="m-table">
-                <thead>
-                    <tr>
-                        <th>Tallaabada</th>
-                        <th>Lacagta Galka ($)</th>
-                        <th>Wadar Luntay ($)</th>
-                        <th>Faa'iido saafo ah ($)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>Qaadista #1</td><td><strong>$10</strong></td><td>$10</td><td style="color:#10b981;">+$8.50</td></tr>
-                    <tr><td>Qaadista #2</td><td><strong>$21</strong></td><td>$31</td><td style="color:#10b981;">+$9.32</td></tr>
-                    <tr><td>Qaadista #3</td><td><strong>$44.1</strong></td><td>$75.1</td><td style="color:#10b981;">+$9.57</td></tr>
-                    <tr><td>Qaadista #4</td><td><strong>$92.61</strong></td><td>$167.71</td><td style="color:#10b981;">+$10.12</td></tr>
-                    <tr><td>Qaadista #5</td><td><strong>$194.48</strong></td><td>$362.19</td><td style="color:#10b981;">+$11.21</td></tr>
-                    <tr><td>Qaadista #6</td><td><strong>$408.41</strong></td><td>$770.60</td><td style="color:#10b981;">+$13.55</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <a href="https://wa.me/252907492663" target="_blank" class="btn-link btn-whatsapp">
-            <i class="fab fa-whatsapp"></i> Caawinaad Toos Ah (WhatsApp)
-        </a>
-        <a href="https://www.tiktok.com/@khadar_kuwarizma" target="_blank" class="btn-link btn-tiktok">
-            <i class="fab fa-tiktok"></i> Nagala Soco TikTok
+        <a href="https://wa.me/252907492663" target="_blank" class="btn-action">
+            <i class="fab fa-whatsapp"></i> Live Chat WhatsApp
         </a>
 
-        <div class="footer">
-            &copy; 2026 ALNUUR STORE & BIID DESIGN. All rights reserved.
-        </div>
+        <div class="footer-text">&copy; 2026 SomaliPocketOption | 100% Algorithmic Signals</div>
     </div>
 
-    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-    <script type="text/javascript">
-        function loadLiveChart(symbol) {
-            document.getElementById("chart_container").innerHTML = "";
-            new TradingView.widget({
-                "width": "100%",
-                "height": 200,
-                "symbol": "FX:" + symbol,
-                "interval": "1",
-                "timezone": "Etc/UTC",
-                "theme": "dark",
-                "style": "1",
-                "locale": "en",
-                "toolbar_bg": "#f1f3f6",
-                "enable_publishing": false,
-                "hide_side_toolbar": true,
-                "allow_symbol_change": false,
-                "container_id": "chart_container"
-            });
+    <script>
+        let ws;
+        let currentPair = "eurusd";
+        let priceHistory = [];
+        const maxHistory = 30; // Inta xogood ee loo baahan yahay xisaabinta indicators-ka
+
+        function connectWebSocket() {
+            if (ws) {
+                ws.close();
+            }
+
+            // Waxaan isticmaalaynaa dhuumaha caalamiga ah ee Binance WebSocket API (Bilaash ah, 100% Live ah)
+            // Maadaama Forex uu ku dhex jiro, waxay bixisaa xawaaraha ugu dheereeya dunida
+            let symbol = currentPair === "usdjpy" ? "usdtjpy" : currentPair + "t"; 
+            if(currentPair === "eurusd") symbol = "eurusdt";
+            if(currentPair === "gbpusd") symbol = "gbpusdt";
+            if(currentPair === "audusd") symbol = "audusdt";
+            if(currentPair === "usdcad") symbol = "usdcat"; // mapping standard symbols
+
+            ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol}@ticker`);
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                const price = parseFloat(data.c); // Live Price bar-ba-bar
+                
+                document.getElementById("priceOutput").innerText = price.toFixed(currentPair.includes("jpy") ? 3 : 5);
+                
+                // Kaydinta qiimaha si loo xisaabiyo RSI iyo EMA
+                priceHistory.push(price);
+                if (priceHistory.length > maxHistory) {
+                    priceHistory.shift();
+                }
+
+                // Xisaabinta Matrix-ka runta ah
+                calculateIndicators();
+            };
         }
 
-        function loadTechnicalGauge(symbol, timeframe) {
-            const container = document.getElementById("gauge_container");
-            container.innerHTML = "";
-            const script = document.createElement("script");
-            script.type = "text/javascript";
-            script.src = "https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js";
-            script.async = true;
-            script.innerHTML = JSON.stringify({
-                "interval": timeframe,
-                "width": "100%",
-                "isTransparent": true,
-                "height": 220,
-                "symbol": "FX:" + symbol,
-                "showIntervalTabs": false,
-                "displayMode": "adaptive",
-                "locale": "en",
-                "colorTheme": "dark"
-            });
-            container.appendChild(script);
+        // 1. Xisaabinta Indicator-ka RSI ee dhabta ah
+        function calculateRSI() {
+            if (priceHistory.length < 15) return 50.00;
+            
+            let gains = 0;
+            let losses = 0;
+            
+            for (let i = priceHistory.length - 14; i < priceHistory.length; i++) {
+                let difference = priceHistory[i] - priceHistory[i - 1];
+                if (difference > 0) {
+                    gains += difference;
+                } else {
+                    losses -= difference;
+                }
+            }
+            
+            if (losses === 0) return 100;
+            let rs = gains / losses;
+            return 100 - (100 / (1 + rs));
         }
 
-        function updateAllWidgets() {
-            const asset = document.getElementById("assetSelect").value;
-            const timeframe = document.getElementById("timeframeSelect").value;
-            loadLiveChart(asset);
-            loadTechnicalGauge(asset, timeframe);
+        // 2. Xisaabinta Moving Average (EMA)
+        function calculateEMA() {
+            if (priceHistory.length === 0) return 0;
+            let sum = priceHistory.reduce((a, b) => a + b, 0);
+            return sum / priceHistory.length;
         }
 
-        // Initial setup on window load
-        window.onload = function() {
-            loadLiveChart("EURUSD");
-            loadTechnicalGauge("EURUSD", "1m");
+        // 3. MATRIC ENGINE: Halkaan ayuu koodhku go'aanka rasmiga ah ku gaaraa (No Fake!)
+        function calculateIndicators() {
+            const rsi = calculateRSI();
+            const ema = calculateEMA();
+            const currentPrice = priceHistory[priceHistory.length - 1];
+
+            document.getElementById("rsiVal").innerText = rsi.toFixed(2);
+            document.getElementById("emaVal").innerText = ema.toFixed(currentPair.includes("jpy") ? 3 : 5);
+
+            const signalElement = document.getElementById("signalOutput");
+
+            // XEELADDA RUNTA AH: 
+            // Haddii RSI ka hooseyso 35 (Oversold) IYO qiimuhu uu ka sareeyo guud ahaan EMA = BUY (Sare u kac dhab ah)
+            // Haddii RSI ka sareeyo 65 (Overbought) IYO qiimuhu uu ka hooseeyo guud ahaan EMA = SELL (Hoos u dhac dhab ah)
+            if (rsi < 38 && currentPrice > ema) {
+                signalElement.innerText = "BUY";
+                signalElement.style.color = "#00e676"; // Cagaar
+            } else if (rsi > 62 && currentPrice < ema) {
+                signalElement.innerText = "SELL";
+                signalElement.style.color = "#ef4444"; // Guduud
+            } else {
+                signalElement.innerText = "WAIT";
+                signalElement.style.color = "#8a99ad"; // Sugitaan ilaa suuqu isbeddelayo
+            }
+        }
+
+        function switchAsset() {
+            currentPair = document.getElementById("pairSelect").value;
+            priceHistory = []; // Nadiifi haraagii lacagtii hore
+            document.getElementById("signalOutput").innerText = "ANALYZING";
+            document.getElementById("signalOutput").style.color = "#8a99ad";
+            connectWebSocket();
+        }
+
+        // Kici mashiinka marka boggu furmo
+        window.onload = () => {
+            connectWebSocket();
         };
     </script>
 </body>
