@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Somali Signals Hub 🇸🇴</title>
+    <title>Somali Elite Signals Hub 🇸🇴</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -85,29 +85,18 @@
             cursor: pointer;
         }
         
-        /* Timeframe Group */
-        .time-btn-group {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 5px;
-        }
-        .time-btn {
-            flex: 1;
+        /* Timeframe Selection Styled Dropdown */
+        .time-select {
+            width: 100%;
+            padding: 10px;
             background: #0f1622;
-            color: #94a3b8;
             border: 1px solid #1e293b;
-            padding: 8px 0;
-            border-radius: 5px;
-            cursor: pointer;
+            border-radius: 6px;
+            color: #00e676;
+            font-size: 15px;
             font-weight: bold;
-            font-size: 13px;
-            transition: all 0.3s;
-        }
-        .time-btn.active {
-            background: #00e676;
-            color: #06090e;
-            border-color: #00e676;
+            outline: none;
+            cursor: pointer;
         }
 
         /* Widgets Containers */
@@ -117,6 +106,7 @@
             border-radius: 10px;
             margin-bottom: 15px;
             border: 1px solid #1e293b;
+            min-height: 220px;
         }
         .section-title {
             font-size: 12px;
@@ -129,8 +119,7 @@
             letter-spacing: 0.5px;
         }
         
-        #advancedChartContainer { height: 350px; }
-        #summaryContainer { min-height: 440px; }
+        #gaugeContainer { min-height: 220px; }
         
         .btn {
             display: flex;
@@ -162,41 +151,55 @@
         <div class="ticker-wrapper" id="tickerContainer"></div>
 
         <div class="selector-box">
-            <label>DOORO LACAGTA AAD RABTO (ASSET)</label>
+            <label><i class="fas fa-coins"></i> DOORO LACAGTA AAD RABTO (FOREX PAIR)</label>
             <select class="select-input" id="assetSelector" onchange="onWidgetUpdate()">
                 <optgroup label="Major Forex Pairs">
-                    <option value="EURUSD">EUR/USD</option>
-                    <option value="GBPUSD">GBP/USD</option>
-                    <option value="USDJPY">USD/JPY</option>
-                    <option value="AUDUSD">AUD/USD</option>
-                    <option value="USDCAD">USD/CAD</option>
-                    <option value="USDCHF">USD/CHF</option>
-                    <option value="NZDUSD">NZD/USD</option>
+                    <option value="EURUSD">EUR/USD (Euro / US Dollar)</option>
+                    <option value="GBPUSD">GBP/USD (British Pound / US Dollar)</option>
+                    <option value="USDJPY">USD/JPY (US Dollar / Japanese Yen)</option>
+                    <option value="AUDUSD">AUD/USD (Australian Dollar / US Dollar)</option>
+                    <option value="USDCAD">USD/CAD (US Dollar / Canadian Dollar)</option>
+                    <option value="USDCHF">USD/CHF (US Dollar / Swiss Franc)</option>
+                    <option value="NZDUSD">NZD/USD (New Zealand Dollar / US Dollar)</option>
                 </optgroup>
-                <optgroup label="Cross Forex Pairs">
-                    <option value="EURGBP">EUR/GBP</option>
-                    <option value="EURJPY">EUR/JPY</option>
-                    <option value="GBPJPY">GBP/JPY</option>
-                    <option value="EURAUD">EUR/AUD</option>
-                    <option value="GBPAUD">GBP/AUD</option>
+                <optgroup label="Euro Crosses">
+                    <option value="EURGBP">EUR/GBP (Euro / British Pound)</option>
+                    <option value="EURJPY">EUR/JPY (Euro / Japanese Yen)</option>
+                    <option value="EURAUD">EUR/AUD (Euro / Australian Dollar)</option>
+                    <option value="EURCAD">EUR/CAD (Euro / Canadian Dollar)</option>
+                    <option value="EURCHF">EUR/CHF (Euro / Swiss Franc)</option>
+                    <option value="EURNZD">EUR/NZD (Euro / New Zealand Dollar)</option>
+                </optgroup>
+                <optgroup label="GBP Crosses">
+                    <option value="GBPJPY">GBP/JPY (British Pound / Japanese Yen)</option>
+                    <option value="GBPAUD">GBP/AUD (British Pound / Australian Dollar)</option>
+                    <option value="GBPCAD">GBP/CAD (British Pound / Canadian Dollar)</option>
+                    <option value="GBPCHF">GBP/CHF (British Pound / Swiss Franc)</option>
+                    <option value="GBPNZD">GBP/NZD (British Pound / New Zealand Dollar)</option>
+                </optgroup>
+                <optgroup label="Minor Crosses">
+                    <option value="AUDJPY">AUD/JPY</option>
+                    <option value="CADJPY">CAD/JPY</option>
+                    <option value="CHFJPY">CHF/JPY</option>
+                    <option value="NZDJPY">NZD/JPY</option>
                 </optgroup>
             </select>
         </div>
 
         <div class="selector-box">
-            <label>DOORO TIMEFRAME-KA (WAQTIGA)</label>
-            <div class="time-btn-group">
-                <button class="time-btn active" onclick="changeTimeframe('1m', this)">1M</button>
-                <button class="time-btn" onclick="changeTimeframe('5m', this)">5M</button>
-                <button class="time-btn" onclick="changeTimeframe('15m', this)">15M</button>
-            </div>
+            <label><i class="fas fa-clock"></i> DOORO TIMEFRAME-KA (EXPIRY TIME)</label>
+            <select class="time-select" id="timeframeSelector" onchange="onWidgetUpdate()">
+                <option value="1m">1 Daqiiqo (1M - Scalping)</option>
+                <option value="5m">5 Daqiiqo (5M - Fast Trade)</option>
+                <option value="15m">15 Daqiiqo (15M - Standard)</option>
+                <option value="1h">1 Saac (1H - Intraday)</option>
+                <option value="4h">4 Saacadood (4H - Swing)</option>
+                <option value="1d">1 Maalinti (1D - Long Term)</option>
+            </select>
         </div>
 
-        <div class="section-title"><i class="fas fa-chart-area"></i> Shaxda Sare ee Shumacda (Advanced Live Chart)</div>
-        <div class="widget-wrapper" id="advancedChartContainer"></div>
-
-        <div class="section-title"><i class="fas fa-wave-square"></i> Falanqaynta Tilmaamayaasha Farsamo</div>
-        <div class="widget-wrapper" id="summaryContainer"></div>
+        <div class="section-title"><i class="fas fa-bolt"></i> Go'aanka Signal-ka Live-ka ah (BUY / SELL)</div>
+        <div class="widget-wrapper" id="gaugeContainer"></div>
 
         <a href="https://wa.me/252907492663" target="_blank" class="btn btn-whatsapp">
             <i class="fab fa-whatsapp"></i> Caawinaad Toos Ah (WhatsApp)
@@ -211,10 +214,7 @@
     </div>
 
     <script>
-        let selectedAsset = "EURUSD";
-        let selectedTimeframe = "1m";
-
-        // 1. Ticker Tape Widget (Dhamaan suuqyada caalamka oo wada socda)
+        // Ticker Tape widget (Multi-source data fed from diverse global feeds)
         function loadTickerTapeWidget() {
             const container = document.getElementById("tickerContainer");
             container.innerHTML = "";
@@ -234,57 +234,14 @@
                 "colorTheme": "dark",
                 "isTransparent": true,
                 "displayMode": "adaptive",
-                "locale": "so"
+                "locale": "en"
             });
             container.appendChild(tickerScript);
         }
 
-        // 2. Advanced Charting Widget (Nooca ugu dambeeyey ee bixiya full technical setup)
-        function loadAdvancedChart(symbol, timeframe) {
-            const container = document.getElementById("advancedChartContainer");
-            container.innerHTML = "";
-            
-            // Habaynta waqtiga chart-ka rasmiga ah
-            let chartInterval = "1";
-            if(timeframe === "5m") chartInterval = "5";
-            if(timeframe === "15m") chartInterval = "15";
-
-            const chartScript = document.createElement("script");
-            chartScript.type = "text/javascript";
-            chartScript.src = "https://s3.tradingview.com/tv.js";
-            chartScript.async = false; // Hubi inuu marka hore soo raddiyo maktabadda
-            
-            chartScript.onload = function() {
-                new TradingView.widget({
-                    "width": "100%",
-                    "height": "100%",
-                    "symbol": "FX:" + symbol,
-                    "interval": chartInterval,
-                    "timezone": "Etc/UTC",
-                    "theme": "dark",
-                    "style": "1",
-                    "locale": "en",
-                    "enable_publishing": false,
-                    "hide_side_toolbar": true,
-                    "allow_symbol_change": false,
-                    "container_id": "advancedChartContainer",
-                    "studies": [
-                        "RSI@tv-basicstudies",
-                        "MASimple@tv-basicstudies"
-                    ]
-                });
-            };
-            container.appendChild(chartScript);
-            
-            // Haddi uu script-ku horey u yiilay bogga
-            if (typeof TradingView !== 'undefined') {
-                chartScript.onload();
-            }
-        }
-
-        // 3. Technical Summary Widget (Nidaamka codadka falanqaynta)
-        function loadSummaryWidget(symbol, timeframe) {
-            const container = document.getElementById("summaryContainer");
+        // Live Technical Engine (Brings instantaneous BUY/SELL meters directly)
+        function loadGaugeWidget(symbol, timeframe) {
+            const container = document.getElementById("gaugeContainer");
             container.innerHTML = ""; 
             const widgetScript = document.createElement("script");
             widgetScript.type = "text/javascript";
@@ -294,10 +251,10 @@
                 "interval": timeframe,
                 "width": "100%",
                 "isTransparent": true,
-                "height": 440,
+                "height": 220,
                 "symbol": "FX:" + symbol,
                 "showIntervalTabs": false,
-                "displayMode": "single",
+                "displayMode": "adaptive",
                 "locale": "en",
                 "colorTheme": "dark"
             });
@@ -305,24 +262,14 @@
         }
 
         function onWidgetUpdate() {
-            selectedAsset = document.getElementById("assetSelector").value;
-            loadAdvancedChart(selectedAsset, selectedTimeframe);
-            loadSummaryWidget(selectedAsset, selectedTimeframe);
-        }
-
-        function changeTimeframe(timeframe, btn) {
-            selectedTimeframe = timeframe;
-            document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            
-            loadAdvancedChart(selectedAsset, selectedTimeframe);
-            loadSummaryWidget(selectedAsset, selectedTimeframe);
+            const selectedAsset = document.getElementById("assetSelector").value;
+            const selectedTimeframe = document.getElementById("timeframeSelector").value;
+            loadGaugeWidget(selectedAsset, selectedTimeframe);
         }
 
         window.onload = function() {
             loadTickerTapeWidget();
-            loadAdvancedChart("EURUSD", "1m");
-            loadSummaryWidget("EURUSD", "1m");
+            loadGaugeWidget("EURUSD", "1m"); // Default loading setup
         };
     </script>
 </body>
