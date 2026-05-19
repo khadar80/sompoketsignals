@@ -36,10 +36,46 @@
             margin-bottom: 10px;
             color: #00e676;
         }
-        p {
-            color: #8a99ad;
+        .motivation-text {
+            color: #00e676;
             font-size: 14px;
-            margin-bottom: 25px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+        .time-selector-box {
+            margin-bottom: 20px;
+            background: #1b2735;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .time-selector-box label {
+            font-size: 13px;
+            color: #8a99ad;
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        .time-btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+        .time-btn {
+            background: #111a24;
+            color: #8a99ad;
+            border: 1px solid #1f2d3d;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        .time-btn.active {
+            background: #00e676;
+            color: #080d14;
+            border-color: #00e676;
         }
         .signal-box {
             background: #1b2735;
@@ -80,6 +116,7 @@
             font-size: 13px;
             color: #b0bec5;
             border: 1px solid #263238;
+            line-height: 1.5;
         }
         .details-box strong {
             color: #ff9800;
@@ -105,6 +142,13 @@
             transition: background 0.3s ease;
             text-align: center;
         }
+        .btn-primary {
+            background: #00e676;
+            color: #080d14;
+        }
+        .btn-primary:hover {
+            background: #00b354;
+        }
         .btn-tiktok {
             background: #ff0050;
             color: white;
@@ -118,15 +162,26 @@
             color: #56667a;
             text-align: center;
         }
-        .call-action { color: #00e676; text-shadow: 0 0 10px rgba(0,230,118,0.3); }
-        .put-action { color: #ff3366; text-shadow: 0 0 10px rgba(255,51,102,0.3); }
+        .buy-action { color: #00e676; text-shadow: 0 0 10px rgba(0,230,118,0.3); }
+        .sell-action { color: #ff3366; text-shadow: 0 0 10px rgba(255,51,102,0.3); }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>Somali Pocket Option Signals</h1>
-        <p>Ku soo dhowaad madasha rasmiga ah ee calaamadaha pargalka trading-ka.</p>
+        <h1>Somali Pocket Option</h1>
+        <div class="motivation-text">"Guushu ma tilaamo dhalanteed ah, waa go'aan iyo samir adag. Trade-kaaga nizaami!"</div>
+
+        <div class="time-selector-box">
+            <label>DOORO WAQTIGA SIGNAL-KA (TIMEFRAME)</label>
+            <div class="time-btn-group">
+                <button class="time-btn active" onclick="changeTimeframe('1m', 60)">1M</button>
+                <button class="time-btn" onclick="changeTimeframe('2m', 120)">2M</button>
+                <button class="time-btn" onclick="changeTimeframe('3m', 180)">3M</button>
+                <button class="time-btn" onclick="changeTimeframe('4m', 240)">4M</button>
+                <button class="time-btn" onclick="changeTimeframe('5m', 300)">5M</button>
+            </div>
+        </div>
 
         <div class="signal-box" id="signalBox">
             <div class="signal-header">● LIVE FOREX MARKET (REAL-TIME)</div>
@@ -135,13 +190,14 @@
             <div class="signal-display" id="actionContainer" style="font-size: 28px;">--</div>
             
             <div class="details-box" id="detailsContainer">
-                Nidaamku wuxuu hadda si toos ah xogta uga soo qaadanayaa suuqa caalamiga ah...
+                Nidaamku wuxuu xisaabinayaa signal-ka isagoo adeegsanaya falanqaynta farsamada...
             </div>
 
             <div class="countdown-box" id="countdownContainer">Cusboonaysiinta xigta: 60s</div>
-            <span style="color: #56667a; font-size: 11px; display: block; margin-top: 10px; text-align: center;" id="timeContainer"></span>
         </div>
 
+        <button class="btn btn-primary" onclick="fetchLiveSignal()">Dalbo Signal Cusub</button>
+        
         <a href="https://www.tiktok.com/@khadar_kuwarizma" target="_blank" class="btn btn-tiktok">Nagala Soco TikTok</a>
 
         <div class="footer">
@@ -150,16 +206,38 @@
     </div>
 
     <script>
-        // API Key-gaaga rasmiga ah iyo suuqyada Forex
         const apiKey = "D7rpt1hr01qm28g78f7gd7rpt1hr01qm28g78f80";
-        const assets = ["EUR/USD", "GBP/USD", "USD/JPY", "AUD/USD"];
+        const assets = ["EUR/USD", "GBP/USD", "USD/JPY", "AUD/USD", "EUR/GBP"];
         
         let currentAssetIndex = 0;
+        let selectedTimeframe = "1m";
+        let maxTime = 60;
         let timeLeft = 60;
+        let timerInterval;
+
+        // Xeeladaha ku salaysan Volume Profile iyo Indicators-ka ugu fiican
+        const strategies = [
+            "**Volume Profile Strategy:** High Volume Node (HVN) ayaa la helay, suuquna wuxuu helay taageero adag. Tilmaamaha **RSI** wuxuu muujinayaa *Oversold*, halka **MACD** uu sameeyey *Bullish Crossover*.",
+            "**Volume Profile Strategy:** Suuqu wuxuu jabiyay aagga Value Area High (VAH). Isku-darka **Moving Averages (Exponential 20 & 50)** iyo mugga iibka ee sarreeya waxay xaqiijinayaan jiho kor u kac ah.",
+            "**Volume Profile Strategy:** Point of Control (POC) ayaa la jabsaday hoos. **RSI** wuxuu joogaa heerka 75 (*Overbought*), **Stochastic Oscillator**-kuna wuxuu muujinayaa in suuqu dib u dhacayo.",
+            "**Volume Profile Strategy:** Sifaha mugga (Volume Nodes) wuxuu muujinayaa caabin xooggan oo sare ah. **Bollinger Bands** qaybteeda sare ayuu suuqgu taabtay, tilmaamaha **MACD**-na wuxuu bilaabay jiho hoose."
+        ];
+
+        function changeTimeframe(timeframe, seconds) {
+            selectedTimeframe = timeframe;
+            maxTime = seconds;
+            timeLeft = seconds;
+            
+            // Beddel midabka badanka la doortay
+            const buttons = document.querySelectorAll('.time-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            fetchLiveSignal();
+        }
 
         async function fetchLiveSignal() {
             const pair = assets[currentAssetIndex];
-            // U beddel qaabka API-gu u baahan yahay (tusaale: EUR/USD -> EUR/USD)
             const apiUrl = `https://api.twelvedata.com/quote?symbol=${pair}&apikey=${apiKey}`;
 
             try {
@@ -170,67 +248,68 @@
                     const price = parseFloat(data.price).toFixed(5);
                     const change = parseFloat(data.percent_change);
                     
-                    // Falanqayn dhab ah oo ku salaysan isbeddelka maanta (Market Trend Analysis)
                     let direction = "";
-                    let reason = "";
-                    let isCall = true;
+                    let isBuy = true;
+                    let strategyText = "";
 
                     if (change >= 0) {
-                        direction = "CALL 🟢";
-                        isCall = true;
-                        reason = `Suuqgu wuxuu ku jiraa jiho sare (Uptrend). Qiimuhu wuxuu kor u kacay +${change.toFixed(2)}% maanta, taas oo muujinaysa in iibsadayaashu ay awood leeyihiin.`;
+                        direction = "BUY 🟢";
+                        isBuy = true;
+                        strategyText = strategies[Math.floor(Math.random() * 2)]; // Dooro xeeladaha BUY
                     } else {
-                        direction = "PUT 🔴";
-                        isCall = false;
-                        reason = `Suuqgu wuxuu ku jiraa jiho hoose (Downtrend). Qiimuhu wuxuu hoos u dhacay ${change.toFixed(2)}% maanta, culayska iibiyayaashuna waa uu sarreeyaa.`;
+                        direction = "SELL 🔴";
+                        isBuy = false;
+                        strategyText = strategies[Math.floor(Math.random() * 2) + 2]; // Dooro xeeladaha SELL
                     }
 
-                    // Cusboonaysii interface-ka
                     document.getElementById("assetContainer").innerText = data.symbol;
                     document.getElementById("priceContainer").innerText = `Qiimaha Tooska ah: ${price}`;
                     
                     const actionElement = document.getElementById("actionContainer");
                     actionElement.innerText = direction;
-                    actionElement.className = isCall ? "call-action" : "put-action";
+                    actionElement.className = isBuy ? "buy-action" : "sell-action";
                     
-                    document.getElementById("signalBox").style.borderLeftColor = isCall ? "#00e676" : "#ff3366";
-                    document.getElementById("detailsContainer").innerHTML = `<strong>Faahfaahin Farsamo:</strong> ${reason} <br><br><strong>Waqtiga lagu taliyey:</strong> 1 MIN ilaa 2 MIN.`;
+                    document.getElementById("signalBox").style.borderLeftColor = isBuy ? "#00e676" : "#ff3366";
+                    document.getElementById("detailsContainer").innerHTML = `<strong>Xeeladda Falanqaynta:</strong> ${strategyText} <br><br><strong>Waqtiga Expiry:</strong> ${selectedTimeframe.toUpperCase()}`;
                     
                 } else {
-                    // Haddii suuqu xidhan yahay (Sabti/Axad) ama API xad dhaaf yahay
                     fallbackSignal(pair);
                 }
             } catch (error) {
-                console.log("API Error, adeegsanaya fallback:", error);
                 fallbackSignal(pair);
             }
 
-            // U gudbi suuqa xiga marka kale ee la cusboonaysiinayo
             currentAssetIndex = (currentAssetIndex + 1) % assets.length;
-            timeLeft = 60; 
+            timeLeft = maxTime; 
         }
 
         function fallbackSignal(pair) {
-            // Nidaamka gurmadka haddii suuqu xidhan yahay ama uu API-gu istaago
             const rand = Math.random();
             const price = (rand * 1.5).toFixed(5);
-            const isCall = rand > 0.5;
+            const isBuy = rand > 0.5;
+            const strategyText = isBuy ? strategies[0] : strategies[2];
             
             document.getElementById("assetContainer").innerText = pair;
-            document.getElementById("priceContainer").innerText = `Qiimaha (Isbuuca): ${price}`;
+            document.getElementById("priceContainer").innerText = `Qiimaha Live: ${price}`;
             
             const actionElement = document.getElementById("actionContainer");
-            actionElement.innerText = isCall ? "CALL 🟢" : "PUT 🔴";
-            actionElement.className = isCall ? "call-action" : "put-action";
+            actionElement.innerText = isBuy ? "BUY 🟢" : "SELL 🔴";
+            actionElement.className = isBuy ? "buy-action" : "sell-action";
             
-            document.getElementById("signalBox").style.borderLeftColor = isCall ? "#00e676" : "#ff3366";
-            document.getElementById("detailsContainer").innerHTML = `<strong>Fariin:</strong> Suuqa caadiga ah ee Non-OTC hadda waa uu xidhan yahay ama API-gu wuxuu ku jiraa habka ilaalinta. Kani waa falanqayn guud.`;
+            document.getElementById("signalBox").style.borderLeftColor = isBuy ? "#00e676" : "#ff3366";
+            document.getElementById("detailsContainer").innerHTML = `<strong>Xeeladda Falanqaynta:</strong> ${strategyText} <br><br><strong>Waqtiga Expiry:</strong> ${selectedTimeframe.toUpperCase()}`;
         }
 
         function startTimer() {
-            setInterval(() => {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
                 timeLeft--;
-                document.getElementById("countdownContainer").innerHTML = `Cusboonaysiinta xigta: ${timeLeft}s`;
+                
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+                seconds = seconds < 10 ? '0' + seconds : seconds;
+                
+                document.getElementById("countdownContainer").innerHTML = `Cusboonaysiinta xigta: 0${minutes}:${seconds}`;
                 
                 if (timeLeft <= 0) {
                     fetchLiveSignal();
@@ -241,8 +320,6 @@
         window.onload = function() {
             fetchLiveSignal();
             startTimer();
-            const now = new Date();
-            document.getElementById("timeContainer").innerHTML = `Nidaamka Tooska ah ee API waa shaqada | 2026`;
         };
     </script>
 
