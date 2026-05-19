@@ -43,16 +43,23 @@
         }
         .signal-box {
             background: #1b2735;
-            padding: 20px;
+            padding: 25px;
             border-radius: 10px;
             margin-bottom: 25px;
             border-left: 5px solid #00e676;
+            transition: all 0.5s ease;
         }
         .signal-display {
-            font-size: 22px;
+            font-size: 24px;
             font-weight: bold;
             margin: 15px 0;
             letter-spacing: 1px;
+        }
+        .countdown-box {
+            font-size: 14px;
+            color: #ff9800;
+            margin-top: 10px;
+            font-weight: bold;
         }
         .btn {
             display: block;
@@ -67,13 +74,6 @@
             text-decoration: none;
             transition: background 0.3s ease;
         }
-        .btn-primary {
-            background: #00e676;
-            color: #080d14;
-        }
-        .btn-primary:hover {
-            background: #00b354;
-        }
         .btn-tiktok {
             background: #ff0050;
             color: white;
@@ -86,8 +86,8 @@
             font-size: 12px;
             color: #56667a;
         }
-        .call-action { color: #00e676; }
-        .put-action { color: #ff3366; }
+        .call-action { color: #00e676; text-shadow: 0 0 10px rgba(0,230,118,0.3); }
+        .put-action { color: #ff3366; text-shadow: 0 0 10px rgba(255,51,102,0.3); }
     </style>
 </head>
 <body>
@@ -96,13 +96,13 @@
         <h1>Somali Pocket Option Signals</h1>
         <p>Ku soo dhowaad madasha rasmiga ah ee calaamadaha pargalka trading-ka.</p>
 
-        <div class="signal-box">
-            <div style="color: #8a99ad; font-size: 14px; font-weight: bold;">🟢 SIGNAL-KA HADDA JOOGA</div>
-            <div class="signal-display" id="signalContainer">Sugaya Signal-ka...</div>
-            <span style="color: #8a99ad; font-size: 12px;" id="timeContainer">Cusboonaysiinta: 00:00</span>
+        <div class="signal-box" id="signalBox">
+            <div style="color: #8a99ad; font-size: 13px; font-weight: bold; letter-spacing: 1px;">🟢 TOOS / LIVE SIGNAL</div>
+            <div class="signal-display" id="signalContainer">Sugaya nidaamka...</div>
+            <div class="countdown-box" id="countdownContainer">Signal-ka xiga: --:--</div>
+            <span style="color: #56667a; font-size: 11px; display: block; margin-top: 10px;" id="timeContainer"></span>
         </div>
 
-        <button class="btn btn-primary" onclick="generateManualSignal()">Abuur Signal Cusub</button>
         <a href="https://www.tiktok.com/@khadar_kuwarizma" target="_blank" class="btn btn-tiktok">Nagala Soco TikTok</a>
 
         <div class="footer">
@@ -111,27 +111,59 @@
     </div>
 
     <script>
-        const pairs = ["EUR/USD (OTC)", "GBP/USD (OTC)", "AUD/USD (OTC)", "USD/JPY (OTC)", "EUR/GBP (OTC)"];
-        const actions = ["CALL 🟢", "PUT 🔴"];
-        const times = ["1 MIN", "2 MIN", "5 MIN"];
+        // Suuqyada Pocket Option OTC iyo Solana Tokens oo aad la socoto
+        const assets = ["EUR/USD (OTC)", "GBP/USD (OTC)", "USD/JPY (OTC)", "SOL/USDT", "EUR/GBP (OTC)"];
+        const directions = ["CALL 🟢", "PUT 🔴"];
+        const durations = ["1 MIN", "2 MIN"];
+        
+        let timeLeft = 60; // Signal kasta wuxuu ogaanayaa 60 ilbiriqsi (1 daqiiqo)
+        let timerInterval;
 
-        function generateManualSignal() {
-            const randomPair = pairs[Math.floor(Math.random() * pairs.length)];
-            const randomAction = actions[Math.floor(Math.random() * actions.length)];
-            const randomTime = times[Math.floor(Math.random() * times.length)];
+        function generateNewSignal() {
+            // Doorasho random ah
+            const randomAsset = assets[Math.floor(Math.random() * assets.length)];
+            const randomDirection = directions[Math.floor(Math.random() * directions.length)];
+            const randomDuration = durations[Math.floor(Math.random() * durations.length)];
             
-            const actionClass = randomAction.includes("CALL") ? "call-action" : "put-action";
+            const isCall = randomDirection.includes("CALL");
+            const actionClass = isCall ? "call-action" : "put-action";
             
+            // Beddel midabka darbiga bidix iyadoo loo eegayo Call ama Put
+            document.getElementById("signalBox").style.borderLeftColor = isCall ? "#00e676" : "#ff3366";
+            
+            // Ku shub xogta bogga
             document.getElementById("signalContainer").innerHTML = 
-                `${randomPair} <br> <span class="${actionClass}">${randomAction}</span> [${randomTime}]`;
+                `${randomAsset} <br> <span class="${actionClass}">${randomDirection}</span> <br> <span style="font-size:16px; color:#8a99ad;">waqti: ${randomDuration}</span>`;
             
             const now = new Date();
             document.getElementById("timeContainer").innerHTML = `La cusboonaysiiyay: ${now.toLocaleTimeString()}`;
+            
+            // Dib u bilaw waqtiga nidaamka
+            timeLeft = 60; 
         }
 
-        // Si toos ah u bilaw signal-ka ugu horreeya marka boggu furmo
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+                
+                // Ku dar eber haddii ay ka yar tahay 10
+                seconds = seconds < 10 ? '0' + seconds : seconds;
+                
+                document.getElementById("countdownContainer").innerHTML = `Signal-ka xiga: 0${minutes}:${seconds}`;
+                
+                if (timeLeft <= 0) {
+                    generateNewSignal();
+                }
+            }, 1000);
+        }
+
+        // Shid nidaamka marka boggu uu toos u furmo
         window.onload = function() {
-            generateManualSignal();
+            generateNewSignal();
+            startTimer();
         };
     </script>
 
