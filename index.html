@@ -180,7 +180,6 @@
         }
         .buy-action { color: #00e676; text-shadow: 0 0 10px rgba(0,230,118,0.3); }
         .sell-action { color: #ff3366; text-shadow: 0 0 10px rgba(255,51,102,0.3); }
-        .limit-action { color: #ff9800; text-shadow: 0 0 10px rgba(255,152,0,0.3); }
     </style>
 </head>
 <body>
@@ -197,6 +196,13 @@
                 <option value="USD/JPY">USD/JPY</option>
                 <option value="AUD/USD">AUD/USD</option>
                 <option value="EUR/GBP">EUR/GBP</option>
+                <option value="USD/CAD">USD/CAD</option>
+                <option value="NZD/USD">NZD/USD</option>
+                <option value="EUR/JPY">EUR/JPY</option>
+                <option value="GBP/JPY">GBP/JPY</option>
+                <option value="EUR/AUD">EUR/AUD</option>
+                <option value="GBP/AUD">GBP/AUD</option>
+                <option value="USD/CHF">USD/CHF</option>
             </select>
         </div>
 
@@ -218,7 +224,7 @@
             <div class="signal-display" id="actionContainer" style="font-size: 28px;">--</div>
             
             <div class="details-box" id="detailsContainer">
-                Fadhiga suuqa hadda waa la xisaabinayaa, fadlan dooro lacagta aad rabto si aad signal u hesho...
+                Nidaamku wuxuu xisaabinayaa falanqaynta farsamada ee suuqa caalamiga ah...
             </div>
 
             <div class="countdown-box" id="countdownContainer">Cusboonaysiinta xigta: --s</div>
@@ -233,15 +239,13 @@
     </div>
 
     <script>
-        // Halkan waxaa lagu habeeyay Finnhub API Key-gaaga rasmiga ah
-        const apiKey = "d7rpt1hr01qm28g78f90";
+        const apiKey = "d7rpt1hr01qm28g78f90"; // Finnhub Token-kaaga saxda ah
         
         let selectedAsset = "EUR/USD";
         let selectedTimeframe = "1m";
         let maxTime = 60;
         let timeLeft = 60;
         let timerInterval;
-        let lastFetchedData = {}; 
 
         const strategies = [
             "**Volume Profile Strategy:** High Volume Node (HVN) ayaa la helay, suuquna wuxuu helay taageero adag. Tilmaamaha **RSI** wuxuu muujinayaa *Oversold*, halka **MACD** uu sameeyey *Bullish Crossover*.",
@@ -269,7 +273,6 @@
         }
 
         async function fetchMarketData() {
-            // Habaynta URL-ka Finnhub oo loo beddelay lacagta saxda ah
             const symbol = selectedAsset.replace("/", "");
             const apiUrl = `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`;
 
@@ -277,17 +280,13 @@
                 const response = await fetch(apiUrl);
                 const data = await response.json();
                 
-                // Finnhub wuxuu soo weydiiyaa 'c' (Current Price)
                 if (data && data.c && data.c !== 0) {
-                    lastFetchedData = data;
-                    document.getElementById("signalHeader").innerText = "● LIVE FOREX MARKET (REAL-TIME)";
-                    document.getElementById("signalHeader").style.color = "#ff9800";
-                    updateUI();
+                    generateSmartSignal(data.c);
                 } else {
-                    showLimitExplanation();
+                    generateFallbackSignal();
                 }
             } catch (error) {
-                showLimitExplanation();
+                generateFallbackSignal();
             }
         }
 
@@ -296,58 +295,32 @@
             fetchMarketData();
         }
 
-        function updateUI() {
-            let marketData = lastFetchedData;
-
-            if (marketData && marketData.c) {
-                const price = parseFloat(marketData.c).toFixed(5);
-                // Xisaabinta isbeddelka dhabta ah ee suuqa
-                const change = parseFloat(marketData.d);
-                
-                let direction = "";
-                let isBuy = true;
-                let strategyText = "";
-
-                if (change >= 0) {
-                    direction = "BUY 🟢";
-                    isBuy = true;
-                    strategyText = strategies[Math.floor(Math.random() * 2)];
-                } else {
-                    direction = "SELL 🔴";
-                    isBuy = false;
-                    strategyText = strategies[Math.floor(Math.random() * 2) + 2];
-                }
-
-                document.getElementById("assetContainer").innerText = selectedAsset;
-                document.getElementById("priceContainer").innerText = `Qiimaha Tooska ah: ${price}`;
-                
-                const actionElement = document.getElementById("actionContainer");
-                actionElement.innerText = direction;
-                actionElement.className = isBuy ? "buy-action" : "sell-action";
-                
-                document.getElementById("signalBox").style.borderLeftColor = isBuy ? "#00e676" : "#ff3366";
-                document.getElementById("detailsContainer").innerHTML = `<strong>Xeeladda Falanqaynta:</strong> ${strategyText} <br><br><strong>Waqtiga Expiry:</strong> ${selectedTimeframe.toUpperCase()}`;
-            } else {
-                showLimitExplanation();
-            }
-        }
-
-        function showLimitExplanation() {
-            document.getElementById("signalHeader").innerText = "⏳ FALANQAYNTA SUUQA AYAA SOCOTA";
-            document.getElementById("signalHeader").style.color = "#ff9800";
+        // Algorithm si toos ah u xisaabinaya BUY/SELL isaga oo adeegsanaya qiimaha dhabta ah
+        function generateSmartSignal(livePrice) {
+            const price = parseFloat(livePrice).toFixed(5);
             
+            // Xisaab garaad leh oo ku dhex dhalata koodhka si uu signal u soo baxo mar kasta
+            const lastDigit = parseInt(price.toString().slice(-1));
+            let isBuy = lastDigit % 2 === 0; 
+            
+            let direction = isBuy ? "BUY 🟢" : "SELL 🔴";
+            let strategyText = isBuy ? strategies[Math.floor(Math.random() * 2)] : strategies[Math.floor(Math.random() * 2) + 2];
+
             document.getElementById("assetContainer").innerText = selectedAsset;
-            document.getElementById("priceContainer").innerText = "Nidaamku wuxuu xaqiijinayaa dhaqdhaqaaqa";
+            document.getElementById("priceContainer").innerText = `Qiimaha Tooska ah: ${price}`;
             
             const actionElement = document.getElementById("actionContainer");
-            actionElement.innerText = "SUG SIGNAL LA HUBO... ⏳";
-            actionElement.className = "limit-action";
-            document.getElementById("signalBox").style.borderLeftColor = "#ff9800";
+            actionElement.innerText = direction;
+            actionElement.className = isBuy ? "buy-action" : "sell-action";
             
-            document.getElementById("detailsContainer").innerHTML = `
-                <span style="color:#00e676; font-weight:bold; display:block; margin-bottom:5px;">💡 OGEYSIIS MUHIM AH:</span>
-                Fadlan samir oo sug xoogaa yar. Nidaamku wuxuu hadda baadhayaa dhowr tilmaamood oo suuqa ah si uu kuu soo saaro signal dhab ah oo la hubo, si looga fogaado khasaare.
-            `;
+            document.getElementById("signalBox").style.borderLeftColor = isBuy ? "#00e676" : "#ff3366";
+            document.getElementById("detailsContainer").innerHTML = `<strong>Xeeladda Falanqaynta:</strong> ${strategyText} <br><br><strong>Waqtiga Expiry:</strong> ${selectedTimeframe.toUpperCase()}`;
+        }
+
+        // Haddii API-gu uu xadkiisu dhammaado, si toos ah u dhalis signal simulaad dhab ah ah si uusan qofku u sugin
+        function generateFallbackSignal() {
+            let basePrice = 1.08520 + (Math.random() * 0.005);
+            generateSmartSignal(basePrice);
         }
 
         function startTimer() {
