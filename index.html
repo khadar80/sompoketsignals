@@ -190,14 +190,13 @@
             <div class="signal-display" id="actionContainer" style="font-size: 28px;">--</div>
             
             <div class="details-box" id="detailsContainer">
-                Nidaamku wuxuu xisaabinayaa signal-ka isagoo adeegsanaya falanqaynta farsamada...
+                Nidaamku wuxuu xisaabinayaa xogta dhabta ah ee suuqa caalamiga ah...
             </div>
 
-            <div class="countdown-box" id="countdownContainer">Cusboonaysiinta xigta: 60s</div>
+            <div class="countdown-box" id="countdownContainer">Cusboonaysiinta xigta: --s</div>
         </div>
 
-        <button class="btn btn-primary" onclick="fetchLiveSignal()">Dalbo Signal Cusub</button>
-        
+        <button class="btn btn-primary" onclick="triggerManualFetch()">Dalbo Signal Cusub</button>
         <a href="https://www.tiktok.com/@khadar_kuwarizma" target="_blank" class="btn btn-tiktok">Nagala Soco TikTok</a>
 
         <div class="footer">
@@ -214,11 +213,11 @@
         let maxTime = 60;
         let timeLeft = 60;
         let timerInterval;
+        let lastFetchedData = {}; // Meesha lagu kaydinayo xogta dhabta ah
 
-        // Xeeladaha ku salaysan Volume Profile iyo Indicators-ka ugu fiican
         const strategies = [
             "**Volume Profile Strategy:** High Volume Node (HVN) ayaa la helay, suuquna wuxuu helay taageero adag. Tilmaamaha **RSI** wuxuu muujinayaa *Oversold*, halka **MACD** uu sameeyey *Bullish Crossover*.",
-            "**Volume Profile Strategy:** Suuqu wuxuu jabiyay aagga Value Area High (VAH). Isku-darka **Moving Averages (Exponential 20 & 50)** iyo mugga iibka ee sarreeya waxay xaqiijinayaan jiho kor u kac ah.",
+            "**Volume Profile Strategy:** Suuqu wuxoo jabiyay aagga Value Area High (VAH). Isku-darka **Moving Averages (EMA 20/50)** iyo mugga iibka ee sarreeya waxay xaqiijinayaan jiho kor u kac ah.",
             "**Volume Profile Strategy:** Point of Control (POC) ayaa la jabsaday hoos. **RSI** wuxuu joogaa heerka 75 (*Overbought*), **Stochastic Oscillator**-kuna wuxuu muujinayaa in suuqu dib u dhacayo.",
             "**Volume Profile Strategy:** Sifaha mugga (Volume Nodes) wuxuu muujinayaa caabin xooggan oo sare ah. **Bollinger Bands** qaybteeda sare ayuu suuqgu taabtay, tilmaamaha **MACD**-na wuxuu bilaabay jiho hoose."
         ];
@@ -228,76 +227,74 @@
             maxTime = seconds;
             timeLeft = seconds;
             
-            // Beddel midabka badanka la doortay
             const buttons = document.querySelectorAll('.time-btn');
             buttons.forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
             
-            fetchLiveSignal();
+            updateUI();
         }
 
-        async function fetchLiveSignal() {
-            const pair = assets[currentAssetIndex];
-            const apiUrl = `https://api.twelvedata.com/quote?symbol=${pair}&apikey=${apiKey}`;
+        async function fetchMarketData() {
+            // Waxaan hal mara wacaynaa suuqyada oo dhan si aan u ilaalinno xadka API-ga
+            const symbols = assets.join(',');
+            const apiUrl = `https://api.twelvedata.com/quote?symbol=${symbols}&apikey=${apiKey}`;
 
             try {
                 const response = await fetch(apiUrl);
                 const data = await response.json();
-
-                if (data.symbol) {
-                    const price = parseFloat(data.price).toFixed(5);
-                    const change = parseFloat(data.percent_change);
-                    
-                    let direction = "";
-                    let isBuy = true;
-                    let strategyText = "";
-
-                    if (change >= 0) {
-                        direction = "BUY 🟢";
-                        isBuy = true;
-                        strategyText = strategies[Math.floor(Math.random() * 2)]; // Dooro xeeladaha BUY
-                    } else {
-                        direction = "SELL 🔴";
-                        isBuy = false;
-                        strategyText = strategies[Math.floor(Math.random() * 2) + 2]; // Dooro xeeladaha SELL
-                    }
-
-                    document.getElementById("assetContainer").innerText = data.symbol;
-                    document.getElementById("priceContainer").innerText = `Qiimaha Tooska ah: ${price}`;
-                    
-                    const actionElement = document.getElementById("actionContainer");
-                    actionElement.innerText = direction;
-                    actionElement.className = isBuy ? "buy-action" : "sell-action";
-                    
-                    document.getElementById("signalBox").style.borderLeftColor = isBuy ? "#00e676" : "#ff3366";
-                    document.getElementById("detailsContainer").innerHTML = `<strong>Xeeladda Falanqaynta:</strong> ${strategyText} <br><br><strong>Waqtiga Expiry:</strong> ${selectedTimeframe.toUpperCase()}`;
-                    
-                } else {
-                    fallbackSignal(pair);
+                
+                // Haddii xogtu si sax ah u timaado, ku kaydi variable-ka guud
+                if (data) {
+                    lastFetchedData = data;
+                    updateUI();
                 }
             } catch (error) {
-                fallbackSignal(pair);
+                console.log("API Fetch Error:", error);
             }
-
-            currentAssetIndex = (currentAssetIndex + 1) % assets.length;
-            timeLeft = maxTime; 
         }
 
-        function fallbackSignal(pair) {
-            const rand = Math.random();
-            const price = (rand * 1.5).toFixed(5);
-            const isBuy = rand > 0.5;
-            const strategyText = isBuy ? strategies[0] : strategies[2];
-            
-            document.getElementById("assetContainer").innerText = pair;
-            document.getElementById("priceContainer").innerText = `Qiimaha Live: ${price}`;
-            
-            const actionElement = document.getElementById("actionContainer");
-            actionElement.innerText = isBuy ? "BUY 🟢" : "SELL 🔴";
-            actionElement.className = isBuy ? "buy-action" : "sell-action";
-            
-            document.getElementById("signalBox").style.borderLeftColor = isBuy ? "#00e676" : "#ff3366";
-            document.getElementById("detailsContainer").innerHTML = `<strong>Xeeladda Falanqaynta:</strong> ${strategyText} <br><br><strong>Waqtiga Expiry:</strong> ${selectedTimeframe.toUpperCase()}`;
+        function triggerManualFetch() {
+            currentAssetIndex = (currentAssetIndex + 1) % assets.length;
+            timeLeft = maxTime;
+            updateUI();
+        }
+
+        function updateUI() {
+            const pair = assets[currentAssetIndex];
+            let marketData = lastFetchedData[pair] || lastFetchedData;
+
+            // Haddii API-gu uu xog sax ah keenay
+            if (marketData && marketData.symbol === pair) {
+                const price = parseFloat(marketData.price).toFixed(5);
+                const change = parseFloat(marketData.percent_change);
+                
+                let direction = "";
+                let isBuy = true;
+                let strategyText = "";
+
+                if (change >= 0) {
+                    direction = "BUY 🟢";
+                    isBuy = true;
+                    strategyText = strategies[Math.floor(Math.random() * 2)];
+                } else {
+                    direction = "SELL 🔴";
+                    isBuy = false;
+                    strategyText = strategies[Math.floor(Math.random() * 2) + 2];
+                }
+
+                document.getElementById("assetContainer").innerText = marketData.symbol;
+                document.getElementById("priceContainer").innerText = `Qiimaha Tooska ah: ${price}`;
+                
+                const actionElement = document.getElementById("actionContainer");
+                actionElement.innerText = direction;
+                actionElement.className = isBuy ? "buy-action" : "sell-action";
+                
+                document.getElementById("signalBox").style.borderLeftColor = isBuy ? "#00e676" : "#ff3366";
+                document.getElementById("detailsContainer").innerHTML = `<strong>Xeeladda Falanqaynta:</strong> ${strategyText} <br><br><strong>Waqtiga Expiry:</strong> ${selectedTimeframe.toUpperCase()}`;
+            } else {
+                // Gurmad nidaamsan haddii API-gu wali dhiman yahay (Laakiin aan xog been ah keenayn)
+                document.getElementById("priceContainer").innerText = `Qiimaha: Isku xidhka API...`;
+            }
         }
 
         function startTimer() {
@@ -312,13 +309,20 @@
                 document.getElementById("countdownContainer").innerHTML = `Cusboonaysiinta xigta: 0${minutes}:${seconds}`;
                 
                 if (timeLeft <= 0) {
-                    fetchLiveSignal();
+                    currentAssetIndex = (currentAssetIndex + 1) % assets.length;
+                    timeLeft = maxTime;
+                    updateUI();
+                }
+                
+                // 5-tii daqiiqadoodba mar nidaamku suuqa rasmiga ah ha ka soo qaado xog cusub (Si loo dhowro API-ga)
+                if (timeLeft % 300 === 0) {
+                    fetchMarketData();
                 }
             }, 1000);
         }
 
         window.onload = function() {
-            fetchLiveSignal();
+            fetchMarketData();
             startTimer();
         };
     </script>
