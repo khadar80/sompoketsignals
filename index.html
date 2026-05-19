@@ -39,22 +39,37 @@
         .motivation-text {
             color: #00e676;
             font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            font-style: italic;
+            font-weight: 600;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            padding: 0 10px;
         }
-        .time-selector-box {
-            margin-bottom: 20px;
+        .selector-box {
+            margin-bottom: 18px;
             background: #1b2735;
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
+            text-align: left;
         }
-        .time-selector-box label {
-            font-size: 13px;
+        .selector-box label {
+            font-size: 12px;
             color: #8a99ad;
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+        .select-input {
+            width: 100%;
+            padding: 10px;
+            background: #111a24;
+            border: 1px solid #1f2d3d;
+            border-radius: 6px;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: bold;
+            outline: none;
+            cursor: pointer;
         }
         .time-btn-group {
             display: flex;
@@ -62,10 +77,11 @@
             gap: 8px;
         }
         .time-btn {
+            flex: 1;
             background: #111a24;
             color: #8a99ad;
             border: 1px solid #1f2d3d;
-            padding: 6px 12px;
+            padding: 8px 0;
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
@@ -110,13 +126,13 @@
         }
         .details-box {
             background: #111a24;
-            padding: 12px;
+            padding: 15px;
             border-radius: 6px;
             margin-top: 15px;
             font-size: 13px;
             color: #b0bec5;
             border: 1px solid #263238;
-            line-height: 1.5;
+            line-height: 1.6;
         }
         .details-box strong {
             color: #ff9800;
@@ -164,15 +180,27 @@
         }
         .buy-action { color: #00e676; text-shadow: 0 0 10px rgba(0,230,118,0.3); }
         .sell-action { color: #ff3366; text-shadow: 0 0 10px rgba(255,51,102,0.3); }
+        .limit-action { color: #ff9800; text-shadow: 0 0 10px rgba(255,152,0,0.3); }
     </style>
 </head>
 <body>
 
     <div class="container">
         <h1>Somali Pocket Option</h1>
-        <div class="motivation-text">"Guushu ma tilaamo dhalanteed ah, waa go'aan iyo samir adag. Trade-kaaga nizaami!"</div>
+        <div class="motivation-text">"Guushu kuma timaaddo dhalanteed iyo hami fadhiid ah, waxay ku dhalataa go'aan adag, samir iyo edbin ganacsi. Maareey maalkaaga!"</div>
 
-        <div class="time-selector-box">
+        <div class="selector-box">
+            <label>DOORO LACCAGTA AAD RABTO (ASSET)</label>
+            <select class="select-input" id="assetSelector" onchange="onAssetChange()">
+                <option value="EUR/USD">EUR/USD (Euro / US Dollar)</option>
+                <option value="GBP/USD">GBP/USD (British Pound / US Dollar)</option>
+                <option value="USD/JPY">USD/JPY (US Dollar / Japanese Yen)</option>
+                <option value="AUD/USD">AUD/USD (Australian Dollar / US Dollar)</option>
+                <option value="EUR/GBP">EUR/GBP (Euro / British Pound)</option>
+            </select>
+        </div>
+
+        <div class="selector-box">
             <label>DOORO WAQTIGA SIGNAL-KA (TIMEFRAME)</label>
             <div class="time-btn-group">
                 <button class="time-btn active" onclick="changeTimeframe('1m', 60)">1M</button>
@@ -184,13 +212,13 @@
         </div>
 
         <div class="signal-box" id="signalBox">
-            <div class="signal-header">● LIVE FOREX MARKET (REAL-TIME)</div>
+            <div class="signal-header" id="signalHeader">● LIVE FOREX MARKET (REAL-TIME)</div>
             <div class="signal-display" id="assetContainer">EUR/USD</div>
             <div class="price-display" id="priceContainer">Qiimaha: Sugaya...</div>
             <div class="signal-display" id="actionContainer" style="font-size: 28px;">--</div>
             
             <div class="details-box" id="detailsContainer">
-                Nidaamku wuxuu xisaabinayaa xogta dhabta ah ee suuqa caalamiga ah...
+                Fadhiga suuqa hadda waa la xisaabinayaa, fadlan dooro lacagta aad rabto si aad signal u hesho...
             </div>
 
             <div class="countdown-box" id="countdownContainer">Cusboonaysiinta xigta: --s</div>
@@ -206,14 +234,13 @@
 
     <script>
         const apiKey = "D7rpt1hr01qm28g78f7gd7rpt1hr01qm28g78f80";
-        const assets = ["EUR/USD", "GBP/USD", "USD/JPY", "AUD/USD", "EUR/GBP"];
         
-        let currentAssetIndex = 0;
+        let selectedAsset = "EUR/USD";
         let selectedTimeframe = "1m";
         let maxTime = 60;
         let timeLeft = 60;
         let timerInterval;
-        let lastFetchedData = {}; // Meesha lagu kaydinayo xogta dhabta ah
+        let lastFetchedData = {}; 
 
         const strategies = [
             "**Volume Profile Strategy:** High Volume Node (HVN) ayaa la helay, suuquna wuxuu helay taageero adag. Tilmaamaha **RSI** wuxuu muujinayaa *Oversold*, halka **MACD** uu sameeyey *Bullish Crossover*.",
@@ -222,6 +249,12 @@
             "**Volume Profile Strategy:** Sifaha mugga (Volume Nodes) wuxuu muujinayaa caabin xooggan oo sare ah. **Bollinger Bands** qaybteeda sare ayuu suuqgu taabtay, tilmaamaha **MACD**-na wuxuu bilaabay jiho hoose."
         ];
 
+        function onAssetChange() {
+            selectedAsset = document.getElementById("assetSelector").value;
+            timeLeft = maxTime;
+            fetchMarketData();
+        }
+
         function changeTimeframe(timeframe, seconds) {
             selectedTimeframe = timeframe;
             maxTime = seconds;
@@ -229,42 +262,42 @@
             
             const buttons = document.querySelectorAll('.time-btn');
             buttons.forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            if(event) event.target.classList.add('active');
             
-            updateUI();
+            fetchMarketData();
         }
 
         async function fetchMarketData() {
-            // Waxaan hal mara wacaynaa suuqyada oo dhan si aan u ilaalinno xadka API-ga
-            const symbols = assets.join(',');
-            const apiUrl = `https://api.twelvedata.com/quote?symbol=${symbols}&apikey=${apiKey}`;
+            const apiUrl = `https://api.twelvedata.com/quote?symbol=${selectedAsset}&apikey=${apiKey}`;
 
             try {
                 const response = await fetch(apiUrl);
                 const data = await response.json();
                 
-                // Haddii xogtu si sax ah u timaado, ku kaydi variable-ka guud
-                if (data) {
+                if (data.code === 429 || data.status === "error") {
+                    showLimitExplanation();
+                } else if (data && data.symbol === selectedAsset) {
                     lastFetchedData = data;
+                    document.getElementById("signalHeader").innerText = "● LIVE FOREX MARKET (REAL-TIME)";
+                    document.getElementById("signalHeader").style.color = "#ff9800";
                     updateUI();
+                } else {
+                    showLimitExplanation();
                 }
             } catch (error) {
-                console.log("API Fetch Error:", error);
+                showLimitExplanation();
             }
         }
 
         function triggerManualFetch() {
-            currentAssetIndex = (currentAssetIndex + 1) % assets.length;
             timeLeft = maxTime;
-            updateUI();
+            fetchMarketData();
         }
 
         function updateUI() {
-            const pair = assets[currentAssetIndex];
-            let marketData = lastFetchedData[pair] || lastFetchedData;
+            let marketData = lastFetchedData;
 
-            // Haddii API-gu uu xog sax ah keenay
-            if (marketData && marketData.symbol === pair) {
+            if (marketData && marketData.symbol === selectedAsset) {
                 const price = parseFloat(marketData.price).toFixed(5);
                 const change = parseFloat(marketData.percent_change);
                 
@@ -292,9 +325,28 @@
                 document.getElementById("signalBox").style.borderLeftColor = isBuy ? "#00e676" : "#ff3366";
                 document.getElementById("detailsContainer").innerHTML = `<strong>Xeeladda Falanqaynta:</strong> ${strategyText} <br><br><strong>Waqtiga Expiry:</strong> ${selectedTimeframe.toUpperCase()}`;
             } else {
-                // Gurmad nidaamsan haddii API-gu wali dhiman yahay (Laakiin aan xog been ah keenayn)
-                document.getElementById("priceContainer").innerText = `Qiimaha: Isku xidhka API...`;
+                showLimitExplanation();
             }
+        }
+
+        function showLimitExplanation() {
+            document.getElementById("signalHeader").innerText = "⚠️ SYSTEM API LIMIT REACHED";
+            document.getElementById("signalHeader").style.color = "#ff3366";
+            
+            document.getElementById("assetContainer").innerText = selectedAsset;
+            document.getElementById("priceContainer").innerText = "Xaddid daqiiqadeedkii baa buuxsamay";
+            
+            const actionElement = document.getElementById("actionContainer");
+            actionElement.innerText = "WAIT / SUG ⏳";
+            actionElement.className = "limit-action";
+            document.getElementById("signalBox").style.borderLeftColor = "#ff9800";
+            
+            document.getElementById("detailsContainer").innerHTML = `
+                <span style="color:#ff9800; font-weight:bold; display:block; margin-bottom:5px;">💡 KUU BARO INDICATOR: RSI (Relative Strength Index)</span>
+                Inta uu nidaamku dib u soo cusboonaysiinayo signalada dhabta ah, baro xeeladdan adiga kugu caawinaysa Pocket Option:<br><br>
+                • <strong>Heerka 70 (Overbought):</strong>/ Qaali: Haddii xariiqda RSI ay dhaafto 70, suuqu aad buu u qaaliyoobay. Ka filo inuu hoos u dhaco, markaa isu diyaari <strong>SELL 🔴</strong>.<br>
+                • <strong>Heerka 30 (Oversold):</strong>/ Jaban: Haddii xariiqda RSI ay ka hoos marto 30, suuqu aad buu u jaban yahay. Ka filo inuu dib u soo kaco, markaa isu diyaari <strong>BUY 🟢</strong>.
+            `;
         }
 
         function startTimer() {
@@ -309,13 +361,7 @@
                 document.getElementById("countdownContainer").innerHTML = `Cusboonaysiinta xigta: 0${minutes}:${seconds}`;
                 
                 if (timeLeft <= 0) {
-                    currentAssetIndex = (currentAssetIndex + 1) % assets.length;
                     timeLeft = maxTime;
-                    updateUI();
-                }
-                
-                // 5-tii daqiiqadoodba mar nidaamku suuqa rasmiga ah ha ka soo qaado xog cusub (Si loo dhowro API-ga)
-                if (timeLeft % 300 === 0) {
                     fetchMarketData();
                 }
             }, 1000);
