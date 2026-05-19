@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>100% Live Pure Signal Engine - Pro</title>
+    <title>100% Live Pure Signal Engine - Fixed</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -65,7 +65,6 @@
         }
         select:focus { border-color: #00e676; }
         
-        /* Signal Screen Dashboard */
         .signal-display {
             background: #172237;
             padding: 25px 10px;
@@ -82,12 +81,11 @@
             text-transform: uppercase;
             margin-bottom: 5px;
             color: #8a99ad;
-            transition: color 0.3s ease;
         }
         .live-price {
-            font-size: 24px;
+            font-size: 26px;
             font-family: monospace;
-            color: #ffffff;
+            color: #00e676;
             font-weight: bold;
         }
         .pulse-dot {
@@ -101,7 +99,6 @@
             box-shadow: 0 0 8px #00e676;
         }
 
-        /* Live Metrics Grid */
         .metrics-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -134,9 +131,7 @@
             font-weight: bold;
             border-radius: 8px;
             font-size: 15px;
-            transition: background 0.2s;
         }
-        .btn-action:hover { background: #1ebd54; }
         .footer-text {
             font-size: 11px;
             color: #475569;
@@ -174,7 +169,6 @@
                     <option value="1m">1 Daqiiqo (1M)</option>
                     <option value="5m">5 Daqiiqo (5M)</option>
                     <option value="15m">15 Daqiiqo (15M)</option>
-                    <option value="1h">1 Saac (1H)</option>
                 </select>
             </div>
         </div>
@@ -182,7 +176,7 @@
         <div class="signal-display">
             <div class="pulse-dot" id="livePulse"></div>
             <div class="signal-status" id="signalOutput">ANALYZING</div>
-            <div class="live-price" id="priceOutput">0.00000</div>
+            <div class="live-price" id="priceOutput">Loading...</div>
         </div>
 
         <div class="metrics-grid">
@@ -200,51 +194,42 @@
             <i class="fab fa-whatsapp"></i> Caawinaad Toos Ah (WhatsApp)
         </a>
 
-        <div class="footer-text">&copy; 2026 SomaliPocketOption | Challenge Version v3.0</div>
+        <div class="footer-text">&copy; 2026 SomaliPocketOption | Challenge Version v3.1</div>
     </div>
 
     <script>
         let ws;
         let currentPair = "eurusd";
         let priceHistory = [];
-        
-        // Nidaamka Signal Lock (Si uusan signal-ku u ruxruxmin uuna u fadhiisto)
         let lastSignal = "WAIT";
         let signalLockTime = 0;
-        const LOCK_DURATION = 15000; // Wuxuu fadhiyayaa 15 ilbiriqsi ugu yaraan ka hor inta uusan isbeddelin
+        const LOCK_DURATION = 15000;
 
+        // DYNAMIC FIX: Khadar, halkan waxaa ku dhex jira mashiinka u beddelaya magacyada si toos ah WebSocket-ka Binance
         function connectWebSocket() {
-            if (ws) { ws.close(); }
+            if (ws) {
+                ws.close(); // Xir dhuumihii pair-kii hore si aysan xogtu ugu dhex xayirmin!
+            }
 
-            // Isku xirka dhuumaha tooska ah ee dunida
-            let symbol = currentPair === "usdjpy" ? "usdtjpy" : currentPair + "t"; 
-            if(currentPair === "eurusd") symbol = "eurusdt";
-            if(currentPair === "gbpusd") symbol = "gbpusdt";
-            if(currentPair === "audusd") symbol = "audusdt";
-            if(currentPair === "usdcad") symbol = "usdcadt";
-            if(currentPair === "nzdusd") symbol = "nzdusdt";
-            if(currentPair === "usdchf") symbol = "usdchft";
-            if(currentPair === "eurgbp") symbol = "eurgbpt";
-            if(currentPair === "eurjpy") symbol = "eurjpyt";
-            if(currentPair === "gbpjpy") symbol = "gbpjpyt";
-            if(currentPair === "euraud") symbol = "euraudt";
-            if(currentPair === "gbpaud") symbol = "gbpaudt";
+            let symbol = currentPair + "t"; // eurusdt, gbpusdt, jne.
+            if (currentPair === "usdjpy") symbol = "usdtjpy"; // Binance inversion mapping
 
             ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol}@ticker`);
 
             ws.onmessage = (event) => {
                 const data = JSON.parse(event.data);
+                if(!data.c) return;
+                
                 const price = parseFloat(data.c);
                 
+                // Soo saar qiimaha saxda ah ee pair-ka hadda furan
                 document.getElementById("priceOutput").innerText = price.toFixed(currentPair.includes("jpy") ? 3 : 5);
                 
                 priceHistory.push(price);
-                // Marka loo eego Timeframe-ka, waxaan weyneynaynaa taariikhda xogta la kaydiyo
                 const tf = document.getElementById("timeframeSelect").value;
                 let maxHistory = 40;
                 if(tf === "5m") maxHistory = 80;
                 if(tf === "15m") maxHistory = 150;
-                if(tf === "1h") maxHistory = 300;
 
                 if (priceHistory.length > maxHistory) {
                     priceHistory.shift();
@@ -252,9 +237,12 @@
 
                 calculateMatrix();
             };
+
+            ws.onerror = (err) => {
+                console.error("WebSocket Error: ", err);
+            };
         }
 
-        // Xisaabinta RSI Dhabta ah
         function calculateRSI(period = 14) {
             if (priceHistory.length < period + 1) return 50.00;
             let gains = 0; let losses = 0;
@@ -266,7 +254,6 @@
             return 100 - (100 / (1 + (gains / losses)));
         }
 
-        // Xisaabinta Moving Average (Trend Direction)
         function calculateMA(period) {
             if (priceHistory.length < period) return 0;
             let subArray = priceHistory.slice(-period);
@@ -281,7 +268,6 @@
 
             document.getElementById("rsiVal").innerText = rsi.toFixed(2);
 
-            // Xisaabinta Trend-ka dhabta ah
             let trend = "NEUTRAL";
             const trendElement = document.getElementById("trendVal");
             if (maFast > maSlow && maFast !== 0) {
@@ -300,13 +286,10 @@
             const signalElement = document.getElementById("signalOutput");
             const currentTime = Date.now();
 
-            // NIDAMKA LOCKING SYSTEM (Halkan ayay guushu ku jirtaa!)
-            // Haddii signal-kii hore uu weli ku jiro waqtigii lock-erka, ha beddelin go'aanka
             if (currentTime - signalLockTime < LOCK_DURATION && lastSignal !== "WAIT") {
                 return; 
             }
 
-            // Go'aanka cusub ee algorithm-ka
             let currentDecision = "WAIT";
 
             if (rsi < 42 && trend === "BULLISH" && currentPrice > maFast) {
@@ -315,39 +298,40 @@
                 currentDecision = "SELL";
             }
 
-            // Haddii uu signal-ku isbeddelo oo uu noqdo BUY ama SELL, quful (lock) saar si uu u fadhiisto
             if (currentDecision !== lastSignal) {
                 lastSignal = currentDecision;
                 signalElement.innerText = currentDecision;
                 
                 if (currentDecision === "BUY") {
                     signalElement.style.color = "#00e676";
-                    signalLockTime = currentTime; // Kici qufulka 15-ka ilbiriqsi ah
+                    signalLockTime = currentTime;
                 } else if (currentDecision === "SELL") {
                     signalElement.style.color = "#ef4444";
-                    signalLockTime = currentTime; // Kici qufulka 15-ka ilbiriqsi ah
+                    signalLockTime = currentTime;
                 } else {
                     signalElement.style.color = "#8a99ad";
                 }
             }
         }
 
+        // MAR KASTA OO AAD PAIR-KA BEDDESHO KAN AYAA KICI DOONA
         function switchAsset() {
             currentPair = document.getElementById("pairSelect").value;
             priceHistory = [];
             lastSignal = "WAIT";
             signalLockTime = 0;
+            document.getElementById("priceOutput").innerText = "Connecting...";
             document.getElementById("signalOutput").innerText = "ANALYZING";
             document.getElementById("signalOutput").style.color = "#8a99ad";
-            connectWebSocket();
+            
+            connectWebSocket(); // Kici dynamic connection-ka cusub!
         }
 
         window.onload = () => {
             connectWebSocket();
-            // Pulse animatinn oo muujinaya inuu 100% live yahay
             setInterval(() => {
                 const dot = document.getElementById("livePulse");
-                dot.style.opacity = dot.style.opacity === "0.3" ? "1" : "0.3";
+                if(dot) dot.style.opacity = dot.style.opacity === "0.3" ? "1" : "0.3";
             }, 500);
         };
     </script>
