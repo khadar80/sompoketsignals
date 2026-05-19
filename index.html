@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Somali Signals 🇸🇴</title>
+    <title>Somali Signals Hub 🇸🇴</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -12,7 +12,7 @@
             padding: 0;
         }
         body {
-            background-color: #080d14;
+            background-color: #06090e;
             color: #e8f0fe;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
@@ -20,18 +20,17 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            padding: 10px;
+            padding: 15px;
         }
         .container {
-            max-width: 500px;
+            max-width: 520px;
             width: 100%;
-            background: #111a24;
+            background: #0f1622;
             padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
             text-align: center;
-            border: 1px solid #1f2d3d;
-            overflow: hidden;
+            border: 1px solid #1e293b;
         }
         h1 {
             font-size: 26px;
@@ -50,24 +49,24 @@
             line-height: 1.5;
         }
         
-        /* Live Ticker Tape Container */
+        /* Live Ticker Tape Style */
         .ticker-wrapper {
             margin-bottom: 15px;
             border-radius: 8px;
             overflow: hidden;
-            border: 1px solid #1f2d3d;
+            border: 1px solid #1e293b;
         }
 
         .selector-box {
             margin-bottom: 15px;
-            background: #1b2735;
+            background: #172237;
             padding: 12px;
             border-radius: 8px;
             text-align: left;
         }
         .selector-box label {
             font-size: 11px;
-            color: #8a99ad;
+            color: #94a3b8;
             display: block;
             margin-bottom: 6px;
             font-weight: bold;
@@ -76,8 +75,8 @@
         .select-input {
             width: 100%;
             padding: 10px;
-            background: #111a24;
-            border: 1px solid #1f2d3d;
+            background: #0f1622;
+            border: 1px solid #1e293b;
             border-radius: 6px;
             color: #ffffff;
             font-size: 15px;
@@ -86,6 +85,7 @@
             cursor: pointer;
         }
         
+        /* Timeframe Group */
         .time-btn-group {
             display: flex;
             justify-content: center;
@@ -94,9 +94,9 @@
         }
         .time-btn {
             flex: 1;
-            background: #111a24;
-            color: #8a99ad;
-            border: 1px solid #1f2d3d;
+            background: #0f1622;
+            color: #94a3b8;
+            border: 1px solid #1e293b;
             padding: 8px 0;
             border-radius: 5px;
             cursor: pointer;
@@ -106,17 +106,17 @@
         }
         .time-btn.active {
             background: #00e676;
-            color: #080d14;
+            color: #06090e;
             border-color: #00e676;
         }
 
+        /* Widgets Containers */
         .widget-wrapper {
-            background: #1b2735;
-            padding: 10px;
+            background: #172237;
+            padding: 8px;
             border-radius: 10px;
             margin-bottom: 15px;
-            border: 1px solid #263238;
-            min-height: 440px;
+            border: 1px solid #1e293b;
         }
         .section-title {
             font-size: 12px;
@@ -128,6 +128,9 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
+        
+        #advancedChartContainer { height: 350px; }
+        #summaryContainer { min-height: 440px; }
         
         .btn {
             display: flex;
@@ -147,13 +150,13 @@
         }
         .btn-whatsapp { background: #25d366; color: #ffffff; }
         .btn-tiktok { background: #ff0050; color: white; }
-        .footer { margin-top: 15px; font-size: 12px; color: #56667a; }
+        .footer { margin-top: 15px; font-size: 12px; color: #475569; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>Somali Signals 🇸🇴</h1>
+        <h1>Somali Signals Hub 🇸🇴</h1>
         <div class="motivation-text">"Guushu kuma timaaddo dhalanteed, waxay ku dhalataa go'aan adag, samir iyo edbin ganacsi. Maareey maalkaaga!"</div>
 
         <div class="ticker-wrapper" id="tickerContainer"></div>
@@ -161,7 +164,7 @@
         <div class="selector-box">
             <label>DOORO LACAGTA AAD RABTO (ASSET)</label>
             <select class="select-input" id="assetSelector" onchange="onWidgetUpdate()">
-                <optgroup label="Major Pairs">
+                <optgroup label="Major Forex Pairs">
                     <option value="EURUSD">EUR/USD</option>
                     <option value="GBPUSD">GBP/USD</option>
                     <option value="USDJPY">USD/JPY</option>
@@ -170,18 +173,12 @@
                     <option value="USDCHF">USD/CHF</option>
                     <option value="NZDUSD">NZD/USD</option>
                 </optgroup>
-                <optgroup label="Euro Crosses">
+                <optgroup label="Cross Forex Pairs">
                     <option value="EURGBP">EUR/GBP</option>
                     <option value="EURJPY">EUR/JPY</option>
-                    <option value="EURAUD">EUR/AUD</option>
-                    <option value="EURCAD">EUR/CAD</option>
-                    <option value="EURCHF">EUR/CHF</option>
-                </optgroup>
-                <optgroup label="GBP Crosses">
                     <option value="GBPJPY">GBP/JPY</option>
+                    <option value="EURAUD">EUR/AUD</option>
                     <option value="GBPAUD">GBP/AUD</option>
-                    <option value="GBPCAD">GBP/CAD</option>
-                    <option value="GBPCHF">GBP/CHF</option>
                 </optgroup>
             </select>
         </div>
@@ -195,7 +192,10 @@
             </div>
         </div>
 
-        <div class="section-title"><i class="fas fa-chart-pie"></i> Falanqaynta Suuqa iyo Signal-ka Live-ka ah</div>
+        <div class="section-title"><i class="fas fa-chart-area"></i> Shaxda Sare ee Shumacda (Advanced Live Chart)</div>
+        <div class="widget-wrapper" id="advancedChartContainer"></div>
+
+        <div class="section-title"><i class="fas fa-wave-square"></i> Falanqaynta Tilmaamayaasha Farsamo</div>
         <div class="widget-wrapper" id="summaryContainer"></div>
 
         <a href="https://wa.me/252907492663" target="_blank" class="btn btn-whatsapp">
@@ -214,7 +214,7 @@
         let selectedAsset = "EURUSD";
         let selectedTimeframe = "1m";
 
-        // Soo xoraynta Live Ticker Tape (Khadka socda ee qiimaha suuqyada aduunka)
+        // 1. Ticker Tape Widget (Dhamaan suuqyada caalamka oo wada socda)
         function loadTickerTapeWidget() {
             const container = document.getElementById("tickerContainer");
             container.innerHTML = "";
@@ -234,12 +234,55 @@
                 "colorTheme": "dark",
                 "isTransparent": true,
                 "displayMode": "adaptive",
-                "locale": "en"
+                "locale": "so"
             });
             container.appendChild(tickerScript);
         }
 
-        // Soo xoraynta Mitirka rasmiga ah (Technical Summary Widget)
+        // 2. Advanced Charting Widget (Nooca ugu dambeeyey ee bixiya full technical setup)
+        function loadAdvancedChart(symbol, timeframe) {
+            const container = document.getElementById("advancedChartContainer");
+            container.innerHTML = "";
+            
+            // Habaynta waqtiga chart-ka rasmiga ah
+            let chartInterval = "1";
+            if(timeframe === "5m") chartInterval = "5";
+            if(timeframe === "15m") chartInterval = "15";
+
+            const chartScript = document.createElement("script");
+            chartScript.type = "text/javascript";
+            chartScript.src = "https://s3.tradingview.com/tv.js";
+            chartScript.async = false; // Hubi inuu marka hore soo raddiyo maktabadda
+            
+            chartScript.onload = function() {
+                new TradingView.widget({
+                    "width": "100%",
+                    "height": "100%",
+                    "symbol": "FX:" + symbol,
+                    "interval": chartInterval,
+                    "timezone": "Etc/UTC",
+                    "theme": "dark",
+                    "style": "1",
+                    "locale": "en",
+                    "enable_publishing": false,
+                    "hide_side_toolbar": true,
+                    "allow_symbol_change": false,
+                    "container_id": "advancedChartContainer",
+                    "studies": [
+                        "RSI@tv-basicstudies",
+                        "MASimple@tv-basicstudies"
+                    ]
+                });
+            };
+            container.appendChild(chartScript);
+            
+            // Haddi uu script-ku horey u yiilay bogga
+            if (typeof TradingView !== 'undefined') {
+                chartScript.onload();
+            }
+        }
+
+        // 3. Technical Summary Widget (Nidaamka codadka falanqaynta)
         function loadSummaryWidget(symbol, timeframe) {
             const container = document.getElementById("summaryContainer");
             container.innerHTML = ""; 
@@ -263,6 +306,7 @@
 
         function onWidgetUpdate() {
             selectedAsset = document.getElementById("assetSelector").value;
+            loadAdvancedChart(selectedAsset, selectedTimeframe);
             loadSummaryWidget(selectedAsset, selectedTimeframe);
         }
 
@@ -271,12 +315,14 @@
             document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
+            loadAdvancedChart(selectedAsset, selectedTimeframe);
             loadSummaryWidget(selectedAsset, selectedTimeframe);
         }
 
         window.onload = function() {
-            loadTickerTapeWidget(); // Khadka socda wuxuu dhashaa hal jeer
-            loadSummaryWidget("EURUSD", "1m"); // Mitirka Live-ka ah
+            loadTickerTapeWidget();
+            loadAdvancedChart("EURUSD", "1m");
+            loadSummaryWidget("EURUSD", "1m");
         };
     </script>
 </body>
