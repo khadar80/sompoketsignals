@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Signals · Somali Pocket Option</title>
+    <title>Somali Signals 🇸🇴</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             box-sizing: border-box;
@@ -32,9 +33,13 @@
             border: 1px solid #1f2d3d;
         }
         h1 {
-            font-size: 24px;
+            font-size: 26px;
             margin-bottom: 10px;
             color: #00e676;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
         .motivation-text {
             color: #00e676;
@@ -72,39 +77,45 @@
         }
         .widget-wrapper {
             background: #1b2735;
-            padding: 15px;
+            padding: 10px;
             border-radius: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             border: 1px solid #263238;
             min-height: 440px;
         }
-        /* Qaybta casharrada tooska ah */
+        .chart-wrapper {
+            background: #1b2735;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #263238;
+            height: 250px;
+        }
         .lesson-box {
             background: #1b2735;
             padding: 18px;
             border-radius: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             border-left: 4px solid #ff9800;
             text-align: left;
-            min-height: 120px;
-            transition: all 0.5s ease-in-out;
+            min-height: 110px;
         }
         .lesson-title {
-            font-size: 14px;
+            font-size: 13px;
             color: #ff9800;
             font-weight: bold;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            margin-bottom: 6px;
         }
         .lesson-content {
-            font-size: 13px;
+            font-size: 12px;
             color: #b0bec5;
             line-height: 1.6;
         }
         .btn {
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
             width: 100%;
             padding: 12px;
             margin: 10px 0;
@@ -115,7 +126,13 @@
             cursor: pointer;
             text-decoration: none;
             transition: background 0.3s ease;
-            text-align: center;
+        }
+        .btn-whatsapp {
+            background: #25d366;
+            color: #ffffff;
+        }
+        .btn-whatsapp:hover {
+            background: #1ebd58;
         }
         .btn-tiktok {
             background: #ff0050;
@@ -134,50 +151,31 @@
 <body>
 
     <div class="container">
-        <h1>Somali Pocket Option</h1>
+        <h1>Somali Signals 🇸🇴</h1>
         <div class="motivation-text">"Guushu kuma timaaddo dhalanteed, waxay ku dhalataa go'aan adag, samir iyo edbin ganacsi. Maareey maalkaaga!"</div>
 
         <div class="selector-box">
             <label>DOORO LACAGTA AAD RABTO (ASSET)</label>
             <select class="select-input" id="assetSelector" onchange="changeLiveAsset()">
-                <optgroup label="Major Pairs (Kuwa ugu waaweyn)">
-                    <option value="FX:EURUSD">EUR/USD</option>
-                    <option value="FX:GBPUSD">GBP/USD</option>
-                    <option value="FX:USDJPY">USD/JPY</option>
-                    <option value="FX:AUDUSD">AUD/USD</option>
-                    <option value="FX:USDCAD">USD/CAD</option>
-                    <option value="FX:USDCHF">USD/CHF</option>
-                    <option value="FX:NZDUSD">NZD/USD</option>
+                <optgroup label="Major Pairs">
+                    <option value="EURUSD">EUR/USD</option>
+                    <option value="GBPUSD">GBP/USD</option>
+                    <option value="USDJPY">USD/JPY</option>
+                    <option value="AUDUSD">AUD/USD</option>
+                    <option value="USDCAD">USD/CAD</option>
+                    <option value="USDCHF">USD/CHF</option>
+                    <option value="NZDUSD">NZD/USD</option>
                 </optgroup>
-                <optgroup label="Euro Crosses">
-                    <option value="FX:EURGBP">EUR/GBP</option>
-                    <option value="FX:EURJPY">EUR/JPY</option>
-                    <option value="FX:EURAUD">EUR/AUD</option>
-                    <option value="FX:EURCAD">EUR/CAD</option>
-                    <option value="FX:EURCHF">EUR/CHF</option>
-                    <option value="FX:EURNZD">EUR/NZD</option>
-                </optgroup>
-                <optgroup label="GBP Crosses">
-                    <option value="FX:GBPJPY">GBP/JPY</option>
-                    <option value="FX:GBPAUD">GBP/AUD</option>
-                    <option value="FX:GBPCAD">GBP/CAD</option>
-                    <option value="FX:GBPCHF">GBP/CHF</option>
-                    <option value="FX:GBPNZD">GBP/NZD</option>
-                </optgroup>
-                <optgroup label="Other Minor Pairs">
-                    <option value="FX:AUDJPY">AUD/JPY</option>
-                    <option value="FX:AUDCAD">AUD/CAD</option>
-                    <option value="FX:AUDCHF">AUD/CHF</option>
-                    <option value="FX:AUDNZD">AUD/NZD</option>
-                    <option value="FX:CADJPY">CAD/JPY</option>
-                    <option value="FX:CADCHF">CAD/CHF</option>
-                    <option value="FX:CHFJPY">CHF/JPY</option>
-                    <option value="FX:NZDJPY">NZD/JPY</option>
-                    <option value="FX:NZDCAD">NZD/CAD</option>
-                    <option value="FX:NZDCHF">NZD/CHF</option>
+                <optgroup label="Cross Pairs">
+                    <option value="EURGBP">EUR/GBP</option>
+                    <option value="EURJPY">EUR/JPY</option>
+                    <option value="GBPJPY">GBP/JPY</option>
+                    <option value="EURCHF">EUR/CHF</option>
                 </optgroup>
             </select>
         </div>
+
+        <div class="chart-wrapper" id="chartContainer"></div>
 
         <div class="widget-wrapper" id="widgetContainer"></div>
 
@@ -186,36 +184,24 @@
             <div class="lesson-content" id="lessonContent">Xogta casharrada ayaa hadda xisaabtamaysa...</div>
         </div>
 
-        <a href="https://www.tiktok.com/@khadar_kuwarizma" target="_blank" class="btn btn-tiktok">Nagala Soco TikTok</a>
+        <a href="https://wa.me/252907492663" target="_blank" class="btn btn-whatsapp">
+            <i class="fab fa-whatsapp"></i> Caawinaad Toos Ah (WhatsApp)
+        </a>
+        <a href="https://www.tiktok.com/@khadar_kuwarizma" target="_blank" class="btn btn-tiktok">
+            <i class="fab fa-tiktok"></i> Nagala Soco TikTok
+        </a>
 
         <div class="footer">
-            &copy; 2026 ALNUUR STORE & BIID DESIGN.
+            &copy; 2026 SomaliPocketOption. All rights reserved.
         </div>
     </div>
 
     <script>
-        // Liiska casharrada maaliyadeed ee qofka u soo baxaya si toos ah
         const tradingLessons = [
-            {
-                title: "📚 XEERKA RISK MANAGEMENT (1%)",
-                content: "Waligaa hal trade ha u isticmaalin wax ka badan 1% ilaa 2% oo kamid ah lacagta kuugu jirta akaount-kaaga. Tani waxay kaa caawinaysaa inaad suuqa sii joogto xataa haddii aad dhowr jeer khasaarto."
-            },
-            {
-                title: "🕯️ CODKA CANDLESTICK PATTERNS",
-                content: "Markaad aragto shumaca 'Hammer' ama 'Pin Bar' oo ku dhuftay aagga Support-ka, waxay muujinaysaa in iibsadayaashu (Buyers) suuqa soo galeen, nidaamkuna uu u dhow yahay iib kor u kac ah (BUY)."
-            },
-            {
-                title: "📉 KELIYA RAAC TREND-KA SUUQA",
-                content: "Xikmadda suuqa waxay leedahay: 'The trend is your friend'. Haddii suuqu yahay Uptrend, kaliya raadi fursado BUY ah. Ha isku dayin inaad ka hor ttagto jiho xooggan oo suuqu u socdo."
-            },
-            {
-                title: "🧠 EDXIBTA GANACSIGA (TRADING DISCIPLINE)",
-                content: "Khasaaruhu waa qayb kamid ah ganacsiga. Haddii aad lumiso 3 trade oo isku xiga maanta, dami kombiyuutarka ama moobilka. Ha isku dayin inaad aargudato (Revenge Trading) waayo waxaad lumin doontaa lacag kale."
-            },
-            {
-                title: "📊 MAREEYA TRADING PLAN-KAAGA",
-                content: "Kahor inta uusan suuqu furmin, deji inta dollar oo aad rabto inaad faa'iido ahaan u samayso (Take Profit) iyo inta aad u dulqaadan karto khasaare ahaan (Stop Loss). Markaad hadafkaga gaarto, ka bax suuqa."
-            }
+            { title: "📚 XEERKA RISK MANAGEMENT (1%)", content: "Waligaa hal trade ha u isticmaalin wax ka badan 1% ilaa 2% oo kamid ah lacagta kuugu jirta akaount-kaaga. Tani waxay kaa caawinaysaa inaad suuqa sii joogto xataa haddii aad dhowr jeer khasaarto." },
+            { title: "🕯️ CODKA CANDLESTICK PATTERNS", content: "Markaad aragto shumaca 'Hammer' ama 'Pin Bar' oo ku dhuftay aagga Support-ka, waxay muujinaysaa in iibsadayaashu (Buyers) suuqa soo galeen, nidaamkuna uu u dhow yahay iib kor u kac ah (BUY)." },
+            { title: "📉 KELIYA RAAC TREND-KA SUUQA", content: "Xikmadda suuqa waxay leedahay: 'The trend is your friend'. Haddii suuqu yahay Uptrend, kaliya raadi fursado BUY ah. Ha isku dayin inaad ka hor ttagto jiho xooggan." },
+            { title: "🧠 EDXIBTA GANACSIGA (TRADING DISCIPLINE)", content: "Khasaaruhu waa qayb ganacsiga kamid ah. Haddii aad lumiso 3 trade oo isku xiga maanta, dami kombiyuutarka ama moobilka. Ha isku dayin inaad aargudato." }
         ];
 
         let currentLessonIndex = 0;
@@ -223,52 +209,72 @@
         function rotateLessons() {
             const titleElement = document.getElementById("lessonTitle");
             const contentElement = document.getElementById("lessonContent");
-            
-            // Ku shubista casharka xiga
             const currentLesson = tradingLessons[currentLessonIndex];
             titleElement.innerText = currentLesson.title;
             contentElement.innerText = currentLesson.content;
-
-            // Isku wareejinta index-ka
             currentLessonIndex = (currentLessonIndex + 1) % tradingLessons.length;
         }
 
-        function loadTradingViewWidget(symbol) {
+        // Nidaamka soo xoraynta Mitirka Signal-ka
+        function loadSignalWidget(symbol) {
             const container = document.getElementById("widgetContainer");
             container.innerHTML = ""; 
-
             const widgetScript = document.createElement("script");
             widgetScript.type = "text/javascript";
             widgetScript.src = "https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js";
             widgetScript.async = true;
 
-            const widgetConfig = {
+            widgetScript.innerHTML = JSON.stringify({
                 "interval": "1m",
                 "width": "100%",
                 "isTransparent": true,
                 "height": 440,
-                "symbol": symbol,
+                "symbol": "FX:" + symbol,
                 "showIntervalTabs": true,
                 "displayMode": "single",
                 "locale": "en",
                 "colorTheme": "dark"
-            };
-
-            widgetScript.innerHTML = JSON.stringify(widgetConfig);
+            });
             container.appendChild(widgetScript);
+        }
+
+        // Nidaamka soo xoraynta Garaafka Shumacda (Mini Candle Chart)
+        function loadChartWidget(symbol) {
+            const container = document.getElementById("chartContainer");
+            container.innerHTML = "";
+            const chartScript = document.createElement("script");
+            chartScript.type = "text/javascript";
+            chartScript.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
+            chartScript.async = true;
+
+            chartScript.innerHTML = JSON.stringify({
+                "symbol": "FX:" + symbol,
+                "width": "100%",
+                "height": "100%",
+                "locale": "en",
+                "dateRange": "1d",
+                "colorTheme": "dark",
+                "trendLineColor": "rgba(0, 230, 118, 1)",
+                "underLineColor": "rgba(0, 230, 118, 0.1)",
+                "underLineBottomColor": "rgba(0, 230, 118, 0)",
+                "isTransparent": true,
+                "autosize": true
+            });
+            container.appendChild(chartScript);
         }
 
         function changeLiveAsset() {
             const selectedSymbol = document.getElementById("assetSelector").value;
-            loadTradingViewWidget(selectedSymbol);
+            loadSignalWidget(selectedSymbol);
+            loadChartWidget(selectedSymbol);
         }
 
         window.onload = function() {
-            loadTradingViewWidget("FX:EURUSD");
-            rotateLessons(); // Soo saar casharkii ugu horeeyey
-            setInterval(rotateLessons, 20000); // 20-kii ilbiriqsiba mar isbeddel automatic ah
+            loadSignalWidget("EURUSD");
+            loadChartWidget("EURUSD");
+            rotateLessons();
+            setInterval(rotateLessons, 20000); 
         };
     </script>
-
 </body>
 </html>
