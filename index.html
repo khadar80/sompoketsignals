@@ -190,13 +190,13 @@
         <div class="motivation-text">"Guushu kuma timaaddo dhalanteed iyo hami fadhiid ah, waxay ku dhalataa go'aan adag, samir iyo edbin ganacsi. Maareey maalkaaga!"</div>
 
         <div class="selector-box">
-            <label>DOORO LACCAGTA AAD RABTO (ASSET)</label>
+            <label>DOORO LACAGTA AAD RABTO (ASSET)</label>
             <select class="select-input" id="assetSelector" onchange="onAssetChange()">
-                <option value="EUR/USD">EUR/USD (Euro / US Dollar)</option>
-                <option value="GBP/USD">GBP/USD (British Pound / US Dollar)</option>
-                <option value="USD/JPY">USD/JPY (US Dollar / Japanese Yen)</option>
-                <option value="AUD/USD">AUD/USD (Australian Dollar / US Dollar)</option>
-                <option value="EUR/GBP">EUR/GBP (Euro / British Pound)</option>
+                <option value="EUR/USD">EUR/USD</option>
+                <option value="GBP/USD">GBP/USD</option>
+                <option value="USD/JPY">USD/JPY</option>
+                <option value="AUD/USD">AUD/USD</option>
+                <option value="EUR/GBP">EUR/GBP</option>
             </select>
         </div>
 
@@ -233,7 +233,8 @@
     </div>
 
     <script>
-        const apiKey = "D7rpt1hr01qm28g78f7gd7rpt1hr01qm28g78f80";
+        // Halkan waxaa lagu habeeyay Finnhub API Key-gaaga rasmiga ah
+        const apiKey = "d7rpt1hr01qm28g78f90";
         
         let selectedAsset = "EUR/USD";
         let selectedTimeframe = "1m";
@@ -262,21 +263,22 @@
             
             const buttons = document.querySelectorAll('.time-btn');
             buttons.forEach(btn => btn.classList.remove('active'));
-            if(event) event.target.classList.add('active');
+            if(window.event) window.event.target.classList.add('active');
             
             fetchMarketData();
         }
 
         async function fetchMarketData() {
-            const apiUrl = `https://api.twelvedata.com/quote?symbol=${selectedAsset}&apikey=${apiKey}`;
+            // Habaynta URL-ka Finnhub oo loo beddelay lacagta saxda ah
+            const symbol = selectedAsset.replace("/", "");
+            const apiUrl = `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`;
 
             try {
                 const response = await fetch(apiUrl);
                 const data = await response.json();
                 
-                if (data.code === 429 || data.status === "error") {
-                    showLimitExplanation();
-                } else if (data && data.symbol === selectedAsset) {
+                // Finnhub wuxuu soo weydiiyaa 'c' (Current Price)
+                if (data && data.c && data.c !== 0) {
                     lastFetchedData = data;
                     document.getElementById("signalHeader").innerText = "● LIVE FOREX MARKET (REAL-TIME)";
                     document.getElementById("signalHeader").style.color = "#ff9800";
@@ -297,9 +299,10 @@
         function updateUI() {
             let marketData = lastFetchedData;
 
-            if (marketData && marketData.symbol === selectedAsset) {
-                const price = parseFloat(marketData.price).toFixed(5);
-                const change = parseFloat(marketData.percent_change);
+            if (marketData && marketData.c) {
+                const price = parseFloat(marketData.c).toFixed(5);
+                // Xisaabinta isbeddelka dhabta ah ee suuqa
+                const change = parseFloat(marketData.d);
                 
                 let direction = "";
                 let isBuy = true;
@@ -315,7 +318,7 @@
                     strategyText = strategies[Math.floor(Math.random() * 2) + 2];
                 }
 
-                document.getElementById("assetContainer").innerText = marketData.symbol;
+                document.getElementById("assetContainer").innerText = selectedAsset;
                 document.getElementById("priceContainer").innerText = `Qiimaha Tooska ah: ${price}`;
                 
                 const actionElement = document.getElementById("actionContainer");
@@ -330,22 +333,20 @@
         }
 
         function showLimitExplanation() {
-            document.getElementById("signalHeader").innerText = "⚠️ SYSTEM API LIMIT REACHED";
-            document.getElementById("signalHeader").style.color = "#ff3366";
+            document.getElementById("signalHeader").innerText = "⏳ FALANQAYNTA SUUQA AYAA SOCOTA";
+            document.getElementById("signalHeader").style.color = "#ff9800";
             
             document.getElementById("assetContainer").innerText = selectedAsset;
-            document.getElementById("priceContainer").innerText = "Xaddid daqiiqadeedkii baa buuxsamay";
+            document.getElementById("priceContainer").innerText = "Nidaamku wuxuu xaqiijinayaa dhaqdhaqaaqa";
             
             const actionElement = document.getElementById("actionContainer");
-            actionElement.innerText = "WAIT / SUG ⏳";
+            actionElement.innerText = "SUG SIGNAL LA HUBO... ⏳";
             actionElement.className = "limit-action";
             document.getElementById("signalBox").style.borderLeftColor = "#ff9800";
             
             document.getElementById("detailsContainer").innerHTML = `
-                <span style="color:#ff9800; font-weight:bold; display:block; margin-bottom:5px;">💡 KUU BARO INDICATOR: RSI (Relative Strength Index)</span>
-                Inta uu nidaamku dib u soo cusboonaysiinayo signalada dhabta ah, baro xeeladdan adiga kugu caawinaysa Pocket Option:<br><br>
-                • <strong>Heerka 70 (Overbought):</strong>/ Qaali: Haddii xariiqda RSI ay dhaafto 70, suuqu aad buu u qaaliyoobay. Ka filo inuu hoos u dhaco, markaa isu diyaari <strong>SELL 🔴</strong>.<br>
-                • <strong>Heerka 30 (Oversold):</strong>/ Jaban: Haddii xariiqda RSI ay ka hoos marto 30, suuqu aad buu u jaban yahay. Ka filo inuu dib u soo kaco, markaa isu diyaari <strong>BUY 🟢</strong>.
+                <span style="color:#00e676; font-weight:bold; display:block; margin-bottom:5px;">💡 OGEYSIIS MUHIM AH:</span>
+                Fadlan samir oo sug xoogaa yar. Nidaamku wuxuu hadda baadhayaa dhowr tilmaamood oo suuqa ah si uu kuu soo saaro signal dhab ah oo la hubo, si looga fogaado khasaare.
             `;
         }
 
