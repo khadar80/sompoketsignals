@@ -101,7 +101,7 @@
             border-color: #00e676;
         }
 
-        /* Qaybta rasmiga ah ee Widgets-ka TradingView */
+        /* Qaybaha kala duwan ee Widgets-ka */
         .widget-wrapper {
             background: #1b2735;
             padding: 10px;
@@ -109,12 +109,19 @@
             margin-bottom: 15px;
             border: 1px solid #263238;
         }
-        #gaugeContainer {
-            min-height: 220px;
+        .section-title {
+            font-size: 12px;
+            color: #ff9800;
+            font-weight: bold;
+            text-align: left;
+            margin-bottom: 8px;
+            padding-left: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        #summaryContainer {
-            min-height: 440px;
-        }
+        #gaugeContainer { min-height: 220px; }
+        #chartContainer { height: 240px; }
+        #summaryContainer { min-height: 440px; }
         
         .btn {
             display: flex;
@@ -170,18 +177,6 @@
                     <option value="GBPCHF">GBP/CHF</option>
                     <option value="GBPNZD">GBP/NZD</option>
                 </optgroup>
-                <optgroup label="Other Minor Pairs">
-                    <option value="AUDJPY">AUD/JPY</option>
-                    <option value="AUDCAD">AUD/CAD</option>
-                    <option value="AUDCHF">AUD/CHF</option>
-                    <option value="AUDNZD">AUD/NZD</option>
-                    <option value="CADJPY">CAD/JPY</option>
-                    <option value="CADCHF">CAD/CHF</option>
-                    <option value="CHFJPY">CHF/JPY</option>
-                    <option value="NZDJPY">NZD/JPY</option>
-                    <option value="NZDCAD">NZD/CAD</option>
-                    <option value="NZDCHF">NZD/CHF</option>
-                </optgroup>
             </select>
         </div>
 
@@ -194,8 +189,13 @@
             </div>
         </div>
 
+        <div class="section-title"><i class="fas fa-bolt"></i> Go'aanka Signal-ka Live-ka ah</div>
         <div class="widget-wrapper" id="gaugeContainer"></div>
 
+        <div class="section-title"><i class="fas fa-chart-line"></i> Shaxda Shumacda (Live Chart)</div>
+        <div class="widget-wrapper" id="chartContainer"></div>
+
+        <div class="section-title"><i class="fas fa-calculator"></i> Codadka Tilmaamayaasha Farsamo</div>
         <div class="widget-wrapper" id="summaryContainer"></div>
 
         <a href="https://wa.me/252907492663" target="_blank" class="btn btn-whatsapp">
@@ -214,16 +214,14 @@
         let selectedAsset = "EURUSD";
         let selectedTimeframe = "1m";
 
-        // 1. Nidaamka soo xoraynta Saacadda sare (Gauge Widget)
+        // Soo xoraynta Saacadda Go'aanka (Gauge)
         function loadGaugeWidget(symbol, timeframe) {
             const container = document.getElementById("gaugeContainer");
             container.innerHTML = ""; 
-            
             const widgetScript = document.createElement("script");
             widgetScript.type = "text/javascript";
             widgetScript.src = "https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js";
             widgetScript.async = true;
-
             widgetScript.innerHTML = JSON.stringify({
                 "interval": timeframe,
                 "width": "100%",
@@ -231,23 +229,44 @@
                 "height": 220,
                 "symbol": "FX:" + symbol,
                 "showIntervalTabs": false,
-                "displayMode": "adaptive", // Habkaan wuxuu soo saaraa kaliya saacadda go'aanka ah
+                "displayMode": "adaptive",
                 "locale": "en",
                 "colorTheme": "dark"
             });
             container.appendChild(widgetScript);
         }
 
-        // 2. Nidaamka soo xoraynta Tiroyinka hoose (Summary Widget)
+        // Soo xoraynta Garaafka Shumacda (Live Chart)
+        function loadChartWidget(symbol) {
+            const container = document.getElementById("chartContainer");
+            container.innerHTML = "";
+            const chartScript = document.createElement("script");
+            chartScript.type = "text/javascript";
+            chartScript.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
+            chartScript.async = true;
+            chartScript.innerHTML = JSON.stringify({
+                "symbol": "FX:" + symbol,
+                "width": "100%",
+                "height": "100%",
+                "locale": "en",
+                "dateRange": "1d",
+                "colorTheme": "dark",
+                "trendLineColor": "rgba(0, 230, 118, 1)",
+                "underLineColor": "rgba(0, 230, 118, 0.1)",
+                "isTransparent": true,
+                "autosize": true
+            });
+            container.appendChild(chartScript);
+        }
+
+        // Soo xoraynta Tiroyinka Falanqaynta (Summary)
         function loadSummaryWidget(symbol, timeframe) {
             const container = document.getElementById("summaryContainer");
             container.innerHTML = ""; 
-            
             const widgetScript = document.createElement("script");
             widgetScript.type = "text/javascript";
             widgetScript.src = "https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js";
             widgetScript.async = true;
-
             widgetScript.innerHTML = JSON.stringify({
                 "interval": timeframe,
                 "width": "100%",
@@ -255,7 +274,7 @@
                 "height": 440,
                 "symbol": "FX:" + symbol,
                 "showIntervalTabs": false,
-                "displayMode": "single", // Habkaan wuxuu keenaa falanqaynta oo dhammaystiran
+                "displayMode": "single",
                 "locale": "en",
                 "colorTheme": "dark"
             });
@@ -265,12 +284,12 @@
         function onWidgetUpdate() {
             selectedAsset = document.getElementById("assetSelector").value;
             loadGaugeWidget(selectedAsset, selectedTimeframe);
+            loadChartWidget(selectedAsset);
             loadSummaryWidget(selectedAsset, selectedTimeframe);
         }
 
         function changeTimeframe(timeframe, btn) {
             selectedTimeframe = timeframe;
-            
             document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
@@ -279,8 +298,8 @@
         }
 
         window.onload = function() {
-            // Marka horeba labada nidaam oo Live ah ayaa isku mar wada kici doona
             loadGaugeWidget("EURUSD", "1m");
+            loadChartWidget("EURUSD");
             loadSummaryWidget("EURUSD", "1m");
         };
     </script>
