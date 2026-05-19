@@ -101,13 +101,18 @@
             border-color: #00e676;
         }
 
-        /* Qaybta rasmiga ah ee TradingView Widget */
+        /* Qaybta rasmiga ah ee Widgets-ka TradingView */
         .widget-wrapper {
             background: #1b2735;
             padding: 10px;
             border-radius: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             border: 1px solid #263238;
+        }
+        #gaugeContainer {
+            min-height: 220px;
+        }
+        #summaryContainer {
             min-height: 440px;
         }
         
@@ -189,7 +194,9 @@
             </div>
         </div>
 
-        <div class="widget-wrapper" id="widgetContainer"></div>
+        <div class="widget-wrapper" id="gaugeContainer"></div>
+
+        <div class="widget-wrapper" id="summaryContainer"></div>
 
         <a href="https://wa.me/252907492663" target="_blank" class="btn btn-whatsapp">
             <i class="fab fa-whatsapp"></i> Caawinaad Toos Ah (WhatsApp)
@@ -207,16 +214,40 @@
         let selectedAsset = "EURUSD";
         let selectedTimeframe = "1m";
 
-        function loadTradingViewWidget(symbol, timeframe) {
-            const container = document.getElementById("widgetContainer");
-            container.innerHTML = ""; // Nadiifinta haraagii hore
+        // 1. Nidaamka soo xoraynta Saacadda sare (Gauge Widget)
+        function loadGaugeWidget(symbol, timeframe) {
+            const container = document.getElementById("gaugeContainer");
+            container.innerHTML = ""; 
             
             const widgetScript = document.createElement("script");
             widgetScript.type = "text/javascript";
             widgetScript.src = "https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js";
             widgetScript.async = true;
 
-            // Koodhka rasmiga ah ee TradingView oo toos u xisaabinaya suuqyada aduunka
+            widgetScript.innerHTML = JSON.stringify({
+                "interval": timeframe,
+                "width": "100%",
+                "isTransparent": true,
+                "height": 220,
+                "symbol": "FX:" + symbol,
+                "showIntervalTabs": false,
+                "displayMode": "adaptive", // Habkaan wuxuu soo saaraa kaliya saacadda go'aanka ah
+                "locale": "en",
+                "colorTheme": "dark"
+            });
+            container.appendChild(widgetScript);
+        }
+
+        // 2. Nidaamka soo xoraynta Tiroyinka hoose (Summary Widget)
+        function loadSummaryWidget(symbol, timeframe) {
+            const container = document.getElementById("summaryContainer");
+            container.innerHTML = ""; 
+            
+            const widgetScript = document.createElement("script");
+            widgetScript.type = "text/javascript";
+            widgetScript.src = "https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js";
+            widgetScript.async = true;
+
             widgetScript.innerHTML = JSON.stringify({
                 "interval": timeframe,
                 "width": "100%",
@@ -224,7 +255,7 @@
                 "height": 440,
                 "symbol": "FX:" + symbol,
                 "showIntervalTabs": false,
-                "displayMode": "single",
+                "displayMode": "single", // Habkaan wuxuu keenaa falanqaynta oo dhammaystiran
                 "locale": "en",
                 "colorTheme": "dark"
             });
@@ -233,22 +264,24 @@
 
         function onWidgetUpdate() {
             selectedAsset = document.getElementById("assetSelector").value;
-            loadTradingViewWidget(selectedAsset, selectedTimeframe);
+            loadGaugeWidget(selectedAsset, selectedTimeframe);
+            loadSummaryWidget(selectedAsset, selectedTimeframe);
         }
 
         function changeTimeframe(timeframe, btn) {
             selectedTimeframe = timeframe;
             
-            // Ka saar active-ka badhamada kale, ku dar kan la riixay
             document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
-            loadTradingViewWidget(selectedAsset, selectedTimeframe);
+            loadGaugeWidget(selectedAsset, selectedTimeframe);
+            loadSummaryWidget(selectedAsset, selectedTimeframe);
         }
 
         window.onload = function() {
-            // Marka boggu bisto wuxuu ku furmayaa EUR/USD iyo 1M oo toos ah
-            loadTradingViewWidget("EURUSD", "1m");
+            // Marka horeba labada nidaam oo Live ah ayaa isku mar wada kici doona
+            loadGaugeWidget("EURUSD", "1m");
+            loadSummaryWidget("EURUSD", "1m");
         };
     </script>
 </body>
