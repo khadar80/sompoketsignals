@@ -76,72 +76,41 @@
             cursor: pointer;
         }
         
-        /* Qaybta rasmiga ah ee Signal-ka Tooska ah */
-        .live-signal-box {
-            background: #1b2735;
-            padding: 22px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            border-left: 6px solid #00e676;
-            text-align: center;
-            transition: all 0.4s ease;
+        /* Timeframe Buttons Style */
+        .time-btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 5px;
         }
-        .signal-pair {
-            font-size: 28px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            margin-bottom: 5px;
-        }
-        .signal-rate {
-            font-size: 20px;
-            font-family: monospace;
-            color: #ffffff;
-            font-weight: bold;
-            margin-bottom: 12px;
-        }
-        .signal-action {
-            font-size: 32px;
-            font-weight: 900;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            margin-bottom: 15px;
-            padding: 5px;
-            border-radius: 6px;
-        }
-        .action-buy { color: #00e676; text-shadow: 0 0 15px rgba(0,230,118,0.4); }
-        .action-sell { color: #ff3366; text-shadow: 0 0 15px rgba(255,51,102,0.4); }
-        
-        .strategy-card {
+        .time-btn {
+            flex: 1;
             background: #111a24;
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            color: #b0bec5;
-            text-align: left;
-            line-height: 1.5;
-            border: 1px solid #263238;
-            margin-bottom: 12px;
-        }
-        .strategy-card strong { color: #ff9800; }
-        
-        .countdown-timer {
-            font-size: 14px;
-            color: #00e676;
+            color: #8a99ad;
+            border: 1px solid #1f2d3d;
+            padding: 8px 0;
+            border-radius: 5px;
+            cursor: pointer;
             font-weight: bold;
-            background: #111a24;
-            padding: 6px 12px;
-            border-radius: 20px;
-            display: inline-block;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        .time-btn.active {
+            background: #00e676;
+            color: #080d14;
+            border-color: #00e676;
         }
 
-        .chart-wrapper {
+        /* Qaybta rasmiga ah ee TradingView Widget */
+        .widget-wrapper {
             background: #1b2735;
             padding: 10px;
             border-radius: 10px;
             margin-bottom: 20px;
             border: 1px solid #263238;
-            height: 220px;
+            min-height: 440px;
         }
+        
         .btn {
             display: flex;
             align-items: center;
@@ -171,30 +140,56 @@
 
         <div class="selector-box">
             <label>DOORO LACAGTA AAD RABTO (ASSET)</label>
-            <select class="select-input" id="assetSelector" onchange="onAssetChange()">
-                <option value="EURUSD">EUR/USD</option>
-                <option value="GBPUSD">GBP/USD</option>
-                <option value="USDJPY">USD/JPY</option>
-                <option value="AUDUSD">AUD/USD</option>
-                <option value="USDCAD">USD/CAD</option>
-                <option value="USDCHF">USD/CHF</option>
-                <option value="NZDUSD">NZD/USD</option>
+            <select class="select-input" id="assetSelector" onchange="onWidgetUpdate()">
+                <optgroup label="Major Pairs">
+                    <option value="EURUSD">EUR/USD</option>
+                    <option value="GBPUSD">GBP/USD</option>
+                    <option value="USDJPY">USD/JPY</option>
+                    <option value="AUDUSD">AUD/USD</option>
+                    <option value="USDCAD">USD/CAD</option>
+                    <option value="USDCHF">USD/CHF</option>
+                    <option value="NZDUSD">NZD/USD</option>
+                </optgroup>
+                <optgroup label="Euro Crosses">
+                    <option value="EURGBP">EUR/GBP</option>
+                    <option value="EURJPY">EUR/JPY</option>
+                    <option value="EURAUD">EUR/AUD</option>
+                    <option value="EURCAD">EUR/CAD</option>
+                    <option value="EURCHF">EUR/CHF</option>
+                    <option value="EURNZD">EUR/NZD</option>
+                </optgroup>
+                <optgroup label="GBP Crosses">
+                    <option value="GBPJPY">GBP/JPY</option>
+                    <option value="GBPAUD">GBP/AUD</option>
+                    <option value="GBPCAD">GBP/CAD</option>
+                    <option value="GBPCHF">GBP/CHF</option>
+                    <option value="GBPNZD">GBP/NZD</option>
+                </optgroup>
+                <optgroup label="Other Minor Pairs">
+                    <option value="AUDJPY">AUD/JPY</option>
+                    <option value="AUDCAD">AUD/CAD</option>
+                    <option value="AUDCHF">AUD/CHF</option>
+                    <option value="AUDNZD">AUD/NZD</option>
+                    <option value="CADJPY">CAD/JPY</option>
+                    <option value="CADCHF">CAD/CHF</option>
+                    <option value="CHFJPY">CHF/JPY</option>
+                    <option value="NZDJPY">NZD/JPY</option>
+                    <option value="NZDCAD">NZD/CAD</option>
+                    <option value="NZDCHF">NZD/CHF</option>
+                </optgroup>
             </select>
         </div>
 
-        <div class="live-signal-box" id="signalBox">
-            <div class="signal-pair" id="signalPairDisplay">EUR/USD</div>
-            <div class="signal-rate" id="signalRateDisplay">Qiimaha: Sugaya...</div>
-            <div class="signal-action" id="signalActionDisplay">ANALYZING...</div>
-            
-            <div class="strategy-card" id="strategyCardDisplay">
-                <strong>Xeeladda rasmiga ah:</strong> Nidaamku wuxuu hadda xisaabinayaa aagga Price Action ee ugu dhow...
+        <div class="selector-box">
+            <label>DOORO TIMEFRAME-KA (WAQTIGA)</label>
+            <div class="time-btn-group">
+                <button class="time-btn active" onclick="changeTimeframe('1m', this)">1M</button>
+                <button class="time-btn" onclick="changeTimeframe('5m', this)">5M</button>
+                <button class="time-btn" onclick="changeTimeframe('15m', this)">15M</button>
             </div>
-            
-            <div class="countdown-timer" id="timerDisplay">Cusboonaysiinta: 01:00</div>
         </div>
 
-        <div class="chart-wrapper" id="chartContainer"></div>
+        <div class="widget-wrapper" id="widgetContainer"></div>
 
         <a href="https://wa.me/252907492663" target="_blank" class="btn btn-whatsapp">
             <i class="fab fa-whatsapp"></i> Caawinaad Toos Ah (WhatsApp)
@@ -210,110 +205,50 @@
 
     <script>
         let selectedAsset = "EURUSD";
-        let timeLeft = 60; 
-        let timerInterval;
+        let selectedTimeframe = "1m";
 
-        // Saldhigyada rasmiga ah ee suuqyada Forex dhabta ah xilligan
-        const realMarketPrices = {
-            "EURUSD": 1.16240, "GBPUSD": 1.28410, "USDJPY": 154.62,
-            "AUDUSD": 0.66200, "USDCAD": 1.36380, "USDCHF": 0.89180, "NZDUSD": 0.61190
-        };
-
-        const buyStrategies = [
-            "**Price Action & Volume:** Candlestick Bullish Pin-Bar ayaa ku dhuftay aagga rasmiga ah ee **Support Zone**. Mugga iibsadayaasha (Trading Volume) ayaa kordhay 14%, RSI-na wuxuu ka soo laabtay heerka 30.",
-            "**EMA Crossover Strategy:** Exponential Moving Average (EMA 9) ayaa kor u dhaafay (EMA 21), taas oo xaqiijinaysa bilowga **Uptrend** xooggan oo dhab ah suuqa daqiiqadahan."
-        ];
-
-        const sellStrategies = [
-            "**Price Action & Volume:** Shumac Bearish Engulfing ah ayaa ka dhex dhashay aagga **Resistance Zone**. Mugga iibiyayaasha (Sellers) ayaa ka awood batay Buyers-ka, suuqguxu hoos ayuu u socdaa.",
-            "**MACD Bearish Divergence:** Tilmaamaha rasmiga ah ee MACD wuxuu sameeyey Crossover hoose aagga sare, qiimuhuna wuxuu jebiyay khadka taageerada ee ugu dambeeyey."
-        ];
-
-        function updateMarketRate() {
-            // algorithm-kan wuxuu qiimaha u beddelayaa daqiiqad kasta si toos ah oo dabiici ah
-            let fluctuation = (Math.random() * 0.00006) - 0.00003;
-            realMarketPrices[selectedAsset] += fluctuation;
+        function loadTradingViewWidget(symbol, timeframe) {
+            const container = document.getElementById("widgetContainer");
+            container.innerHTML = ""; // Nadiifinta haraagii hore
             
-            let currentPrice = realMarketPrices[selectedAsset];
-            let formattedPrice = selectedAsset.includes("JPY") ? currentPrice.toFixed(3) : currentPrice.toFixed(5);
-            
-            document.getElementById("signalRateDisplay").innerText = `Rate: ${formattedPrice}`;
-        }
+            const widgetScript = document.createElement("script");
+            widgetScript.type = "text/javascript";
+            widgetScript.src = "https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js";
+            widgetScript.async = true;
 
-        function generate100PercentSignal() {
-            updateMarketRate();
-            
-            // Go'aanka dhabta ah ee rasmiga ah ee ku salaysan xisaabta suuqa
-            let isBuy = Math.random() > 0.47; 
-            
-            const actionElement = document.getElementById("signalActionDisplay");
-            const boxElement = document.getElementById("signalBox");
-            const strategyElement = document.getElementById("strategyCardDisplay");
-
-            if (isBuy) {
-                actionElement.innerText = "BUY 🟢";
-                actionElement.className = "signal-action action-buy";
-                boxElement.style.borderLeftColor = "#00e676";
-                strategyElement.innerHTML = `<strong>Strategy:** ${buyStrategies[Math.floor(Math.random() * buyStrategies.length)]} <br><br><strong>Expiry Time:</strong> 1 Minute (Toos ah)`;
-            } else {
-                actionElement.innerText = "SELL 🔴";
-                actionElement.className = "signal-action action-sell";
-                boxElement.style.borderLeftColor = "#ff3366";
-                strategyElement.innerHTML = `<strong>Strategy:** ${sellStrategies[Math.floor(Math.random() * sellStrategies.length)]} <br><br><strong>Expiry Time:</strong> 1 Minute (Toos ah)`;
-            }
-        }
-
-        function loadChartWidget(symbol) {
-            const container = document.getElementById("chartContainer");
-            container.innerHTML = "";
-            const chartScript = document.createElement("script");
-            chartScript.type = "text/javascript";
-            chartScript.src = "https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js";
-            chartScript.async = true;
-
-            chartScript.innerHTML = JSON.stringify({
-                "symbol": "FX:" + symbol,
+            // Koodhka rasmiga ah ee TradingView oo toos u xisaabinaya suuqyada aduunka
+            widgetScript.innerHTML = JSON.stringify({
+                "interval": timeframe,
                 "width": "100%",
-                "height": "100%",
-                "locale": "en",
-                "dateRange": "1d",
-                "colorTheme": "dark",
-                "trendLineColor": "rgba(0, 230, 118, 1)",
-                "underLineColor": "rgba(0, 230, 118, 0.1)",
                 "isTransparent": true,
-                "autosize": true
+                "height": 440,
+                "symbol": "FX:" + symbol,
+                "showIntervalTabs": false,
+                "displayMode": "single",
+                "locale": "en",
+                "colorTheme": "dark"
             });
-            container.appendChild(chartScript);
+            container.appendChild(widgetScript);
         }
 
-        function onAssetChange() {
+        function onWidgetUpdate() {
             selectedAsset = document.getElementById("assetSelector").value;
-            document.getElementById("signalPairDisplay").innerText = selectedAsset.slice(0,3) + "/" + selectedAsset.slice(3);
-            timeLeft = 60;
-            generate100PercentSignal();
-            loadChartWidget(selectedAsset);
+            loadTradingViewWidget(selectedAsset, selectedTimeframe);
         }
 
-        function startCountdown() {
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                
-                let seconds = timeLeft < 10 ? '0' + timeLeft : timeLeft;
-                document.getElementById("timerDisplay").innerText = `Cusboonaysiinta: 00:${seconds}`;
-                
-                if (timeLeft <= 0) {
-                    timeLeft = 60;
-                    generate100PercentSignal();
-                }
-            }, 1000);
+        function changeTimeframe(timeframe, btn) {
+            selectedTimeframe = timeframe;
+            
+            // Ka saar active-ka badhamada kale, ku dar kan la riixay
+            document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            loadTradingViewWidget(selectedAsset, selectedTimeframe);
         }
 
         window.onload = function() {
-            document.getElementById("signalPairDisplay").innerText = "EUR/USD";
-            generate100PercentSignal();
-            loadChartWidget("EURUSD");
-            startCountdown();
+            // Marka boggu bisto wuxuu ku furmayaa EUR/USD iyo 1M oo toos ah
+            loadTradingViewWidget("EURUSD", "1m");
         };
     </script>
 </body>
