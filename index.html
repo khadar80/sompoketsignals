@@ -48,10 +48,11 @@
             margin-bottom: 25px;
             border-left: 5px solid #00e676;
         }
-        .signal-title {
+        .signal-display {
+            font-size: 22px;
             font-weight: bold;
-            font-size: 18px;
-            margin-bottom: 5px;
+            margin: 15px 0;
+            letter-spacing: 1px;
         }
         .btn {
             display: block;
@@ -85,6 +86,8 @@
             font-size: 12px;
             color: #56667a;
         }
+        .call-action { color: #00e676; }
+        .put-action { color: #ff3366; }
     </style>
 </head>
 <body>
@@ -94,17 +97,43 @@
         <p>Ku soo dhowaad madasha rasmiga ah ee calaamadaha pargalka trading-ka.</p>
 
         <div class="signal-box">
-            <div class="signal-title">🟢 Signal-ka Hadda furan: Active</div>
-            <span style="color: #8a99ad; font-size: 13px;">Waa la cusboonaysiiyay hadda</span>
+            <div style="color: #8a99ad; font-size: 14px; font-weight: bold;">🟢 SIGNAL-KA HADDA JOOGA</div>
+            <div class="signal-display" id="signalContainer">Sugaya Signal-ka...</div>
+            <span style="color: #8a99ad; font-size: 12px;" id="timeContainer">Cusboonaysiinta: 00:00</span>
         </div>
 
-        <a href="#" class="btn btn-primary">Halkan Ka Eeg Signal-ada Maanta</a>
-        <a href="https://www.tiktok.com/" target="_blank" class="btn btn-tiktok">Nagala Soco TikTok</a>
+        <button class="btn btn-primary" onclick="generateManualSignal()">Abuur Signal Cusub</button>
+        <a href="https://www.tiktok.com/@khadar_kuwarizma" target="_blank" class="btn btn-tiktok">Nagala Soco TikTok</a>
 
         <div class="footer">
             &copy; 2026 ALNUUR STORE & BIID DESIGN. All rights reserved.
         </div>
     </div>
+
+    <script>
+        const pairs = ["EUR/USD (OTC)", "GBP/USD (OTC)", "AUD/USD (OTC)", "USD/JPY (OTC)", "EUR/GBP (OTC)"];
+        const actions = ["CALL 🟢", "PUT 🔴"];
+        const times = ["1 MIN", "2 MIN", "5 MIN"];
+
+        function generateManualSignal() {
+            const randomPair = pairs[Math.floor(Math.random() * pairs.length)];
+            const randomAction = actions[Math.floor(Math.random() * actions.length)];
+            const randomTime = times[Math.floor(Math.random() * times.length)];
+            
+            const actionClass = randomAction.includes("CALL") ? "call-action" : "put-action";
+            
+            document.getElementById("signalContainer").innerHTML = 
+                `${randomPair} <br> <span class="${actionClass}">${randomAction}</span> [${randomTime}]`;
+            
+            const now = new Date();
+            document.getElementById("timeContainer").innerHTML = `La cusboonaysiiyay: ${now.toLocaleTimeString()}`;
+        }
+
+        // Si toos ah u bilaw signal-ka ugu horreeya marka boggu furmo
+        window.onload = function() {
+            generateManualSignal();
+        };
+    </script>
 
 </body>
 </html>
