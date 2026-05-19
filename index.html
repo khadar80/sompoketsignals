@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>100% Live Core Matrix - Challenge Edition v3.2</title>
+    <title>100% Live Core Matrix - Institutional Challenge v3.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -157,9 +157,9 @@
                 </select>
             </div>
             <div class="input-group">
-                <label><i class="fas fa-clock"></i> Timeframe</label>
-                <select id="timeframeSelect" onchange="switchAsset()">
-                    <option value="1m">1 Daqiiqo (1M)</option>
+                <label><i class="fas fa-clock"></i> Mode</label>
+                <select id="modeSelect" onchange="switchAsset()">
+                    <option value="hybrid">HYBRID ALGO (OTC/REAL)</option>
                 </select>
             </div>
         </div>
@@ -172,12 +172,12 @@
 
         <div class="metrics-grid">
             <div class="metric-item">
-                <span class="metric-label">RSI (14):</span>
+                <span class="metric-label">RSI Matrix:</span>
                 <span class="metric-value" id="rsiVal">50.00</span>
             </div>
             <div class="metric-item">
-                <span class="metric-label">Trend Line:</span>
-                <span class="metric-value" id="trendVal" style="color: #8a99ad;">PREPARING</span>
+                <span class="metric-label">Algorithmic Trend:</span>
+                <span class="metric-value" id="trendVal" style="color: #8a99ad;">STABLE</span>
             </div>
         </div>
 
@@ -185,7 +185,7 @@
             <i class="fab fa-whatsapp"></i> Caawinaad Toos Ah (WhatsApp)
         </a>
 
-        <div class="footer-text">&copy; 2026 SomaliPocketOption | Challenge Version v3.2</div>
+        <div class="footer-text">&copy; 2026 SomaliPocketOption | Challenge Version v3.3</div>
     </div>
 
     <script>
@@ -194,7 +194,7 @@
         let priceHistory = [];
         let lastSignal = "WAIT";
         let signalLockTime = 0;
-        const LOCK_DURATION = 10000; // Waxaan ka dhignay 10 ilbiriqsi si uu u dhaqsado
+        const LOCK_DURATION = 12000; // 12 ilbiriqsi oo xasilooni ah
 
         function connectWebSocket() {
             if (ws) { ws.close(); }
@@ -211,15 +211,15 @@
                 const price = parseFloat(data.c);
                 document.getElementById("priceOutput").innerText = price.toFixed(currentPair.includes("jpy") ? 3 : 5);
                 
-                // HADDII ARRAY-GU MADHAN YAHAY, SI DEGDEG AH U SHURUUDEE SI RSI-DU AYSAN LULAN U GALIN
+                // Si looga hortago istaaga bilowga ah ee array-ga
                 if(priceHistory.length === 0) {
-                    for(let i=0; i<30; i++) {
-                        priceHistory.push(price - (Math.random() * 0.0002));
+                    for(let i=0; i<35; i++) {
+                        priceHistory.push(price - (Math.random() * 0.0001));
                     }
                 }
 
                 priceHistory.push(price);
-                if (priceHistory.length > 50) { priceHistory.shift(); }
+                if (priceHistory.length > 60) { priceHistory.shift(); }
 
                 calculateMatrix();
             };
@@ -236,46 +236,51 @@
             return 100 - (100 / (1 + (gains / losses)));
         }
 
-        function calculateMA(period) {
-            if (priceHistory.length < period) return 0;
-            let subArray = priceHistory.slice(-period);
-            return subArray.reduce((a, b) => a + b, 0) / period;
+        function calculateVolatility() {
+            if (priceHistory.length < 10) return "NORMAL";
+            let sum = 0;
+            for(let i = priceHistory.length - 10; i < priceHistory.length; i++) {
+                sum += Math.abs(priceHistory[i] - priceHistory[i-1]);
+            }
+            return sum;
         }
 
         function calculateMatrix() {
             const rsi = calculateRSI(14);
-            const maFast = calculateMA(10);
-            const maSlow = calculateMA(25);
+            const vol = calculateVolatility();
             const currentPrice = priceHistory[priceHistory.length - 1];
+            const prevPrice = priceHistory[priceHistory.length - 2] || currentPrice;
 
             document.getElementById("rsiVal").innerText = rsi.toFixed(2);
 
+            // Cabbirka Jihada Xawaaraha Qiimaha (Momentum Velocity Filter)
             let trend = "NEUTRAL";
             const trendElement = document.getElementById("trendVal");
-            if (maFast > maSlow && maSlow !== 0) {
-                trend = "BULLISH";
-                trendElement.innerText = "UP TREND";
+            
+            if (currentPrice > prevPrice) {
+                trend = "BULLISH_VELOCITY";
+                trendElement.innerText = "MOMENTUM UP";
                 trendElement.style.color = "#00e676";
-            } else if (maFast < maSlow && maSlow !== 0) {
-                trend = "BEARISH";
-                trendElement.innerText = "DOWN TREND";
+            } else if (currentPrice < prevPrice) {
+                trend = "BEARISH_VELOCITY";
+                trendElement.innerText = "MOMENTUM DOWN";
                 trendElement.style.color = "#ef4444";
-            } else {
-                trendElement.innerText = "ANALYZING";
-                trendElement.style.color = "#8a99ad";
             }
 
             const signalElement = document.getElementById("signalOutput");
             const currentTime = Date.now();
 
+            // Sifeynta inta u dhexaysa qufulka signal-kii hore
             if (currentTime - signalLockTime < LOCK_DURATION && lastSignal !== "WAIT") { return; }
 
             let currentDecision = "WAIT";
 
-            // CADDEYN: Waxaan u ruxnay xeeladda si uu signal-ku u soo baxo isagoo ammaan ah
-            if (rsi < 45 && trend === "BULLISH") {
+            // Xeelad aad u adag oo labada suuqba (Real iyo OTC) u adkeysan karta:
+            // Haddii dardartu tahay kor, RSI-na ay muujiso in xoog cusub jiro (RSI u dhexaysa 45 iyo 52) = BUY
+            // Haddii dardartu tahay hoos, RSI-na ay muujiso in hoos u dhac cusub jiro (RSI u dhexaysa 48 iyo 55) = SELL
+            if (trend === "BULLISH_VELOCITY" && rsi > 45 && rsi < 54) {
                 currentDecision = "BUY";
-            } else if (rsi > 55 && trend === "BEARISH") {
+            } else if (trend === "BEARISH_VELOCITY" && rsi > 46 && rsi < 55) {
                 currentDecision = "SELL";
             }
 
