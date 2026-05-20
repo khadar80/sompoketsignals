@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html lang="so">
 <head>
+    <meta charset="UTF-8">
+    <title>Professional Live Forex Engine v5.0</title>
     <style>
         body { background: #06090f; color: white; font-family: sans-serif; display: flex; justify-content: center; padding: 20px; }
-        .box { width: 100%; max-width: 400px; background: #0f1622; padding: 20px; border-radius: 15px; border: 1px solid #24344d; }
+        .box { width: 100%; max-width: 400px; background: #0f1622; padding: 20px; border-radius: 15px; border: 1px solid #24344d; text-align: center; }
         .price { font-size: 32px; font-weight: bold; color: #00e676; margin: 20px 0; }
         select { width: 100%; padding: 12px; background: #172237; color: white; border: none; border-radius: 8px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 <div class="box">
-    <h3>FOREX LIVE ENGINE</h3>
-    
-    <select id="pair" onchange="updatePair()">
+    <h3>REAL FOREX ENGINE v5.0</h3>
+    <select id="pair" onchange="updateConnection()">
         <option value="EURUSD">EUR/USD</option>
         <option value="GBPUSD">GBP/USD</option>
         <option value="USDJPY">USD/JPY</option>
@@ -22,28 +23,32 @@
         <option value="NZDUSD">NZD/USD</option>
     </select>
 
-    <select id="timeframe">
-        <option value="1m">1 Daqiiqo (1M)</option>
-        <option value="5m">5 Daqiiqo (5M)</option>
-        <option value="15m">15 Daqiiqo (15M)</option>
-    </select>
-
     <div id="price" class="price">Loading...</div>
-    <div id="signal" style="font-size: 24px; font-weight: bold;">ANALYZING</div>
+    <div id="status" style="color: #8a99ad;">Connecting...</div>
 </div>
 
 <script>
     let ws;
-    function updatePair() {
-        if(ws) ws.close();
-        let pair = document.getElementById("pair").value.toLowerCase() + "t";
-        ws = new WebSocket(`wss://stream.binance.com:9443/ws/${pair}@ticker`);
+    // Map rasmi ah oo Binance u yaqaan Pairs-ka Forex
+    const pairMap = {
+        "EURUSD": "eurusdt", "GBPUSD": "gbpusdt", "USDJPY": "usdtjpy",
+        "AUDUSD": "audusdt", "USDCAD": "usdcadt", "USDCHF": "usdchft", "NZDUSD": "nzdusdt"
+    };
+
+    function updateConnection() {
+        if(ws) ws.close(); // Tani waa furaha: Xir xogta hore si aysan u "fake" noqon
+        let selected = document.getElementById("pair").value;
+        let symbol = pairMap[selected];
+        
+        document.getElementById("status").innerText = "Live: " + selected;
+        ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol}@ticker`);
+        
         ws.onmessage = (e) => {
             let data = JSON.parse(e.data);
-            document.getElementById("price").innerText = parseFloat(data.c).toFixed(5);
+            document.getElementById("price").innerText = parseFloat(data.c).toFixed(selected.includes("JPY") ? 3 : 5);
         };
     }
-    updatePair();
+    updateConnection();
 </script>
 </body>
 </html>
