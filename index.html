@@ -2,351 +2,56 @@
 <html lang="so">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>100% Real Forex Live Signal Matrix - v3.5</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Price Action & Signal Convergence v3.7</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            background-color: #06090f;
-            color: #ffffff;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 10px;
-        }
-        .signal-card {
-            width: 100%;
-            max-width: 460px;
-            background: #0f1622;
-            border: 2px solid #1e293b;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-        }
-        .header-title {
-            font-size: 22px;
-            font-weight: bold;
-            color: #00e676;
-            text-align: center;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .control-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        .input-group label {
-            font-size: 10px;
-            color: #8a99ad;
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-        select {
-            padding: 12px;
-            background: #172237;
-            border: 1px solid #1e293b;
-            color: #ffffff;
-            font-weight: bold;
-            border-radius: 6px;
-            outline: none;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        
-        /* SIGNALS BOX INTERFACE */
-        .signal-display {
-            background: #172237;
-            padding: 30px 10px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #24344d;
-            text-align: center;
-            position: relative;
-        }
-        .signal-status {
-            font-size: 50px;
-            font-weight: 900;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-            color: #8a99ad;
-            text-shadow: 0 0 10px rgba(138, 153, 173, 0.2);
-        }
-        .live-price {
-            font-size: 28px;
-            font-family: monospace;
-            color: #ffffff;
-            font-weight: bold;
-        }
-        .pulse-dot {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            width: 8px;
-            height: 8px;
-            background-color: #00e676;
-            border-radius: 50%;
-            box-shadow: 0 0 8px #00e676;
-        }
-
-        /* LIVE REAL-TIME TECHNICAL METRICS */
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        .metric-item {
-            background: #0b0f17;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #1e293b;
-            font-size: 13px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .metric-label { color: #8a99ad; font-weight: 500; }
-        .metric-value { font-weight: bold; color: #ffffff; font-family: monospace; }
-
-        /* WIN RATES COUNTER - INTERFACE KII HORE */
-        .win-counter-box {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-            background: #0b0f17;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #1e293b;
-        }
-        .win-box {
-            text-align: center;
-            font-size: 13px;
-        }
-        .win-box span { color: #8a99ad; display: block; margin-bottom: 2px; font-size: 11px; text-transform: uppercase;}
-        .win-box strong { font-size: 16px; color: #00e676; }
-
-        .btn-action {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-            padding: 14px;
-            background: #25d366;
-            color: #ffffff;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 8px;
-            font-size: 15px;
-        }
-        .footer-text {
-            font-size: 11px;
-            color: #475569;
-            text-align: center;
-            margin-top: 15px;
-        }
+        body { background: #06090f; color: #fff; font-family: monospace; display: flex; justify-content: center; padding: 20px; }
+        .card { width: 100%; max-width: 400px; background: #0f1622; padding: 25px; border-radius: 16px; border: 1px solid #1e293b; }
+        .price { font-size: 32px; color: #00e676; text-align: center; margin: 15px 0; }
+        .signal-box { height: 100px; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 900; border: 2px solid #24344d; border-radius: 12px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
-
-    <div class="signal-card">
-        <div class="header-title">100% Live Forex Engine</div>
-
-        <div class="control-grid">
-            <div class="input-group" style="grid-column: span 2;">
-                <label><i class="fas fa-chart-bar"></i> Dooro Forex Pair (Real-Time)</label>
-                <select id="pairSelect" onchange="switchAsset()">
-                    <option value="eurusd">EURUSD</option>
-                    <option value="gbpusd">GBPUSD</option>
-                    <option value="usdjpy">USDJPY</option>
-                    <option value="audusd">AUDUSD</option>
-                    <option value="usdcad">USDCAD</option>
-                    <option value="nzdusd">NZDUSD</option>
-                    <option value="usdchf">USDCHF</option>
-                    <option value="eurgbp">EURGBP</option>
-                    <option value="eurjpy">EURJPY</option>
-                    <option value="gbpjpy">GBPJPY</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="signal-display">
-            <div class="pulse-dot" id="livePulse"></div>
-            <div class="signal-status" id="signalOutput">ANALYZING</div>
-            <div class="live-price" id="priceOutput">Connecting...</div>
-        </div>
-
-        <div class="win-counter-box">
-            <div class="win-box">
-                <span>Signal Accuracy</span>
-                <strong style="color: #00e676;">94.2%</strong>
-            </div>
-            <div class="win-box">
-                <span>Market Status</span>
-                <strong id="marketStatus" style="color: #f59e0b;">ACTIVE</strong>
-            </div>
-        </div>
-
-        <div class="metrics-grid">
-            <div class="metric-item">
-                <span class="metric-label">RSI (14):</span>
-                <span class="metric-value" id="rsiVal">50.00</span>
-            </div>
-            <div class="metric-item">
-                <span class="metric-label">Trend Matrix:</span>
-                <span class="metric-value" id="trendVal" style="color: #8a99ad;">CALCULATING</span>
-            </div>
-        </div>
-
-        <a href="https://wa.me/252907492663" target="_blank" class="btn-action">
-            <i class="fab fa-whatsapp"></i> Caawinaad Toos Ah (WhatsApp)
-        </a>
-
-        <div class="footer-text">&copy; 2026 SomaliPocketOption | Forex Pure Core v3.5</div>
+    <div class="card">
+        <h3 style="text-align:center; color:#8a99ad;">LIVE PRICE ACTION FEED</h3>
+        <div id="price" class="price">0.00000</div>
+        <div id="signal" class="signal-box">ANALYZING</div>
+        <select id="pairSelect" onchange="switchAsset()" style="width:100%; padding:10px; background:#172237; color:#fff; border:none; border-radius:6px;">
+            <option value="EURUSD">EUR/USD</option>
+            <option value="GBPUSD">GBP/USD</option>
+            <option value="USDJPY">USD/JPY</option>
+            <option value="AUDUSD">AUD/USD</option>
+        </select>
     </div>
 
     <script>
         let ws;
-        let currentPair = "eurusd";
-        let priceHistory = [];
-        let lastSignal = "WAIT";
-        let signalLockTime = 0;
-        const LOCK_DURATION = 15000; // Wuxuu fadhiyayaa 15 ilbiriqsi si uu u noqdo mid deggen
-
-        function connectWebSocket() {
-            if (ws) { ws.close(); }
-
-            // Dhuumaha rasmiga ah ee dunida ugu dheereeya (Binance Spot Forex Feed)
-            let symbol = currentPair + "t";
-            if (currentPair === "usdjpy") symbol = "usdtjpy";
-
-            ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol}@ticker`);
-
-            ws.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                if(!data.c) return;
-                
-                const price = parseFloat(data.c);
-                document.getElementById("priceOutput").innerText = price.toFixed(currentPair.includes("jpy") ? 3 : 5);
-                
-                // BOOSTER SYSTEM: Marka u furan yahayba koodhku si degdeg ah ayuu u shaqaynayaa
-                if(priceHistory.length === 0) {
-                    for(let i=0; i<30; i++) {
-                        priceHistory.push(price - (Math.random() * 0.0001));
-                    }
-                }
-
-                priceHistory.push(price);
-                if (priceHistory.length > 50) { priceHistory.shift(); }
-
-                calculateForexMatrix();
-            };
-        }
-
-        function calculateRSI(period = 14) {
-            if (priceHistory.length < period + 1) return 50.00;
-            let gains = 0; let losses = 0;
-            for (let i = priceHistory.length - period; i < priceHistory.length; i++) {
-                let diff = priceHistory[i] - priceHistory[i - 1];
-                if (diff > 0) gains += diff; else losses -= diff;
-            }
-            if (losses === 0) return 50.00;
-            return 100 - (100 / (1 + (gains / losses)));
-        }
-
-        function calculateMA(period) {
-            if (priceHistory.length < period) return 0;
-            let subArray = priceHistory.slice(-period);
-            return subArray.reduce((a, b) => a + b, 0) / period;
-        }
-
-        function calculateForexMatrix() {
-            const rsi = calculateRSI(14);
-            const maFast = calculateMA(10);
-            const maSlow = calculateMA(25);
-            const currentPrice = priceHistory[priceHistory.length - 1];
-
-            document.getElementById("rsiVal").innerText = rsi.toFixed(2);
-
-            let trend = "NEUTRAL";
-            const trendElement = document.getElementById("trendVal");
-            if (maFast > maSlow && maSlow !== 0) {
-                trend = "BULLISH";
-                trendElement.innerText = "UP TREND";
-                trendElement.style.color = "#00e676";
-            } else if (maFast < maSlow && maSlow !== 0) {
-                trend = "BEARISH";
-                trendElement.innerText = "DOWN TREND";
-                trendElement.style.color = "#ef4444";
-            } else {
-                trendElement.innerText = "CALCULATING";
-                trendElement.style.color = "#8a99ad";
-            }
-
-            const signalElement = document.getElementById("signalOutput");
-            const currentTime = Date.now();
-
-            // SIGNAL LOCK: Haddii uu ku jiro waqtigii qufulka ha isbeddelin
-            if (currentTime - signalLockTime < LOCK_DURATION && lastSignal !== "WAIT") { return; }
-
-            let currentDecision = "WAIT";
-
-            // STRATEGY: Pure Trend Momentum Scalping (Ammaan ah oo 100% Live ah)
-            if (rsi < 46 && trend === "BULLISH") {
-                currentDecision = "BUY";
-            } else if (rsi > 54 && trend === "BEARISH") {
-                currentDecision = "SELL";
-            }
-
-            if (currentDecision !== lastSignal) {
-                lastSignal = currentDecision;
-                signalElement.innerText = currentDecision;
-                
-                if (currentDecision === "BUY") {
-                    signalElement.style.color = "#00e676";
-                    signalLockTime = currentTime;
-                } else if (currentDecision === "SELL") {
-                    signalElement.style.color = "#ef4444";
-                    signalLockTime = currentTime;
-                } else {
-                    signalElement.innerText = "WAIT";
-                    signalElement.style.color = "#8a99ad";
-                }
-            }
-        }
+        let lastPrice = 0;
+        const symbolMap = {"EURUSD":"eurusdt", "GBPUSD":"gbpusdt", "USDJPY":"usdtjpy", "AUDUSD":"audusdt"};
 
         function switchAsset() {
-            currentPair = document.getElementById("pairSelect").value;
-            priceHistory = [];
-            lastSignal = "WAIT";
-            signalLockTime = 0;
-            document.getElementById("priceOutput").innerText = "Connecting...";
-            document.getElementById("signalOutput").innerText = "ANALYZING";
-            document.getElementById("signalOutput").style.color = "#8a99ad";
-            connectWebSocket();
+            if(ws) ws.close();
+            let pair = document.getElementById("pairSelect").value;
+            ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbolMap[pair]}@ticker`);
+            ws.onmessage = (event) => {
+                let data = JSON.parse(event.data);
+                let currentPrice = parseFloat(data.c);
+                document.getElementById("price").innerText = currentPrice.toFixed(pair.includes("JPY") ? 3 : 5);
+                
+                // PRICE ACTION LOGIC: 
+                // Haddii qiimuhu kor u boodo (Momentum), Signal-ku waa BUY
+                // Haddii qiimuhu hoos u dhaco (Momentum), Signal-ku waa SELL
+                let signalEl = document.getElementById("signal");
+                if (currentPrice > lastPrice + 0.00002) {
+                    signalEl.innerText = "BUY";
+                    signalEl.style.color = "#00e676";
+                } else if (currentPrice < lastPrice - 0.00002) {
+                    signalEl.innerText = "SELL";
+                    signalEl.style.color = "#ef4444";
+                }
+                lastPrice = currentPrice;
+            };
         }
-
-        window.onload = () => {
-            connectWebSocket();
-            // Pulse animation oo muujinaya inuu nool yahay 100%
-            setInterval(() => {
-                const dot = document.getElementById("livePulse");
-                if(dot) dot.style.opacity = dot.style.opacity === "0.3" ? "1" : "0.3";
-            }, 500);
-        };
+        switchAsset();
     </script>
 </body>
 </html>
