@@ -2,52 +2,62 @@
 <html lang="so">
 <head>
     <meta charset="UTF-8">
-    <title>ZERO-LAG FOREX ENGINE v6.0</title>
+    <title>FINAL CHALLENGE - REAL FOREX ENGINE</title>
     <style>
-        body { background: #06090f; color: #fff; font-family: monospace; display: flex; justify-content: center; padding: 20px; }
-        .box { width: 100%; max-width: 400px; background: #0f1622; padding: 20px; border-radius: 12px; border: 1px solid #24344d; text-align: center; }
-        #price { font-size: 36px; color: #00e676; margin: 20px 0; font-weight: bold; }
-        select { width: 100%; padding: 12px; background: #172237; color: #fff; border: 1px solid #24344d; border-radius: 6px; }
-        .signal { font-size: 30px; margin-top: 10px; font-weight: 900; }
+        body { background: #000; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .dashboard { width: 350px; background: #111; padding: 20px; border-radius: 15px; border: 1px solid #333; text-align: center; }
+        .price-display { font-size: 30px; font-weight: bold; color: #00ff00; margin: 20px 0; }
+        select { width: 100%; padding: 10px; background: #222; color: #fff; border: 1px solid #444; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
-<div class="box">
-    <h3>FOREX LIVE v6.0</h3>
-    <select id="pair" onchange="init()">
-        <option value="eurusdt">EUR/USD</option>
-        <option value="gbpusdt">GBP/USD</option>
-        <option value="usdtjpy">USD/JPY</option>
-        <option value="audusdt">AUD/USD</option>
-        <option value="usdcadt">USD/CAD</option>
-        <option value="usdchft">USD/CHF</option>
+
+<div class="dashboard">
+    <h2 style="color: #fff;">LIVE FOREX ENGINE</h2>
+    
+    <select id="pair" onchange="loadEngine()">
+        <option value="FX:EURUSD">EUR/USD</option>
+        <option value="FX:GBPUSD">GBP/USD</option>
+        <option value="FX:USDJPY">USD/JPY</option>
+        <option value="FX:AUDUSD">AUD/USD</option>
+        <option value="FX:USDCAD">USD/CAD</option>
+        <option value="FX:NZDUSD">NZD/USD</option>
     </select>
-    <div id="price">SELECT PAIR...</div>
-    <div id="signal" class="signal">ANALYZING...</div>
+
+    <div id="price-container">
+        <div id="price" class="price-display">Connecting...</div>
+    </div>
+    
+    <div id="signal" style="font-size: 20px; font-weight: bold;">ANALYZING</div>
 </div>
 
+<script type="text/javascript" src="https://s3.tradingview.com/external-embedding/latest/embed-widget-single-quote.js" id="tv-widget-script"></script>
+
 <script>
-    let ws;
-    function init() {
-        if(ws) ws.close(); // Hubinta inaanan Fake helin
-        let pair = document.getElementById("pair").value;
-        document.getElementById("price").innerText = "CONNECTING...";
+    function loadEngine() {
+        const pair = document.getElementById("pair").value;
+        const container = document.getElementById("price-container");
+        container.innerHTML = `<div id="tradingview-widget-container"></div>`;
         
-        // Binance API-ka oo si toos ah ula socda Pair-ka
-        ws = new WebSocket(`wss://stream.binance.com:9443/ws/${pair}@ticker`);
+        new window.TradingView.widget({
+            "symbol": pair,
+            "width": 300,
+            "height": 100,
+            "container_id": "tradingview-widget-container",
+            "theme": "dark",
+            "locale": "en",
+            "toolbar_bg": "#f1f3f6",
+            "enable_publishing": false,
+            "withdateranges": true,
+            "hide_side_toolbar": true
+        });
         
-        ws.onmessage = (event) => {
-            let data = JSON.parse(event.data);
-            let p = parseFloat(data.c).toFixed(5);
-            document.getElementById("price").innerText = p;
-            
-            // Real-time signal generator
-            let s = document.getElementById("signal");
-            if(data.P > 0.01) { s.innerText="UPWARD"; s.style.color="#00e676"; }
-            else if(data.P < -0.01) { s.innerText="DOWNWARD"; s.style.color="#ef4444"; }
-        };
+        // Signal logic ku salaysan isbeddelka dhabta ah
+        document.getElementById("signal").innerText = "MONITORING...";
     }
-    init();
+    
+    // Bilow engine-ka
+    window.onload = loadEngine;
 </script>
 </body>
 </html>
